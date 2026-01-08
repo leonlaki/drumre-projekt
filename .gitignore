@@ -1,0 +1,8 @@
+#.env file
+backend/.env
+
+#Node modules
+backend/node_modules/
+
+# Notes
+backend/progress.txt
