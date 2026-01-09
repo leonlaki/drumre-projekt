@@ -1,0 +1,97 @@
+/* LandingPage.css */
+.landing-wrapper {
+  width: 100%;
+}
+
+.hero-section {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero-title {
+  font-size: var(--fs-h1);
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  max-width: 700px;
+}
+
+.section-container {
+  width: 100%;
+  max-width: 1400px;
+  min-height: 70vh;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px 5%;
+  gap: 60px;
+  
+  opacity: 0;
+  will-change: transform, opacity;
+  /* Koristi transform3d za prisilno GPU ubrzanje (hardware acceleration) */
+  transform: translate3d(0, 50px, 0);
+  transition: opacity 1s ease-out, transform 1.2s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.section-container.visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.section-image-wrapper img {
+  /* Smanji kompleksnost blendanja */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  
+  /* Ako slike i dalje štekaju, radije koristi opacity umjesto teškog mix-blend-mode */
+  /* mix-blend-mode: multiply; */ 
+}
+
+.section-reverse { flex-direction: row-reverse; }
+
+.section-text { flex: 1; }
+.section-text h2 { 
+  font-size: var(--fs-h1); 
+  margin-bottom: 20px; 
+  color: var(--text-primary);
+}
+
+.section-image-wrapper {
+  flex: 1.2;
+  display: flex;
+  justify-content: center;
+}
+
+.section-image-wrapper img {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 30px;
+
+  mix-blend-mode: multiply;
+}
+
+[data-theme='dark'] .section-image-wrapper img {
+  mix-blend-mode: screen;
+  opacity: 0.8;
+}
+
+
+/* Mobitel responzivnost */
+@media (max-width: 768px) {
+  .section-container {
+    flex-direction: column !important;
+    text-align: center;
+    min-height: auto;
+    padding: 100px 20px;
+  }
+  .hero-title { font-size: 2.5rem; }
+}
