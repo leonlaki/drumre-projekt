@@ -1,35 +1,63 @@
-// App.jsx
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './Context/AuthContext';
+import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
 
-// Importaj svoje stranice (pazi na putanje!)
-import LandingPage from "./Pages/Landing/LandingPage";
-import HomePage from "./Pages/Home/HomePage";
-import LoginPage from "./Pages/Login/LoginPage";
-import RegisterPage from "./Pages/Register/RegisterPage";
-import ErrorPage from "./Pages/Error/ErrorPage";
+// Importi tvojih stranica (napravi ih prazne ako ih nemaš)
+import LandingPage from './Pages/Landing/LandingPage';
+import Home from './Pages/Home/HomePage';
+import Login from './Pages/Login/LoginPage';
+import Register from './Pages/Register/RegisterPage';
+import './App.css';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <LandingPage />,
-    errorElement: <ErrorPage />, // Ovo automatski hvata sve greške na ovoj ruti
-  },
-  {
-    path: "/home",
-    element: <HomePage />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-]);
+// Mala pomoćna komponenta koja preusmjerava logirane korisnike s Landinga na Home
+// (Da ne gledaju login formu ako su već unutra)
+const PublicRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (user) {
+    return <Navigate to="/home" replace />;
+  }
+  return children;
+};
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          
+          {/* JAVNE RUTE (Landing, Login, Register) */}
+          <Route path="/" element={
+            <PublicRoute>
+              <LandingPage />
+            </PublicRoute>
+          } />
+          
+          <Route path="/login" element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } />
+
+          <Route path="/register" element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          } />
+
+          {/* ZAŠTIĆENE RUTE (Samo za logirane) */}
+          <Route element={<ProtectedRoute />}>
+             <Route path="/home" element={<Home />} />
+             {/* Ovdje dodaj ostale zaštićene rute npr. /profile, /recipes */}
+          </Route>
+
+          {/* Catch-all ruta (404) */}
+          <Route path="*" element={<Navigate to="/" />} />
+
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;

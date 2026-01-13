@@ -7,7 +7,7 @@
   background-size: auto; 
   background-repeat: repeat-x; 
   background-position: center;
-  transition: background-image 0.3s ease;
+  transition: background-image 0.7s ease-in-out;
 }
 
 /* Footer.css */

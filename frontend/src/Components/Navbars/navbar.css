@@ -1,0 +1,159 @@
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2%;
+  background-color: var(--bg-navbar); 
+  border-bottom: 1px solid var(--text-secondary);
+  width: 100%;
+}
+
+.theme-switch {
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-primary);
+  padding: 5px 15px;
+  border-radius: 20px;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.login-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  align-self: center;
+}
+
+.register-btn {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+/* --- POSTOJEĆI CSS (Zadržan) --- */
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2%;
+  background-color: var(--bg-navbar); 
+  border-bottom: 1px solid rgba(0,0,0,0.1); /* Malo nježniji border */
+  width: 100%;
+  /* Osigurava da dropdown ne bude skriven ako overflow nije visible */
+  position: relative; 
+  z-index: 100;
+}
+
+[data-theme='dark'] .navbar-container {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.theme-switch {
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-primary);
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: var(--fs-small);
+  transition: all 0.3s ease;
+}
+
+.theme-switch:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+/* --- NOVI CSS (navbar-logd-user...) --- */
+
+/* Wrapper za pozicioniranje dropdowna */
+.navbar-logd-user-menu-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logd-user-hamburger {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown kontejner */
+.navbar-logd-user-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 200px;
+  background-color: var(--bg-card);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+
+  /* --- ANIMACIJA (Slide Up/Down logika) --- */
+  /* 1. Početno stanje (skriveno i pomaknuto gore) */
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden; /* Bitno: sprječava klikanje dok je skriven */
+  
+  /* Tranzicija za sva svojstva */
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+/* --- STANJE KADA JE OTVOREN --- */
+.navbar-logd-user-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+[data-theme='dark'] .navbar-logd-user-dropdown {
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+/* Ostali stilovi za iteme (ostaju isti) */
+.navbar-logd-user-item {
+  padding: 15px 20px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: var(--fs-body);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  width: 100%;
+}
+
+.navbar-logd-user-item:hover {
+  background-color: rgba(0,0,0,0.05);
+  color: var(--accent-color);
+}
+
+[data-theme='dark'] .navbar-logd-user-item:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
+.navbar-logd-user-logout {
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+[data-theme='dark'] .navbar-logd-user-logout {
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
