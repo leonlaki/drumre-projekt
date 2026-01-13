@@ -1,59 +1,96 @@
 const Recipe = require("../models/Recipe");
-const {
-  searchMealsByName,
-  getMealById,
-  extractIngredients
-} = require("../services/mealdbService");
 
-const searchRecipes = async (req, res) => {
-  const meals = await searchMealsByName(req.query.q || "");
-  res.json(meals);
-};
-
+// 1. SPREMI NOVI RECEPT (Samo hrana, bez glazbe)
 const saveRecipe = async (req, res) => {
-  const meal = await getMealById(req.body.mealId);
+  const { title, image, instructions, ingredients, category } = req.body;
 
-  if (!meal) {
-    return res.status(404).json({ message: "Meal not found" });
+  try {
+    const recipe = await Recipe.create({
+      title,
+      image,
+      instructions,
+      ingredients,
+      category,
+      author: req.user._id,
+    });
+    res.status(201).json(recipe);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error saving recipe" });
   }
-
-  const ingredients = extractIngredients(meal);
-
-  const recipe = await Recipe.create({
-    mealId: meal.idMeal,
-    title: meal.strMeal,
-    image: meal.strMealThumb,
-    instructions: meal.strInstructions,
-    ingredients,
-    author: req.user?.id
-  });
-
-  res.status(201).json(recipe);
 };
 
-const getAllRecipes = async (req, res) => {
-  const recipes = await Recipe.find().sort({ createdAt: -1 });
-  res.json(recipes);
+// 2. DOHVATI MOJE RECEPTE (Za "Moju kuharicu" i dropdown izbornik)
+const getUserRecipes = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // Treba nam ID korisnika na temelju username-a
+    // Pretpostavimo da frontend šalje username
+    const User = require("../models/User");
+    const user = await User.findOne({ username });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Jednostavan find, bez agregacija i statistike
+    const recipes = await Recipe.find({ author: user._id }).sort({
+      createdAt: -1,
+    }); // Najnoviji prvi
+
+    res.json(recipes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching recipes" });
+  }
 };
 
-const rateRecipe = async (req, res) => {
-  const recipe = await Recipe.findById(req.params.id);
-  if (!recipe) {
-    return res.status(404).json({ message: "Recipe not found" });
+// 3. AŽURIRAJ RECEPT (Edit tekst, sliku...)
+const updateRecipe = async (req, res) => {
+  const { id } = req.params;
+  const { title, image, instructions, ingredients, category } = req.body;
+
+  try {
+    const recipe = await Recipe.findById(id);
+    if (!recipe) return res.status(404).json({ message: "Recipe not found" });
+
+    if (recipe.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    recipe.title = title || recipe.title;
+    recipe.image = image || recipe.image;
+    recipe.instructions = instructions || recipe.instructions;
+    recipe.ingredients = ingredients || recipe.ingredients;
+    recipe.category = category || recipe.category;
+
+    await recipe.save();
+    res.json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating recipe" });
   }
+};
 
-  recipe.ratings.push({
-    user: req.user?.id || null,
-    value: req.body.value
-  });
+// 4. OBRIŠI RECEPT
+const deleteRecipe = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const recipe = await Recipe.findById(id);
+    if (!recipe) return res.status(404).json({ message: "Not found" });
 
-  await recipe.save();
-  res.json(recipe);
+    if (recipe.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await recipe.deleteOne();
+    res.json({ message: "Recipe deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting recipe" });
+  }
 };
 
 module.exports = {
-  searchRecipes,
   saveRecipe,
-  getAllRecipes,
-  rateRecipe
+  getUserRecipes,
+  updateRecipe,
+  deleteRecipe,
 };
