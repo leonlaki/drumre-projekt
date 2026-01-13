@@ -1,7 +1,11 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy; // NOVO
+const LocalStrategy = require("passport-local").Strategy;       // NOVO
+const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
+// --- 1. GOOGLE (Postojeće) ---
 passport.use(
   new GoogleStrategy(
     {
@@ -12,16 +16,24 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
-
         if (!user) {
-          user = await User.create({
-            googleId: profile.id,
-            name: profile.displayName,
-            email: profile.emails?.[0]?.value || null,
-            avatar: profile.photos?.[0]?.value || null
-          });
+          // Provjera po emailu
+          if (profile.emails && profile.emails.length > 0) {
+            user = await User.findOne({ email: profile.emails[0].value });
+          }
+          
+          if (user) {
+            user.googleId = profile.id;
+            await user.save();
+          } else {
+            user = await User.create({
+              googleId: profile.id,
+              name: profile.displayName,
+              email: profile.emails?.[0]?.value,
+              avatar: profile.photos?.[0]?.value
+            });
+          }
         }
-
         done(null, user);
       } catch (error) {
         done(error, null);
@@ -30,7 +42,65 @@ passport.use(
   )
 );
 
-// session handling
+// --- 2. FACEBOOK (NOVO) ---
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      callbackURL: "/auth/facebook/callback",
+      profileFields: ['id', 'displayName', 'photos', 'email'] // Ovo je obavezno za FB
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        let user = await User.findOne({ facebookId: profile.id });
+        
+        if (!user) {
+          // Pazi: Facebook nekad ne vrati email (npr. ako je user regan mobitelom)
+          const email = profile.emails && profile.emails[0] ? profile.emails[0].value : null;
+
+          if (email) {
+             user = await User.findOne({ email: email });
+          }
+
+          if (user) {
+            user.facebookId = profile.id;
+            await user.save();
+          } else {
+            user = await User.create({
+              facebookId: profile.id,
+              name: profile.displayName,
+              email: email,
+              avatar: profile.photos ? profile.photos[0].value : ""
+            });
+          }
+        }
+        done(null, user);
+      } catch (error) {
+        done(error, null);
+      }
+    }
+  )
+);
+
+// --- 3. LOCAL (Email/Pass) ---
+passport.use(
+  new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+    try {
+      const user = await User.findOne({ email });
+      if (!user) return done(null, false, { message: 'Korisnik ne postoji.' });
+      if (!user.password) return done(null, false, { message: 'Prijavite se preko Facebooka/Googlea.' });
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return done(null, false, { message: 'Kriva lozinka.' });
+
+      return done(null, user);
+    } catch (err) {
+      return done(err);
+    }
+  })
+);
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
