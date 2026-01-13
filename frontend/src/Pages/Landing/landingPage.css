@@ -84,6 +84,31 @@
   opacity: 0.8;
 }
 
+.landing-page-button-wrapper{
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.landing-page-button{
+  background-color: var(--bg-main-contrast);
+  color: var(--text-primary-contrast);
+  border: none;
+  width: 40%;
+  padding: 30px 60px;
+  font-size: var(--fs-h2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 20px; 
+  align-items: center;
+}
+
+.landing-page-button:hover{
+  background-color: var(--accent-color);
+}
 
 /* Mobitel responzivnost */
 @media (max-width: 768px) {
@@ -94,4 +119,61 @@
     padding: 100px 20px;
   }
   .hero-title { font-size: 2.5rem; }
+}
+
+
+.landing-page-magic-section {
+  flex-direction: column;
+  text-align: center;
+}
+
+.landing-page-reveal-container {
+  position: relative;
+  /* 1. SMANJENE DIMENZIJE */
+  /* Bilo je 500px, sada stavljamo npr. 350px ili 400px */
+  width: 550px; 
+  height: 550px;
+  
+  margin: 40px auto; /* Malo razmaka */
+  border-radius: 50%; /* Da bude okruglo */
+  overflow: hidden;
+  cursor: crosshair;
+  
+  /* Malo sjene da izgleda kao objekt u prostoru */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+  
+  /* Ovo sprječava da se slika selektira dok držiš klik */
+  user-select: none; 
+}
+
+/* GIF je u pozadini, mora popuniti sve */
+.landing-page-reveal-gif {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1; 
+  pointer-events: none;
+}
+
+/* Canvas je preko GIF-a */
+.landing-page-reveal-canvas {
+  position: absolute;
+  top: -17.5%;
+  left: -17.5%;
+  width: 135%;
+  height: 135%;
+  z-index: 2;
+  touch-action: none;
+
+}
+
+/* Responsivnost za manje ekrane */
+@media (max-width: 768px) {
+  .landing-page-reveal-container {
+    width: 280px;
+    height: 280px;
+  }
 }
