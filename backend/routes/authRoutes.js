@@ -62,12 +62,28 @@ router.get(
 );
 
 // --- OSTALO ---
+
+//LOGOUT MORA SE COOKIE UNISTITI KADA SE KORISNIK ODJAVI!!!!
+/*
 router.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
     res.redirect("/");
   });
 });
+*/
+
+router.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+
+    req.session.destroy(() => {
+      res.clearCookie("connect.sid");
+      res.redirect("/");
+    });
+  });
+});
+
 
 router.get("/user", (req, res) => {
   res.json(req.user || null);

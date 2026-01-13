@@ -85,20 +85,32 @@ passport.use(
 
 // --- 3. LOCAL (Email/Pass) ---
 passport.use(
-  new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
-    try {
-      const user = await User.findOne({ email });
-      if (!user) return done(null, false, { message: 'Korisnik ne postoji.' });
-      if (!user.password) return done(null, false, { message: 'Prijavite se preko Facebooka/Googlea.' });
+  new LocalStrategy(
+    { usernameField: 'username' },
+    async (username, password, done) => {
+      try {
+        const user = await User.findOne({ username });
+        if(!user) {
+          return done(null, false, { message: 'Korisnik ne postoji.' });
+        }
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return done(null, false, { message: 'Kriva lozinka.' });
+        if(!user.password) {
+          return done(null, false, {
+            message: 'Prijavite se putem Googlea ili Facebooka.',
+          });
+        }
 
-      return done(null, user);
-    } catch (err) {
-      return done(err);
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch) {
+          return done(null, false, { message: 'Kriva lozinka.' });
+        }
+
+        return done(null, user);
+      } catch(err) {
+        return done(err);
+      }
     }
-  })
+  )
 );
 
 passport.serializeUser((user, done) => {
