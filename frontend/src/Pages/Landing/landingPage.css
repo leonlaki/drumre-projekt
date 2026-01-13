@@ -1,4 +1,5 @@
 /* LandingPage.css */
+
 .landing-wrapper {
   width: 100%;
 }
@@ -24,39 +25,12 @@
   max-width: 700px;
 }
 
-.section-container {
-  width: 100%;
-  max-width: 1400px;
-  min-height: 70vh;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 50px 5%;
-  gap: 60px;
-  
-  opacity: 0;
-  will-change: transform, opacity;
-  /* Koristi transform3d za prisilno GPU ubrzanje (hardware acceleration) */
-  transform: translate3d(0, 50px, 0);
-  transition: opacity 1s ease-out, transform 1.2s cubic-bezier(0.33, 1, 0.68, 1);
-}
+/* .section-container je maknut u AnimatedSection.css */
 
-.section-container.visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
+/* Ovu klasu ostavljamo ovdje jer je specifična za raspored elemenata na ovoj stranici */
+.section-reverse { 
+  flex-direction: row-reverse; 
 }
-
-.section-image-wrapper img {
-  /* Smanji kompleksnost blendanja */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  
-  /* Ako slike i dalje štekaju, radije koristi opacity umjesto teškog mix-blend-mode */
-  /* mix-blend-mode: multiply; */ 
-}
-
-.section-reverse { flex-direction: row-reverse; }
 
 .section-text { flex: 1; }
 .section-text h2 { 
@@ -75,8 +49,11 @@
   width: 100%;
   max-width: 600px;
   border-radius: 30px;
-
   mix-blend-mode: multiply;
+  
+  /* Backface visibility je specifičan za sliku, ne za sekciju */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 [data-theme='dark'] .section-image-wrapper img {
@@ -110,17 +87,10 @@
   background-color: var(--accent-color);
 }
 
-/* Mobitel responzivnost */
 @media (max-width: 768px) {
-  .section-container {
-    flex-direction: column !important;
-    text-align: center;
-    min-height: auto;
-    padding: 100px 20px;
-  }
   .hero-title { font-size: 2.5rem; }
+  /* Media query za .section-container je prebačen u AnimatedSection.css */
 }
-
 
 .landing-page-magic-section {
   flex-direction: column;
@@ -129,24 +99,16 @@
 
 .landing-page-reveal-container {
   position: relative;
-  /* 1. SMANJENE DIMENZIJE */
-  /* Bilo je 500px, sada stavljamo npr. 350px ili 400px */
   width: 550px; 
   height: 550px;
-  
-  margin: 40px auto; /* Malo razmaka */
-  border-radius: 50%; /* Da bude okruglo */
+  margin: 40px auto; 
+  border-radius: 50%; 
   overflow: hidden;
   cursor: crosshair;
-  
-  /* Malo sjene da izgleda kao objekt u prostoru */
   box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
-  
-  /* Ovo sprječava da se slika selektira dok držiš klik */
   user-select: none; 
 }
 
-/* GIF je u pozadini, mora popuniti sve */
 .landing-page-reveal-gif {
   position: absolute;
   top: 0;
@@ -158,7 +120,6 @@
   pointer-events: none;
 }
 
-/* Canvas je preko GIF-a */
 .landing-page-reveal-canvas {
   position: absolute;
   top: -17.5%;
@@ -167,10 +128,8 @@
   height: 135%;
   z-index: 2;
   touch-action: none;
-
 }
 
-/* Responsivnost za manje ekrane */
 @media (max-width: 768px) {
   .landing-page-reveal-container {
     width: 280px;

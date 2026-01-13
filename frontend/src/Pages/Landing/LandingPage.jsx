@@ -1,27 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useInView } from 'react-intersection-observer';
-import Navbar from '../../Components/NavbarLandingPage/Navbar';
-import './LandingPage.css';
+import React from 'react'; // Maknuli smo useState/useEffect/useRef ako se ne koriste drugdje
+import Navbar from '../../Components/Navbars/NavbarLandingPage/Navbar';
 import Footer from '../../Components/Footer/Footer';
 import VinylReveal from './VinylReveal';
-
-// Podkomponenta za animirane sekcije (tvoja postojeća)
-const AnimatedSection = ({ children, className }) => {
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px', 
-    triggerOnce: true, 
-  });
-
-  return (
-    <div 
-      ref={ref} 
-      className={`section-container ${className || ''} ${inView ? 'visible' : 'hidden'}`}
-    >
-      {children}
-    </div>
-  );
-};
+import AnimatedSection from '../../Components/AnimatedSection/AnimatedSection'; // <--- NOVI IMPORT (prilagodi putanju)
+import './LandingPage.css';
 
 const LandingPage = () => {
   return (
@@ -76,7 +58,7 @@ const LandingPage = () => {
         </div>         
       </AnimatedSection>
 
-      {/* OVDJE JE TVOJ NOVI TODO DIO */}
+      {/* MAGIC SECTION */}
       <AnimatedSection className="landing-page-magic-section">
           <div className="section-text">
             <h2>Istraži magiju</h2>
@@ -86,7 +68,6 @@ const LandingPage = () => {
              <VinylReveal />
           </div>
       </AnimatedSection>
-
 
       <Footer />
     </div>

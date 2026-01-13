@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ThemeContext } from '../../Context/ThemeContext';
-import './navbar.css'; // VAŽNO: Uvoz lokalnog CSS-a
+import { ThemeContext } from '../../../Context/ThemeContext';
+import '../navbar.css'; // VAŽNO: Uvoz lokalnog CSS-a
 
 const Navbar = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -16,7 +16,7 @@ const Navbar = () => {
 
       <div className="nav-right">
         <div className="auth-buttons">
-          <Link to="/login" className="login-link">Sign In</Link>
+          <Link to="/login" className="login-link">Login</Link>
           <Link to="/register" className="register-btn">Register</Link>
         </div>
       </div>
