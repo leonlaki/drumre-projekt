@@ -3,10 +3,10 @@ const {
   searchRecipes,
   saveRecipe,
   rateRecipe,
-  getAllRecipes
+  getAllRecipes,
 } = require("../controller/recipeController");
 
-const { protect } = require("../middleware/auth");
+const { ensureAuth } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get("/search", searchRecipes);
 router.get("/", getAllRecipes);
 
 //SECURED
-router.post("/save", protect, saveRecipe);
-router.post("/:id/rate", protect, rateRecipe);
+router.post("/save", ensureAuth, saveRecipe);
+router.post("/:id/rate", ensureAuth, rateRecipe);
 
 module.exports = router;
