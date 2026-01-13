@@ -47,8 +47,9 @@ app.get("/", (req, res) => {
 app.use("/auth", require("./routes/authRoutes"));
 
 app.use("/api/external", require("./routes/apiRoutes"));
-
 app.use("/api/recipes", require("./routes/recipeRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/meals", require("./routes/mealRoutes"));
 
 app.use("/api/friends", require('./routes/friendRoute'));
 

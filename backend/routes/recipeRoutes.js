@@ -1,21 +1,21 @@
 const express = require("express");
 const {
-  searchRecipes,
   saveRecipe,
-  rateRecipe,
-  getAllRecipes,
+  getUserRecipes,
+  updateRecipe,
+  deleteRecipe,
 } = require("../controller/recipeController");
 
 const { ensureAuth } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-//PUBLIC
-router.get("/search", searchRecipes);
-router.get("/", getAllRecipes);
+// --- JAVNE RUTE ---
+router.get("/user/:username", getUserRecipes);
 
-//SECURED
-router.post("/save", ensureAuth, saveRecipe);
-router.post("/:id/rate", ensureAuth, rateRecipe);
+// --- ZAŠTIĆENE RUTE ---
+router.post("/", ensureAuth, saveRecipe);
+router.put("/:id", ensureAuth, updateRecipe);
+router.delete("/:id", ensureAuth, deleteRecipe);
 
 module.exports = router;
