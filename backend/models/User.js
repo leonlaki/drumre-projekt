@@ -33,6 +33,12 @@ const userSchema = new mongoose.Schema(
       sparse: true,
     },
     avatar: String,
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ]
   },
   { timestamps: true }
 );

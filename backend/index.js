@@ -24,9 +24,15 @@ app.use(
 
 app.use(
   session({
+    name: "connect.sid",
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: false,     
+      httpOnly: true,
+      sameSite: "lax",
+    },
   })
 );
 
@@ -43,6 +49,8 @@ app.use("/auth", require("./routes/authRoutes"));
 app.use("/api/external", require("./routes/apiRoutes"));
 
 app.use("/api/recipes", require("./routes/recipeRoutes"));
+
+app.use("/api/friends", require('./routes/friendRoute'));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
