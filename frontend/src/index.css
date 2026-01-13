@@ -3,8 +3,10 @@
 :root {
   /* LIGHT TEMA */
   --bg-main: #ffffff;
+  --bg-main-contrast: #121212;
   --bg-card: #f9f9f9;
   --text-primary: #1a1a1a;
+  --text-primary-contrast: #f5f5f5;
   --text-secondary: #4a4a4a;
   --accent-color: #ff5733;
   --text-navbar: #1a1a1a;
@@ -21,8 +23,10 @@
 [data-theme='dark'] {
   /* DARK TEMA */
   --bg-main: #121212;
+  --bg-main-contrast: #ffffff;
   --bg-card: #1e1e1e;
   --text-primary: #f5f5f5;
+  --text-primary-contrast: #1a1a1a;
   --text-secondary: #b0b0b0;
   --accent-color: #ff7e67;
   --bg-navbar: #181818;
@@ -35,7 +39,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: background-color 0.7s ease, color 0.7s ease, border-color 0.7s ease;
+  transition: background-color 0.7s ease-in-out, color 0.7s ease-in-out, border-color 0.7s ease-in-out;
 }
 
 body {

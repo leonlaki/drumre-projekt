@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Navbar from '../../Components/NavbarLandingPage/Navbar';
 import './LandingPage.css';
 import Footer from '../../Components/Footer/Footer';
+import VinylReveal from './VinylReveal';
 
-// Podkomponenta za animirane sekcije
+// Podkomponenta za animirane sekcije (tvoja postojeća)
 const AnimatedSection = ({ children, className }) => {
-  // threshold: 0.1 znači da animacija kreće čim se vrh sekcije pojavi
   const { ref, inView } = useInView({
     threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px', // Animira se 100px prije nego uđe u skroz vidljivo polje
-    triggerOnce: true, // Ovo drastično ubrzava performanse jer nakon prve animacije JS prestaje pratiti element
+    rootMargin: '0px 0px -100px 0px', 
+    triggerOnce: true, 
   });
 
   return (
     <div 
       ref={ref} 
-      className={`section-container ${className} ${inView ? 'visible' : 'hidden'}`}
+      className={`section-container ${className || ''} ${inView ? 'visible' : 'hidden'}`}
     >
       {children}
     </div>
   );
 };
-
 
 const LandingPage = () => {
   return (
@@ -69,6 +68,26 @@ const LandingPage = () => {
           <img src="/images/landingPage-img2.webp" alt="Zajednica" />
         </div>
       </AnimatedSection>
+
+      <AnimatedSection>
+        <div className="landing-page-button-wrapper">
+          <button className="landing-page-button">Sign In</button> 
+          <button className="landing-page-button">Register</button>
+        </div>         
+      </AnimatedSection>
+
+      {/* OVDJE JE TVOJ NOVI TODO DIO */}
+      <AnimatedSection className="landing-page-magic-section">
+          <div className="section-text">
+            <h2>Istraži magiju</h2>
+            <p>Prijeđi mišem preko tanjura i otkrij glazbu koja se krije iza okusa.</p>
+          </div>
+          <div className="section-image-wrapper">
+             <VinylReveal />
+          </div>
+      </AnimatedSection>
+
+
       <Footer />
     </div>
   );
