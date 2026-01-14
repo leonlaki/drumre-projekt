@@ -37,7 +37,15 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
       }
-    ]
+    ],
+    preferences: {
+      categories: [{ type: String }],
+      areas: [{ type: String }]
+    },
+    isOnboarded: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );
