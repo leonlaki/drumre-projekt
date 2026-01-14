@@ -52,6 +52,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/meals", require("./routes/mealRoutes"));
 
 app.use("/api/friends", require('./routes/friendRoute'));
+app.use("/api/mealdb", require('./routes/mealdbRoutes'))
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
