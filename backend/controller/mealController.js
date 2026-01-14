@@ -1,9 +1,8 @@
 const Meal = require("../models/Meal");
+const User = require("../models/User"); // <--- DODANO: Treba nam za getUserMeals
 
 // 1. KREIRAJ OBROK (OBJAVI POST)
 const createMeal = async (req, res) => {
-  // Frontend šalje: title, description, playlistId i niz 'courses'
-  // courses izgleda ovako: [{ courseType: 'Soup', recipe: 'ID_RECEPTA' }, ...]
   const { title, description, courses, playlistId } = req.body;
 
   if (!courses || courses.length === 0) {
@@ -16,7 +15,7 @@ const createMeal = async (req, res) => {
     const meal = await Meal.create({
       title,
       description,
-      courses, // Spremamo strukturu sljedova
+      courses,
       playlist: playlistId || null,
       author: req.user._id,
     });
@@ -27,7 +26,7 @@ const createMeal = async (req, res) => {
   }
 };
 
-// 2. FEED (TRENDING OBROCI)
+// 2. FEED (TRENDING OBROCI - ZADNJIH 7 DANA)
 const getWeeklyMealFeed = async (req, res) => {
   try {
     const sevenDaysAgo = new Date();
@@ -37,7 +36,7 @@ const getWeeklyMealFeed = async (req, res) => {
       // A. Filter: Zadnjih 7 dana
       { $match: { createdAt: { $gte: sevenDaysAgo } } },
 
-      // B. Statistika (Broj glasova i prosjek)
+      // B. Statistika
       {
         $addFields: {
           voteCount: { $size: "$ratings" },
@@ -46,12 +45,10 @@ const getWeeklyMealFeed = async (req, res) => {
         },
       },
 
-      // C. Sortiranje (Prvo popularnost)
+      // C. Sortiranje (Popularnost)
       { $sort: { voteCount: -1, averageRating: -1 } },
 
-      // D. POPULATE (Dohvaćanje povezanih podataka)
-
-      // 1. Autor
+      // D. POPULATE
       {
         $lookup: {
           from: "users",
@@ -60,7 +57,6 @@ const getWeeklyMealFeed = async (req, res) => {
           as: "authorDetails",
         },
       },
-      // 2. Playlista
       {
         $lookup: {
           from: "playlists",
@@ -69,10 +65,7 @@ const getWeeklyMealFeed = async (req, res) => {
           as: "playlistDetails",
         },
       },
-      // 3. Recepti
-      {
-        $unwind: "$courses", // Razbijamo niz da možemo dohvatiti svaki recept
-      },
+      { $unwind: "$courses" },
       {
         $lookup: {
           from: "recipes",
@@ -81,10 +74,14 @@ const getWeeklyMealFeed = async (req, res) => {
           as: "courses.recipeDetails",
         },
       },
+      // --- FIX: OVO SPRJEČAVA NESTAJANJE OBROKA AKO RECEPT FALI ---
       {
-        $unwind: "$courses.recipeDetails", // Pretvaramo niz u objekt
+        $unwind: {
+          path: "$courses.recipeDetails",
+          preserveNullAndEmptyArrays: true,
+        },
       },
-      // Sada moramo ponovno grupirati Meal jer smo ga gore razbili s unwind
+      // ------------------------------------------------------------
       {
         $group: {
           _id: "$_id",
@@ -96,18 +93,15 @@ const getWeeklyMealFeed = async (req, res) => {
           voteCount: { $first: "$voteCount" },
           averageRating: { $first: "$averageRating" },
           commentCount: { $first: "$commentCount" },
-          // Vraćamo kurseve natrag u niz
           courses: { $push: "$courses" },
         },
       },
-
-      // E. Čišćenje (Unwind author i playlist arrays)
       { $unwind: "$authorDetails" },
       {
         $unwind: { path: "$playlistDetails", preserveNullAndEmptyArrays: true },
       },
 
-      // F. Finalna projekcija (Što šaljemo frontendu)
+      // E. Projekcija
       {
         $project: {
           title: 1,
@@ -120,14 +114,9 @@ const getWeeklyMealFeed = async (req, res) => {
           "authorDetails.avatar": 1,
           "playlistDetails.name": 1,
           "playlistDetails.songs": 1,
-          // Ovdje šaljemo strukturirane sljedove
           courses: {
             courseType: 1,
-            recipeDetails: {
-              title: 1,
-              image: 1,
-              _id: 1,
-            },
+            recipeDetails: { title: 1, image: 1, _id: 1 },
           },
         },
       },
@@ -140,7 +129,108 @@ const getWeeklyMealFeed = async (req, res) => {
   }
 };
 
-// 3. KOMENTIRAJ OBROK
+// 3. DOHVATI OBROKE KORISNIKA (ZA PROFIL)
+const getUserMeals = async (req, res) => {
+  const { username } = req.params;
+  const { sort } = req.query; // ?sort=newest ili ?sort=popular
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Odredi sortiranje
+    let sortStage = {};
+    if (sort === "newest") {
+      sortStage = { createdAt: -1 };
+    } else {
+      sortStage = { voteCount: -1, averageRating: -1 }; // Default: Popularno
+    }
+
+    const meals = await Meal.aggregate([
+      // A. FILTER: Samo obroci ovog korisnika (nema vremenskog ograničenja)
+      { $match: { author: user._id } },
+
+      // B. Statistika
+      {
+        $addFields: {
+          voteCount: { $size: "$ratings" },
+          averageRating: { $avg: "$ratings.value" },
+          commentCount: { $size: "$comments" },
+        },
+      },
+
+      // C. Sortiranje
+      { $sort: sortStage },
+
+      // D. Populate
+      {
+        $lookup: {
+          from: "playlists",
+          localField: "playlist",
+          foreignField: "_id",
+          as: "playlistDetails",
+        },
+      },
+      { $unwind: "$courses" },
+      {
+        $lookup: {
+          from: "recipes",
+          localField: "courses.recipe",
+          foreignField: "_id",
+          as: "courses.recipeDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$courses.recipeDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          createdAt: { $first: "$createdAt" },
+          playlistDetails: { $first: "$playlistDetails" },
+          voteCount: { $first: "$voteCount" },
+          averageRating: { $first: "$averageRating" },
+          commentCount: { $first: "$commentCount" },
+          courses: { $push: "$courses" },
+        },
+      },
+      {
+        $unwind: { path: "$playlistDetails", preserveNullAndEmptyArrays: true },
+      },
+
+      // E. Projekcija
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          createdAt: 1,
+          voteCount: 1,
+          averageRating: 1,
+          commentCount: 1,
+          "playlistDetails.name": 1,
+          courses: {
+            courseType: 1,
+            recipeDetails: { title: 1, image: 1, _id: 1 },
+          },
+        },
+      },
+    ]);
+
+    res.json(meals);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching user meals" });
+  }
+};
+
+// 4. KOMENTIRAJ
 const commentOnMeal = async (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
@@ -149,11 +239,7 @@ const commentOnMeal = async (req, res) => {
     const meal = await Meal.findById(id);
     if (!meal) return res.status(404).json({ message: "Meal not found" });
 
-    meal.comments.push({
-      user: req.user._id,
-      text: text,
-    });
-
+    meal.comments.push({ user: req.user._id, text: text });
     await meal.save();
     res.json(meal);
   } catch (err) {
@@ -161,7 +247,7 @@ const commentOnMeal = async (req, res) => {
   }
 };
 
-// 4. OCIJENI OBROK
+// 5. OCIJENI
 const rateMeal = async (req, res) => {
   const { id } = req.params;
   const { value } = req.body;
@@ -170,13 +256,11 @@ const rateMeal = async (req, res) => {
     const meal = await Meal.findById(id);
     if (!meal) return res.status(404).json({ message: "Meal not found" });
 
-    // Makni stari glas
     const prevIndex = meal.ratings.findIndex(
       (r) => r.user.toString() === req.user._id.toString()
     );
     if (prevIndex !== -1) meal.ratings.splice(prevIndex, 1);
 
-    // Dodaj novi
     meal.ratings.push({ user: req.user._id, value: Number(value) });
     await meal.save();
 
@@ -186,4 +270,10 @@ const rateMeal = async (req, res) => {
   }
 };
 
-module.exports = { createMeal, getWeeklyMealFeed, commentOnMeal, rateMeal };
+module.exports = {
+  createMeal,
+  getWeeklyMealFeed,
+  getUserMeals,
+  commentOnMeal,
+  rateMeal,
+};
