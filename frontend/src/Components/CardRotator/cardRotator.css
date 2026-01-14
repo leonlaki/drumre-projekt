@@ -1,0 +1,61 @@
+/* Glavni wrapper koji drži sve */
+.rotator-wrapper {
+    width: 100%;
+    padding: 2rem 0;
+    position: relative;
+    /* Sakriva sve što ode JAKO daleko, da se ne pojavi scrollbar na dnu stranice,
+       ali ostavlja dovoljno mjesta da se kartice vide */
+    overflow-x: hidden; 
+    display: flex;
+    justify-content: center;
+}
+
+/* Sama Swiper instanca */
+.swiper_container {
+    height: 420px;
+    width: 90%; /* Smanjimo širinu containera da rubne kartice ne udaraju u rub ekrana */
+    padding-bottom: 3rem;
+    position: relative;
+    
+    /* OVO JE TRIK ZA "NE ODREZANE" KARTICE: */
+    overflow: visible !important; 
+}
+
+/* Pojedinačna kartica */
+.swiper-slide {
+    height: 350px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.swiper-slide-active {
+    z-index: 10;
+    transform: scale(1.1); /* Scale možemo ostaviti tu ili prebaciti u JS */
+}
+
+/* One odmah do aktivne (prva lijevo i prva desno) */
+.swiper-slide-prev,
+.swiper-slide-next {
+    opacity: 0.7; /* One su poluvidljive */
+    z-index: 5;
+}
+
+.swiper-grabbing {
+    cursor: grabbing !important;
+}
+
+/* 2. Isključujemo pointer events na samim karticama dok vučemo */
+.swiper-grabbing .dinner-card {
+    /* Ovo je čarobna linija: */
+    pointer-events: none; 
+    
+    /* Ovo osigurava da se hover efekti (boja, border) 
+       ne aktiviraju dok samo prolaziš prstom/mišem preko njih */
+}
+
+.swiper-grabbing .swiper-slide {
+    cursor: grabbing !important;
+}
