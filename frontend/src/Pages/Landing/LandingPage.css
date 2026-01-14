@@ -77,6 +77,8 @@
   padding: 30px 60px;
   font-size: var(--fs-h2);
   border-radius: 20px;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin: 20px; 
