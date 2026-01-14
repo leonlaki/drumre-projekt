@@ -1,3 +1,100 @@
-.homepage-wrapper{
-    width: 100%;
+/* homePage.css */
+
+.homepage-wrapper {
+  width: 100%;
+  /* Osiguravamo da footer bude na dnu ako je sadržaj kratak, iako ovdje ima dosta sadržaja */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- HERO SEKCIJA (Preslikano od .hero-section) --- */
+.homepage-hero-section {
+  min-height: 50vh; /* Isti visinski omjer kao na LandingPageu */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  background-color: transparent; /* Eksplicitno, za svaki slučaj */
+}
+
+.homepage-hero-title {
+  /* Stil kao .hero-title, ali malo veći jer je glavni brand name */
+  font-size: 5rem; 
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: var(--accent-color); /* Ističemo ime aplikacije */
+  letter-spacing: -2px;
+  line-height: 1.1;
+}
+
+.homepage-hero-subtitle {
+  /* Identično kao .hero-subtitle */
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+/* --- GLAVNI SADRŽAJ (Rotatori) --- */
+
+.homepage-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 4rem;
+}
+
+/* Stilovi za zaglavlja sekcija (Naslov iznad rotatora) */
+.homepage-section-header {
+  text-align: center;
+  margin-top: 4rem; /* Odmak od prethodne sekcije */
+  margin-bottom: 2rem; /* Odmak do rotatora */
+  padding: 0 20px;
+  max-width: 800px;
+}
+
+.homepage-section-title {
+  font-size: var(--fs-h1);
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  font-weight: var(--fw-h1);
+}
+
+.homepage-section-subtitle {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Specifična klasa za AnimatedSection unutar Home-a */
+.homepage-animated-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* --- RESPONZIVNOST (Preslikano od LandingPage) --- */
+@media (max-width: 768px) {
+  .homepage-hero-title {
+    font-size: 3rem; /* Prilagodba velikog naslova za mobitele */
+  }
+  
+  .homepage-hero-section {
+    min-height: 40vh; /* Malo manje visine na mobitelu */
+    padding: 60px 20px 20px 20px; /* Više paddinga gore zbog navbara */
+  }
+
+  .homepage-section-title {
+    font-size: 1.5rem;
+  }
+}
+.homepage-animated-section{
+    padding-left: 0px;
+    padding-right: 0px;
+    max-width: none;
 }

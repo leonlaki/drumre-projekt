@@ -22,6 +22,14 @@ const CardRotator = () => {
     { id: 5, title: 'Burger King', description: 'Juicy burgers' },
     { id: 6, title: 'Taco Mexican', description: 'Spicy & Hot' },
     { id: 7, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 8, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 9, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 10, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 11, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 12, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 13, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 14, title: 'Wok & Walk', description: 'Asian Fusion' },
+    { id: 15, title: 'Wok & Walk', description: 'Asian Fusion' },
   ];
 
   return (
@@ -31,7 +39,6 @@ const CardRotator = () => {
         grabCursor={true}
         centeredSlides={true}
         loop={true}
-        velocityRatio={0.4}
         touchRatio={0.7}
         shortSwipes={false}
         longSwipesRatio={0.3}
@@ -74,8 +81,9 @@ const CardRotator = () => {
         
         breakpoints={{
             0: { slidesPerView: 1.5 },
-            600: { slidesPerView: 2.5 }, // Malo šire da se vide rubne
-            1000: { slidesPerView: 3 }
+            800: { slidesPerView: 2.5 }, // Malo šire da se vide rubne
+            1000: { slidesPerView: 3 },
+            1300: { slidesPerView: 4 }
         }}
 
         pagination={{ el: '.swiper-pagination', clickable: true }}
