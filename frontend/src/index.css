@@ -49,6 +49,7 @@ body {
   font-family: sans-serif;
   width: 100%;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 /* Standardizacija teksta kroz klase */
@@ -59,4 +60,6 @@ p { font-size: var(--fs-body); font-weight: var(--fw-body); line-height: 1.6; }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
+

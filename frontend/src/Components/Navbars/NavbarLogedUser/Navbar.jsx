@@ -37,52 +37,54 @@ const Navbar = () => {
         </button>
       </div>
 
+      {/* Ovi linkovi se vide samo na DESKTOPU (šire od 900px) */}
+      <div className="nav-center">
+        <Link to="/home" className="nav-link">Home</Link>
+        <p className="nav-link-separator">|</p>
+        <Link to="/create-event" className="nav-link">Create Event</Link>
+        <p className="nav-link-separator">|</p>
+        <Link to="/my-events" className="nav-link">My Events</Link>
+        <p className="nav-link-separator">|</p>
+        <Link to="/friends" className="nav-link">Friends</Link>
+      </div>  
+
       {/* DESNA STRANA - HAMBURGER MENU */}
       <div className="navbar-logd-user-menu-wrapper" ref={menuRef}>
         
-        {/* Hamburger Ikona */}
         <button 
           className="navbar-logd-user-hamburger" 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Menu"
         >
-          <svg 
-            width="30" 
-            height="30" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
 
-        {/* Dropdown Meni - Renderira se uvijek, ali klasa kontrolira vidljivost */}
         <div className={`navbar-logd-user-dropdown ${isMenuOpen ? 'show' : ''}`}>
-          <Link 
-            to="/profile" 
-            className="navbar-logd-user-item"
-            onClick={() => setIsMenuOpen(false)}
-          >
+          
+          {/* --- MOBILE ONLY LINKOVI --- */}
+          {/* Ovi linkovi su po defaultu skriveni, vide se samo na MOBITELU (< 900px) */}
+          <div className="mobile-only-links">
+            <Link to="/home" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Home</Link>
+            <Link to="/create-event" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Create Event</Link>
+            <Link to="/my-events" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>My Events</Link>
+            <Link to="/friends" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Friends</Link>
+            {/* Linija razdvajanja */}
+            <div className="navbar-dropdown-separator"></div>
+          </div>
+          
+          {/* --- STANDARDNI LINKOVI --- */}
+          <Link to="/profile" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>
             User Profile
           </Link>
-          <Link 
-            to="/inbox" 
-            className="navbar-logd-user-item"
-            onClick={() => setIsMenuOpen(false)}
-          >
+          <Link to="/inbox" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>
             Inbox
           </Link>
           
-          <button 
-            className="navbar-logd-user-item navbar-logd-user-logout"
-            onClick={handleLogout}
-          >
+          <button className="navbar-logd-user-item navbar-logd-user-logout" onClick={handleLogout}>
             Logout
           </button>
         </div>

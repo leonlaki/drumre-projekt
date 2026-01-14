@@ -1,11 +1,12 @@
 // src/pages/Register.jsx
-import { useState } from 'react';
-import { useAuth } from '../../Context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import Navbar from '../../Components/Navbars/NavbarRegister/Navbar';
-import './registerPage.css';
-import AnimatedSection from '../../Components/AnimatedSection/AnimatedSection';
-import Footer from '../../Components/Footer/Footer';
+import { useState } from "react";
+import { useAuth } from "../../Context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../../Components/Navbars/NavbarRegister/Navbar";
+import "./registerPage.css";
+import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
+import Footer from "../../Components/Footer/Footer";
+import SlidePageTransition from "../../Context/SlidePageTransition";
 
 const Register = () => {
   const { registerUser } = useAuth();
@@ -13,23 +14,23 @@ const Register = () => {
 
   // State za podatke forme
   const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   // Ažuriranje input polja
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    if (error) setError(''); // Makni grešku čim korisnik počne tipkati
+    if (error) setError(""); // Makni grešku čim korisnik počne tipkati
   };
 
   // Slanje forme
@@ -39,7 +40,7 @@ const Register = () => {
 
     // 1. Validacija lozinki
     if (formData.password !== formData.confirmPassword) {
-      setError('Lozinke se ne podudaraju.');
+      setError("Lozinke se ne podudaraju.");
       setIsLoading(false);
       return;
     }
@@ -48,14 +49,17 @@ const Register = () => {
     try {
       // Izdvajamo confirmPassword jer ga backend ne očekuje
       const { confirmPassword, ...dataToSend } = formData;
-      
+
       await registerUser(dataToSend);
-      
+
       // Ako je uspješno, vodi na Home
-      navigate('/home');
+      navigate("/home");
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Neuspješna registracija. Pokušajte ponovno.');
+      setError(
+        err.response?.data?.message ||
+          "Neuspješna registracija. Pokušajte ponovno."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -68,130 +72,135 @@ const Register = () => {
   };
 
   return (
-    <div className="register-wrapper">
-      <Navbar />
-      
-      <header className="hero-section">
-        <h1 className="hero-title">Registriraj se</h1>
-        <p className="hero-subtitle">
-          Izradi korisnički račun kako bi započeo svoje kulinarsko i glazbeno putovanje s nama!
-        </p>
-      </header>
+    <SlidePageTransition>
+      <div className="register-wrapper">
+        <Navbar />
 
-      <AnimatedSection className="register-content">
-        <div className="register-card">
-          
-          {error && <div className="form-error">{error}</div>}
+        <header className="hero-section">
+          <h1 className="hero-title">Registriraj se</h1>
+          <p className="hero-subtitle">
+            Izradi korisnički račun kako bi započeo svoje kulinarsko i glazbeno
+            putovanje s nama!
+          </p>
+        </header>
 
-          <form onSubmit={handleSubmit} className="register-form">
-            {/* Ime i Prezime */}
-            <div className="form-group">
-              <label htmlFor="name">Ime i prezime</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="npr. Ana Anić"
-                required
-              />
-            </div>
+        <AnimatedSection className="register-content">
+          <div className="register-card">
+            {error && <div className="form-error">{error}</div>}
 
-            {/* Korisničko ime */}
-            <div className="form-group">
-              <label htmlFor="username">Korisničko ime</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="npr. chef_ana"
-                required
-              />
-            </div>
-
-            {/* Email */}
-            <div className="form-group">
-              <label htmlFor="email">Email adresa</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="ana@primjer.com"
-                required
-              />
-            </div>
-
-            {/* Lozinke - u jednom redu radi uštede prostora */}
-            <div className="form-row">
+            <form onSubmit={handleSubmit} className="register-form">
+              {/* Ime i Prezime */}
               <div className="form-group">
-                <label htmlFor="password">Lozinka</label>
+                <label htmlFor="name">Ime i prezime</label>
                 <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  placeholder="******"
-                  required
-                  minLength={6}
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Potvrdi lozinku</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="******"
+                  placeholder="npr. Ana Anić"
                   required
                 />
               </div>
+
+              {/* Korisničko ime */}
+              <div className="form-group">
+                <label htmlFor="username">Korisničko ime</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="npr. chef_ana"
+                  required
+                />
+              </div>
+
+              {/* Email */}
+              <div className="form-group">
+                <label htmlFor="email">Email adresa</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="ana@primjer.com"
+                  required
+                />
+              </div>
+
+              {/* Lozinke - u jednom redu radi uštede prostora */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="password">Lozinka</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="******"
+                    required
+                    minLength={6}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="confirmPassword">Potvrdi lozinku</label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="******"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="btn-submit" disabled={isLoading}>
+                {isLoading ? "Kreiranje..." : "Kreiraj račun"}
+              </button>
+            </form>
+
+            <div className="divider">
+              <span>ili nastavi putem</span>
             </div>
 
-            <button type="submit" className="btn-submit" disabled={isLoading}>
-              {isLoading ? 'Kreiranje...' : 'Kreiraj račun'}
-            </button>
-          </form>
+            <div className="social-login-buttons">
+              <button
+                type="button"
+                className="btn-social google"
+                onClick={() => handleSocialLogin("google")}
+              >
+                Google
+              </button>
+              <button
+                type="button"
+                className="btn-social facebook"
+                onClick={() => handleSocialLogin("facebook")}
+              >
+                Facebook
+              </button>
+            </div>
 
-          <div className="divider">
-            <span>ili nastavi putem</span>
+            <div className="login-redirect">
+              <p className="text-small">
+                Već imaš račun?{" "}
+                <Link to="/login" className="link-highlight">
+                  Prijavi se ovdje
+                </Link>
+              </p>
+            </div>
           </div>
+        </AnimatedSection>
 
-          <div className="social-login-buttons">
-            <button 
-              type="button" 
-              className="btn-social google"
-              onClick={() => handleSocialLogin('google')}
-            >
-              Google
-            </button>
-            <button 
-              type="button" 
-              className="btn-social facebook"
-              onClick={() => handleSocialLogin('facebook')}
-            >
-              Facebook
-            </button>
-          </div>
-
-          <div className="login-redirect">
-            <p className="text-small">
-              Već imaš račun? <Link to="/login" className="link-highlight">Prijavi se ovdje</Link>
-            </p>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </SlidePageTransition>
   );
 };
 
