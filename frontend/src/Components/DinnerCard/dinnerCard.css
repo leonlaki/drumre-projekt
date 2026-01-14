@@ -1,0 +1,70 @@
+.dinner-card {
+    /* Fiksne dimenzije unutar slota */
+    width: 90%; 
+    max-width: 280px;
+    height: 100%;
+    
+    /* KONTRASTNA POZADINA */
+    /* Light mode: ovo postaje #121212 (tamno) */
+    /* Dark mode: ovo postaje #ffffff (bijelo) */
+    background-color: var(--bg-main-contrast); 
+    color: var(--text-primary-contrast);
+    
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    
+    /* Sjena mora biti prilagođena kontrastu. 
+       Budući da se boja mijenja drastično, koristimo općenitu sjenu */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    
+    /* Border sada treba biti boje teksta (kontrastne), ali vrlo proziran */
+    border: 1px solid var(--text-primary-contrast);
+    
+    cursor: pointer;
+    /* Tranzicija za hover */
+   transition: box-shadow 0.4s ease, background-color 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+.card-image-placeholder {
+    width: 100%;
+    height: 60%;
+    /* Placeholder sada koristi kontrastnu boju s prozirnošću */
+    background-color: var(--text-primary-contrast); 
+    opacity: 0.1; 
+}
+
+.card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    justify-content: center;
+    height: 40%;
+}
+
+/* Naslovi i tekst moraju biti kontrastni u odnosu na karticu */
+.dinner-card h2 {
+    color: var(--text-primary-contrast); /* Bijelo na crnom / Crno na bijelom */
+    margin: 0;
+    font-size: var(--fs-h2);
+    font-weight: var(--fw-h2);
+}
+
+.dinner-card p {
+    /* Koristimo istu kontrastnu boju, ali s opacityjem da dobijemo "sivu" 
+       koja se dobro vidi na kontrastnoj podlozi */
+    color: var(--text-primary-contrast);
+    opacity: 0.7; 
+    margin: 0;
+    font-size: var(--fs-body);
+}
+
+/* Hover efekt */
+.dinner-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    transform: translateY(-10px); 
+}
