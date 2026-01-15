@@ -4,6 +4,7 @@ const FacebookStrategy = require("passport-facebook").Strategy; // NOVO
 const LocalStrategy = require("passport-local").Strategy;       // NOVO
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const getRandomPokemonAvatar = require("../utils/pokemonAvatar");
 
 const generateRandomUsername = async() => {
   const adjectives = ["hungry", "happy", "spicy", "sweet", "lazy", "carzy", "blue", "fast", "cool"];
@@ -50,7 +51,7 @@ passport.use(
               googleId: profile.id,
               name: profile.displayName,
               email: profile.emails?.[0]?.value,
-              avatar: profile.photos?.[0]?.value,
+              avatar: await getRandomPokemonAvatar(),
               username: await generateRandomUsername(),
             });
           }
@@ -92,7 +93,7 @@ passport.use(
               facebookId: profile.id,
               name: profile.displayName,
               email: email,
-              avatar: profile.photos ? profile.photos[0].value : "",
+              avatar: await getRandomPokemonAvatar(),
               username: await generateRandomUsername(),
             });
           }
@@ -105,7 +106,7 @@ passport.use(
   )
 );
 
-// --- 3. LOCAL (Email/Pass) ---
+// --- 3. LOCAL (Username/Password) ---
 passport.use(
   new LocalStrategy(
     { usernameField: 'username' },

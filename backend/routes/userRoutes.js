@@ -11,6 +11,11 @@ const {
   getMealDBRecommendations 
 } = require("../controller/onboardingController");
 
+const {
+  fetchPokemonList,
+  selectPokemonAvatar,
+} = require("../controller/userController")
+
 const { ensureAuth } = require("../middleware/authMiddleware");
 
 // --- JAVNE RUTE ---
@@ -21,5 +26,8 @@ router.get("/:username", getUserProfile);
 router.put("/profile", ensureAuth, updateMyProfile);
 router.post("/onboarding/save", ensureAuth, saveUserPreferences); // Spremi odabir
 router.get("/recommendations/external", ensureAuth, getMealDBRecommendations); // Dohvati preporuke
+//Pokemon rute
+router.get("/pokemon/list", ensureAuth, fetchPokemonList);
+router.post("/pokemon/select", ensureAuth, selectPokemonAvatar);
 
 module.exports = router;
