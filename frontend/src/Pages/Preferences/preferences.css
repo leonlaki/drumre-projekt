@@ -1,0 +1,211 @@
+/* src/pages/Preferences/preferences.css */
+
+.preferences-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+}
+
+.preferences-hero {
+  text-align: center;
+  padding: 3rem 1rem 1rem 1rem;
+}
+
+.preferences-title {
+  font-size: var(--fs-h1);
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.preferences-subtitle {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.preferences-content {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 4rem;
+}
+
+.preferences-card {
+  background-color: var(--bg-card);
+  width: 100%;
+  max-width: 900px; /* Šire jer imamo puno gumbića */
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Sekcije */
+.pref-section {
+  margin-bottom: 2.5rem;
+}
+
+.pref-section h3 {
+  font-size: var(--fs-h2);
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 0.5rem;
+}
+
+[data-theme='dark'] .pref-section h3 {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.pref-instruction {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* Grid za iteme */
+.pref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+/* Pojedinačni item (gumb) */
+.pref-item {
+  background-color: var(--bg-main);
+  border: 2px solid transparent;
+  padding: 0.8rem 1.2rem; /* Malo više paddinga sa strane */
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.7s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Lijevo poravnanje izgleda bolje sa slikom */
+  gap: 12px; /* Razmak između zastave i teksta */
+  min-height: 60px;
+  font-weight: 500;
+  color: var(--text-primary);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.pref-item:hover {
+  transform: translateY(-2px);
+  background-color: rgba(0,0,0,0.02);
+}
+
+[data-theme='dark'] .pref-item:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
+/* Odabrano stanje */
+.pref-item.selected {
+  border-color: var(--accent-color);
+  background-color: rgba(255, 87, 51, 0.05);
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+/* Footer akcije */
+.pref-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 2rem;
+}
+
+[data-theme='dark'] .pref-actions {
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.pref-btn-save {
+  padding: 16px 48px;
+  background-color: var(--bg-main-contrast);
+  color: var(--text-primary-contrast);
+  border: none;
+  border-radius: 12px;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  min-width: 200px;
+}
+
+.pref-btn-save:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.pref-btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pref-error {
+  color: #ff3333;
+  font-size: var(--fs-small);
+  background-color: rgba(255, 51, 51, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Loading stanje */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: var(--fs-h2);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .preferences-card {
+    padding: 1.5rem;
+    margin: 0 15px;
+  }
+  .pref-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 stupca na mobitelu */
+  }
+}
+
+
+.pref-flag {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%; /* Kružić */
+  object-fit: cover;  /* Da slika ispuni kružić bez rastezanja */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Mala sjena ispod zastavice */
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Ako je odabrano, dodajemo malo "sjaja" */
+.pref-item.selected {
+  border-color: var(--accent-color);
+  background-color: rgba(255, 87, 51, 0.08); /* Malo jača pozadina */
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.pref-item.selected .pref-flag {
+  border: 2px solid var(--accent-color); /* I zastavica dobije obrub */
+}
+
+/* Na mobitelima možda želimo centrirati sve */
+@media (max-width: 600px) {
+  .pref-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .pref-item {
+     /* Na mobitelu možda bolje centrirano */
+    justify-content: flex-start; 
+  }
+}
