@@ -1,3 +1,4 @@
+const axios = require("axios"); //za pokemone
 const User = require("../models/User");
 const Recipe = require("../models/Recipe");
 const Playlist = require("../models/Playlist");
@@ -57,4 +58,62 @@ const updateMyProfile = async (req, res) => {
   }
 };
 
-module.exports = { getUserProfile, updateMyProfile };
+//--Pokemon--
+
+//GET ALL POKEMONS
+// GET ALL POKEMONS (Gen 1–5)
+const fetchPokemonList = async (req, res) => {
+  try {
+    // Gen 1–5 = Pokémon #1–649
+    const { data } = await axios.get(
+      "https://pokeapi.co/api/v2/pokemon?limit=649"
+    );
+
+    const pokemons = data.results.map((p, index) => {
+      const id = index + 1;
+
+      return {
+        id,
+        name: p.name,
+        avatar: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`,
+      };
+    });
+
+    res.json(pokemons);
+  } catch (err) {
+    console.error("fetchPokemonList error:", err);
+    res.status(500).json({ message: "Failed to fetch Pokémon list" });
+  }
+};
+
+
+//POST - SELECT DESIRED POKEMON
+const selectPokemonAvatar = async (req, res) => {
+  try {
+    const { pokemonId } = req.body;
+    const userId = req.user._id;
+
+    if (!pokemonId || pokemonId < 1 || pokemonId > 649) {
+      return res.status(400).json({ message: "Invalid Pokémon ID" });
+    }
+
+    // Pokémon Black/White animated GIF
+    const avatar = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${pokemonId}.gif`;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar },
+      { new: true }
+    );
+
+    res.json({
+      message: "Avatar updated",
+      avatar: user.avatar,
+    });
+  } catch (err) {
+    console.error("selectPokemonAvatar error:", err);
+    res.status(500).json({ message: "Failed to update avatar" });
+  }
+};
+
+module.exports = { getUserProfile, updateMyProfile, fetchPokemonList, selectPokemonAvatar };
