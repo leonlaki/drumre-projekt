@@ -38,7 +38,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="section-image-wrapper">
-            <img src="/images/landingPage-img1.png" alt="Kuhanje" />
+            <img src="/images/landingpage1.jfif" alt="Kuhanje" />
           </div>
         </AnimatedSection>
 
