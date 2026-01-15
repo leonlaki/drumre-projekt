@@ -3,18 +3,19 @@ const router = express.Router();
 const {
   getUserProfile,
   updateMyProfile,
+  searchUsers,
 } = require("../controller/userController");
 
-const { 
-  getOnboardingOptions, 
-  saveUserPreferences, 
-  getMealDBRecommendations 
+const {
+  getOnboardingOptions,
+  saveUserPreferences,
+  getMealDBRecommendations,
 } = require("../controller/onboardingController");
 
 const {
   fetchPokemonList,
   selectPokemonAvatar,
-} = require("../controller/userController")
+} = require("../controller/userController");
 
 const { ensureAuth } = require("../middleware/authMiddleware");
 
@@ -26,6 +27,7 @@ router.get("/:username", getUserProfile);
 router.put("/profile", ensureAuth, updateMyProfile);
 router.post("/onboarding/save", ensureAuth, saveUserPreferences); // Spremi odabir
 router.get("/recommendations/external", ensureAuth, getMealDBRecommendations); // Dohvati preporuke
+router.get("/search", ensureAuth, searchUsers);
 //Pokemon rute
 router.get("/pokemon/list", ensureAuth, fetchPokemonList);
 router.post("/pokemon/select", ensureAuth, selectPokemonAvatar);
