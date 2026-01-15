@@ -270,10 +270,66 @@ const rateMeal = async (req, res) => {
   }
 };
 
+// 5. FUNKCIJA ZA BROJANJE PREGLEDA
+const incrementViewCount = async (req, res) => {
+  try {
+    const mealId = req.params.id;
+
+    // $inc atomski povećava vrijednost (nema race-conditiona)
+    await Meal.findByIdAndUpdate(mealId, { $inc: { viewCount: 1 } });
+
+    // Vraćamo samo status 200 OK (ne treba nam nikakav podatak natrag)
+    res.status(200).send();
+  } catch (error) {
+    console.error("Greška viewCount:", error);
+    res.status(500).json({ message: "Greška pri ažuriranju pregleda" });
+  }
+};
+
+// 6. FUNKCIJA ZA BROJANJE DIJELJENJA
+const incrementShareCount = async (req, res) => {
+  try {
+    const mealId = req.params.id;
+
+    // Povećaj shareCount za +1
+    await Meal.findByIdAndUpdate(mealId, { $inc: { shareCount: 1 } });
+
+    res.status(200).send();
+  } catch (error) {
+    console.error("Greška shareCount:", error);
+    res.status(500).json({ message: "Greška pri dijeljenju" });
+  }
+};
+
+// 7. DOHVATI DETALJE JEDNOG OBROKA
+const getMealDetails = async (req, res) => {
+  try {
+    const mealId = req.params.id;
+
+    const meal = await Meal.findById(mealId)
+      .populate("author", "username avatar")       // Tko je objavio
+      .populate("playlist")                        // Playlista
+      .populate("courses.recipe")                  // Recepti unutar sljedova
+      .populate("comments.user", "username avatar"); // Tko je komentirao
+
+    if (!meal) {
+      return res.status(404).json({ message: "Obrok nije pronađen" });
+    }
+
+    res.json(meal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Greška pri dohvatu detalja obroka" });
+  }
+};
+
 module.exports = {
   createMeal,
   getWeeklyMealFeed,
   getUserMeals,
   commentOnMeal,
   rateMeal,
+  incrementViewCount,
+  incrementShareCount,
+  getMealDetails,
 };

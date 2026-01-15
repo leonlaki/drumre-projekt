@@ -5,6 +5,9 @@ const mealSchema = new mongoose.Schema(
     // Naslov posta (npr. "Nedjeljni ručak za ekipu")
     title: { type: String, required: true },
     description: { type: String },
+    
+    // Slika obroka (URL ili path)
+    image: { type: String }, 
 
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +16,6 @@ const mealSchema = new mongoose.Schema(
     },
 
     // --- SLJEDOVI (COURSES) ---
-    // Ovo je niz objekata, svaki ima tip (npr. predjelo) i link na recept
     courses: [
       {
         courseType: {
@@ -42,14 +44,17 @@ const mealSchema = new mongoose.Schema(
       ref: "Playlist",
     },
 
-    // --- DRUŠTVENI DIO (Social) ---
-    // 1. Ocjene (Rating)
+    // --- DRUŠTVENI DIO ---
+    
+    // 1. Ocjene (rating)
     ratings: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         value: { type: Number, min: 1, max: 5 },
       },
     ],
+    // Pomoćno polje za brzo sortiranje po popularnosti
+    averageRating: { type: Number, default: 0 },
 
     // 2. Komentari (Comments)
     comments: [
@@ -59,6 +64,16 @@ const mealSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+
+    // 3. Brojači pregleda i dijeljenja (NOVO ZA PROJEKT) 📈
+    viewCount: {
+      type: Number,
+      default: 0
+    },
+    shareCount: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
