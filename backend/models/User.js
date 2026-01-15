@@ -31,7 +31,21 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
+
     avatar: String,
+
+    bio: {
+      type: String,
+      default: "Dodaj opis o sebi!", 
+    },
+    location: {
+      type: String,
+      default: "Dodaj lokaciju!",
+    },
+    website: {
+      type: String,
+      default: "",
+    },
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -1,0 +1,77 @@
+/* src/Components/PokemonSelector/pokemonSelector.css */
+
+.poke-selector-container {
+  margin-top: 1rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  background-color: var(--bg-main);
+}
+
+[data-theme='dark'] .poke-selector-container {
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.poke-search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--text-secondary);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.poke-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto; /* Scroll unutar grida */
+  padding-right: 5px;
+}
+
+/* Scrollbar styling */
+.poke-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.poke-grid::-webkit-scrollbar-thumb {
+  background-color: var(--text-secondary);
+  border-radius: 3px;
+}
+
+.poke-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.poke-item:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.poke-item.selected {
+  border-color: var(--accent-color);
+  background-color: rgba(255, 87, 51, 0.1);
+}
+
+.poke-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  image-rendering: pixelated; /* Da pixel art izgleda oštro */
+}
+
+.poke-name {
+  font-size: 0.7rem;
+  text-transform: capitalize;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  text-align: center;
+}

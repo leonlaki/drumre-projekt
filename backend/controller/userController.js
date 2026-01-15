@@ -18,19 +18,38 @@ const getUserProfile = async (req, res) => {
     }
 
     // --- AGREGACIJA STATISTIKE ---
-    // Sada brojimo i Obroke (Meals) jer su oni glavni na profilu
-    const [recipeCount, playlistCount, mealCount] = await Promise.all([
-      Recipe.countDocuments({ author: user._id }),
-      Playlist.countDocuments({ user: user._id }),
-      Meal.countDocuments({ author: user._id }), // <--- NOVO
+    
+    // 1. Broj recepata (klasika)
+    const recipeCount = await Recipe.countDocuments({ author: user._id });
+
+    // 2. Broj obroka (klasika)
+    const mealCount = await Meal.countDocuments({ author: user._id });
+
+    // 3. NAPREDNA STATISTIKA (Zbroj pregleda i lajkova na svim obrocima)
+    const engagementStats = await Meal.aggregate([
+      // A. Filtriraj: Uzmi samo obroke ovog korisnika
+      { $match: { author: user._id } },
+
+      // B. Grupiraj i zbrajaj
+      {
+        $group: {
+          _id: null, // Grupiramo sve u jedan rezultat
+          totalViews: { $sum: "$viewCount" }, // Zbroji polje viewCount
+          totalLikes: { $sum: { $size: "$ratings" } } // Zbroji duljinu niza ratings
+        }
+      }
     ]);
+
+    // Aggregate vraća niz. Ako korisnik nema postova, niz je prazan, pa stavljamo default nule.
+    const statsResult = engagementStats[0] || { totalViews: 0, totalLikes: 0 };
 
     res.json({
       profile: user,
       stats: {
         recipes: recipeCount,
-        playlists: playlistCount,
-        meals: mealCount, // <--- NOVO
+        meals: mealCount,
+        views: statsResult.totalViews,  // <--- NOVO
+        likes: statsResult.totalLikes   // <--- NOVO
       },
     });
   } catch (error) {

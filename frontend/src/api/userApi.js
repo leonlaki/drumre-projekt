@@ -32,5 +32,16 @@ export const userApi = {
   getRecommendations: async () => {
     const response = await axiosClient.get('/api/users/recommendations/external');
     return response.data;
+  },
+
+  getPokemonList: async () => {
+    const response = await axiosClient.get('/api/users/pokemon/list');
+    return response.data;
+  },
+
+  // Postavi odabranog pokemona kao avatar
+  setPokemonAvatar: async (pokemonId) => {
+    const response = await axiosClient.post('/api/users/pokemon/select', { pokemonId });
+    return response.data; // Vraća { message, avatar }
   }
 };
