@@ -2,8 +2,10 @@ const express = require("express");
 const dotenv = require("dotenv");
 const session = require("express-session");
 const passport = require("passport");
-const cors = require("cors"); // <--- 1. DODAJ OVO
+const cors = require("cors");
 const connectDB = require("./config/db");
+const musicRoutes = require("./routes/musicRoutes");
+const playlistRoutes = require("./routes/playlistRoutes");
 
 dotenv.config();
 connectDB();
@@ -46,10 +48,11 @@ app.get("/", (req, res) => {
 
 app.use("/auth", require("./routes/authRoutes"));
 
-app.use("/api/external", require("./routes/apiRoutes"));
+app.use("/api", require("./routes/playlistRoutes"));
 app.use("/api/recipes", require("./routes/recipeRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/meals", require("./routes/mealRoutes"));
+app.use("/api/music", musicRoutes);
 
 app.use("/api/friends", require('./routes/friendRoute'));
 
