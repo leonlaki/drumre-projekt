@@ -1,22 +1,28 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import {  useAuth } from './Context/AuthContext';
+import { useAuth } from './Context/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
 
-// Importi tvojih stranica (napravi ih prazne ako ih nemaš)
+// Importi stranica
 import LandingPage from './Pages/Landing/LandingPage';
-import Home from './Pages/Home/HomePage';
-import Login from './Pages/Login/LoginPage';
+import LoginPage from './Pages/Login/LoginPage';
 import Register from './Pages/Register/RegisterPage';
-import './App.css';
+import Preferences from './Pages/Preferences/Preferences'; // <--- DODANO
+import Home from './Pages/Home/HomePage';
 import Friends from './Pages/Friends/Friends';
 import MyEvents from './Pages/MyEvents/MyEvents';
 import CreateEvent from './Pages/CreateEvent/CreateEvent';
 
-// Tvoja PublicRoute komponenta (možeš je i ovdje definirati ili importati)
+import './App.css';
+import UserProfile from './Pages/UserProfile/UserProfile';
+import Notifications from './Pages/Notifications/Notifications';
+
+// PublicRoute: Ako je user logiran, ne daj mu na Login/Register
 const PublicRoute = ({ children }) => {
   const { user } = useAuth();
+  // Ako je logiran, šaljemo ga na Home. 
+  // (Napomena: ProtectedRoute na /home će ga automatski prebaciti na /preferences ako nije onboardan)
   if (user) {
     return <Navigate to="/home" replace />;
   }
@@ -24,14 +30,13 @@ const PublicRoute = ({ children }) => {
 };
 
 const AnimatedRoutes = () => {
-  const location = useLocation(); // OVO nam treba za animaciju
+  const location = useLocation();
 
   return (
-    // mode="wait" osigurava da stara stranica nestane PRIJE nego nova dođe
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         
-        {/* JAVNE RUTE */}
+        {/* --- JAVNE RUTE --- */}
         <Route path="/" element={
           <PublicRoute>
              <LandingPage />
@@ -40,7 +45,7 @@ const AnimatedRoutes = () => {
         
         <Route path="/login" element={
           <PublicRoute>
-             <Login />
+             <LoginPage />
           </PublicRoute>
         } />
 
@@ -50,13 +55,21 @@ const AnimatedRoutes = () => {
           </PublicRoute>
         } />
 
-        {/* ZAŠTIĆENE RUTE */}
-        {/* Grupirao sam ih radi čistoće, ne moraš imati više Route element={<ProtectedRoute>} blokova */}
-        <Route element={<ProtectedRoute />}>
+        {/* --- ZAŠTIĆENA RUTA: PREFERENCES --- */}
+        {/* requireOnboarding={false} znači: "Pusti ga unutra čak i ako nema preferencije" */}
+        <Route element={<ProtectedRoute requireOnboarding={false} />}>
+           <Route path="/preferences" element={<Preferences />} />
+        </Route>
+
+        {/* --- ZAŠTIĆENE RUTE: APLIKACIJA --- */}
+        {/* requireOnboarding={true} (default) znači: "Pusti ga SAMO ako ima preferencije" */}
+        <Route element={<ProtectedRoute requireOnboarding={true} />}>
            <Route path="/home" element={<Home />} />
            <Route path="/friends" element={<Friends />} />
            <Route path="/my-events" element={<MyEvents />} />
            <Route path="/create-event" element={<CreateEvent />} />
+           <Route path="/notifications" element={<Notifications />} />
+           <Route path="/profile" element={<UserProfile />} />
         </Route>
 
         {/* Catch-all ruta */}

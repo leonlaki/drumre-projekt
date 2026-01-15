@@ -6,13 +6,13 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Dok provjeravamo sesiju
+  const [loading, setLoading] = useState(true);
 
-  // Na prvom učitavanju (F5) provjeri backend jel user logiran
   useEffect(() => {
     const checkUserLoggedIn = async () => {
       try {
         const data = await authApi.getCurrentUser();
+        // Backend vraća user objekt ili null
         if (data && data._id) {
           setUser(data);
         } else {
@@ -28,17 +28,15 @@ export const AuthProvider = ({ children }) => {
     checkUserLoggedIn();
   }, []);
 
-  // Funkcija za login koja se poziva iz Login forme
   const loginUser = async (credentials) => {
     const data = await authApi.login(credentials);
-    setUser(data.user); // Postavi usera u state
+    setUser(data.user);
     return data;
   };
 
-  // Funkcija za registraciju
   const registerUser = async (userData) => {
     const data = await authApi.register(userData);
-    setUser(data.user); // Odmah logiraj korisnika nakon registracije
+    setUser(data.user);
     return data;
   };
 
@@ -47,12 +45,17 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // NOVA FUNKCIJA: Ažurira podatke o korisniku u stanju bez ponovnog fetchanja
+  // Koristit ćemo ovo kad spremimo preference da postavimo isOnboarded: true
+  const updateLocalUser = (updatedData) => {
+    setUser((prev) => ({ ...prev, ...updatedData }));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, loginUser, registerUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, loading, loginUser, registerUser, logoutUser, updateLocalUser }}>
       {!loading && children} 
     </AuthContext.Provider>
   );
 };
 
-// Custom hook za lakši pristup podacima
 export const useAuth = () => useContext(AuthContext);
