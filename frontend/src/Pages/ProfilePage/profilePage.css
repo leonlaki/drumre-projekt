@@ -1,0 +1,186 @@
+/* src/Pages/Profile/profilePage.css */
+
+.profile-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-container {
+  max-width: 1000px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+}
+
+/* KARTICA PROFILA */
+.profile-header-card {
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* Avatar | Info | Stats */
+  gap: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  align-items: start;
+}
+
+/* AVATAR SEKCIJA */
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-avatar-lg {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: contain;
+  background-color: var(--bg-main);
+  border: 4px solid var(--accent-color);
+  image-rendering: pixelated; /* Bitno za GIFove */
+}
+
+.btn-edit-profile {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-primary);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: var(--fs-small);
+  transition: all 0.2s;
+}
+
+.btn-edit-profile:hover {
+  background-color: var(--bg-main);
+  border-color: var(--text-primary);
+}
+
+/* INFO SEKCIJA */
+.profile-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-username {
+  font-size: var(--fs-h2);
+  margin: 0;
+}
+
+.profile-bio {
+  color: var(--text-secondary);
+  white-space: pre-wrap; /* Čuva nove redove */
+}
+
+.profile-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* STATS */
+.profile-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--bg-main);
+  padding: 1.5rem;
+  border-radius: 12px;
+  min-width: 120px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* EDIT FORMA */
+.edit-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.edit-profile-form textarea, 
+.edit-profile-form input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-save {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .profile-header-card {
+    grid-template-columns: 1fr; /* Sve u jedan stupac */
+    text-align: center;
+  }
+
+  .profile-stats {
+    flex-direction: row;
+    flex-wrap: wrap; /* Dodaj ovo da mogu preći u novi red ako ne stanu */
+    justify-content: space-around;
+    gap: 15px; /* Malo razmaka */
+  }
+  .stat-box {
+    min-width: 70px; /* Da nisu presitni na mobitelu */
+  }
+  
+  .profile-meta {
+    justify-content: center;
+  }
+
+  .edit-actions {
+    justify-content: center;
+  }
+}
