@@ -98,3 +98,128 @@
     padding-right: 0px;
     max-width: none;
 }
+
+.homepage-split-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px; /* Da ne bude preširoko na velikim ekranima */
+  margin: 4rem auto 2rem auto; /* Razmak gore/dolje */
+  padding: 0 2rem;
+  gap: 3rem; /* Razmak između teksta i slike */
+}
+
+/* Klasa za obrtanje redoslijeda (Tekst desno, slika lijevo) */
+.section-reverse {
+  flex-direction: row-reverse;
+}
+
+/* Stilovi za tekstualni dio */
+.homepage-text-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* Lijevo poravnanje */
+  text-align: left;
+}
+
+.homepage-text-content h2 {
+  font-size: var(--fs-h1);
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  font-weight: var(--fw-h1);
+}
+
+.homepage-text-content p {
+  font-size: var(--fs-body);
+  color: var(--text-primary); /* ili --text-secondary ako želiš sivkastije */
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+/* Stilovi za slike */
+.homepage-image-wrapper {
+  flex: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.homepage-image-wrapper img {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 30px;
+  
+  /* Landing page efekt blendanja slike s pozadinom */
+  mix-blend-mode: multiply; 
+  transition: transform 0.5s ease;
+}
+
+/* Dark mode prilagodba za slike */
+[data-theme='dark'] .homepage-image-wrapper img {
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+/* --- GUMB (Link) --- */
+.homepage-action-button {
+  background-color: var(--bg-main-contrast);
+  color: var(--text-primary-contrast);
+  padding: 18px 45px;
+  font-size: var(--fs-h2); /* Dovoljno velik da bude uočljiv */
+  border-radius: 20px;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.homepage-action-button:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+/* --- RESPONZIVNOST --- */
+@media (max-width: 900px) {
+  .homepage-split-section {
+    flex-direction: column; /* Slika ispod teksta na manjim ekranima */
+    text-align: center;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .section-reverse {
+    flex-direction: column; /* I obrnuta sekcija ide u stupac */
+  }
+
+  .homepage-text-content {
+    align-items: center; /* Centriranje teksta i gumba */
+    text-align: center;
+    width: 100%;
+  }
+
+  .homepage-text-content p {
+    max-width: 100%;
+  }
+
+  .homepage-image-wrapper {
+    width: 100%;
+  }
+  
+  .homepage-image-wrapper img {
+    max-width: 100%; /* Puna širina na mobitelu */
+  }
+
+  .homepage-action-button {
+    width: 80%; /* Širi gumb na mobitelu */
+    padding: 15px 30px;
+    font-size: 1.2rem;
+  }
+}
