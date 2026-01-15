@@ -5,6 +5,26 @@ const LocalStrategy = require("passport-local").Strategy;       // NOVO
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
+const generateRandomUsername = async() => {
+  const adjectives = ["hungry", "happy", "spicy", "sweet", "lazy", "carzy", "blue", "fast", "cool"];
+  const nouns = ["chef", "pasta", "pizza", "spoon", "fork", "tuna", "burger", "noodle"];
+
+  let username;
+  let exists = true;
+
+  while(exists) {
+    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const number = Math.floor(100 + Math.random() * 9000);
+
+    username = `${adj}_${noun}_${number}`;
+    exists = await User.exists({ username });
+  }
+
+  return username;
+};
+
+
 // --- 1. GOOGLE (Postojeće) ---
 passport.use(
   new GoogleStrategy(
@@ -30,7 +50,8 @@ passport.use(
               googleId: profile.id,
               name: profile.displayName,
               email: profile.emails?.[0]?.value,
-              avatar: profile.photos?.[0]?.value
+              avatar: profile.photos?.[0]?.value,
+              username: await generateRandomUsername(),
             });
           }
         }
@@ -71,7 +92,8 @@ passport.use(
               facebookId: profile.id,
               name: profile.displayName,
               email: email,
-              avatar: profile.photos ? profile.photos[0].value : ""
+              avatar: profile.photos ? profile.photos[0].value : "",
+              username: await generateRandomUsername(),
             });
           }
         }
