@@ -15,7 +15,9 @@ const sendFriendRequest = async (req, res) => {
     }
 
     if (from.toString() === to) {
-      return res.status(400).json({ message: "Ne možeš poslati zahtjev sam sebi" });
+      return res
+        .status(400)
+        .json({ message: "Ne možeš poslati zahtjev sam sebi" });
     }
 
     const targetUser = await User.findById(to);
@@ -64,7 +66,9 @@ const acceptFriendRequest = async (req, res) => {
     }
 
     if (request.to.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Nemaš pravo prihvatiti ovaj zahtjev" });
+      return res
+        .status(403)
+        .json({ message: "Nemaš pravo prihvatiti ovaj zahtjev" });
     }
 
     request.status = "accepted";
@@ -99,7 +103,9 @@ const rejectFriendRequest = async (req, res) => {
     }
 
     if (request.to.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Nemaš pravo odbiti ovaj zahtjev" });
+      return res
+        .status(403)
+        .json({ message: "Nemaš pravo odbiti ovaj zahtjev" });
     }
 
     await request.deleteOne();

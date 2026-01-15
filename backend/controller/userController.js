@@ -18,7 +18,7 @@ const getUserProfile = async (req, res) => {
     }
 
     // --- AGREGACIJA STATISTIKE ---
-    
+
     // 1. Broj recepata (klasika)
     const recipeCount = await Recipe.countDocuments({ author: user._id });
 
@@ -35,9 +35,9 @@ const getUserProfile = async (req, res) => {
         $group: {
           _id: null, // Grupiramo sve u jedan rezultat
           totalViews: { $sum: "$viewCount" }, // Zbroji polje viewCount
-          totalLikes: { $sum: { $size: "$ratings" } } // Zbroji duljinu niza ratings
-        }
-      }
+          totalLikes: { $sum: { $size: "$ratings" } }, // Zbroji duljinu niza ratings
+        },
+      },
     ]);
 
     // Aggregate vraća niz. Ako korisnik nema postova, niz je prazan, pa stavljamo default nule.
@@ -48,8 +48,8 @@ const getUserProfile = async (req, res) => {
       stats: {
         recipes: recipeCount,
         meals: mealCount,
-        views: statsResult.totalViews,  // <--- NOVO
-        likes: statsResult.totalLikes   // <--- NOVO
+        views: statsResult.totalViews,
+        likes: statsResult.totalLikes,
       },
     });
   } catch (error) {
@@ -105,7 +105,6 @@ const fetchPokemonList = async (req, res) => {
   }
 };
 
-
 //POST - SELECT DESIRED POKEMON
 const selectPokemonAvatar = async (req, res) => {
   try {
@@ -135,4 +134,40 @@ const selectPokemonAvatar = async (req, res) => {
   }
 };
 
-module.exports = { getUserProfile, updateMyProfile, fetchPokemonList, selectPokemonAvatar };
+const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    // Ako korisnik nije ništa upisao ili je string prazan, vrati prazan niz
+    if (!query || query.trim() === "") {
+      return res.json([]);
+    }
+
+    // Kreiramo regularni izraz
+    // Ovdje ćemo koristiti logiku da traži podudaranje bilo gdje u stringu
+    // jer je to korisnije ako netko traži po prezimenu (npr. "Laki" u "Leon Laki")
+    const searchRegex = new RegExp(query, "i");
+
+    const users = await User.find({
+      $or: [
+        { name: { $regex: searchRegex } },
+        { username: { $regex: searchRegex } },
+      ],
+    })
+      .select("name username avatar _id") // Vraćamo samo osnovne podatke
+      .limit(10); // Limitiramo na 10 rezultata da ne opteretimo bazu ako je upit "a"
+
+    res.json(users);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Greška pri pretraživanju korisnika" });
+  }
+};
+
+module.exports = {
+  getUserProfile,
+  updateMyProfile,
+  fetchPokemonList,
+  selectPokemonAvatar,
+  searchUsers,
+};

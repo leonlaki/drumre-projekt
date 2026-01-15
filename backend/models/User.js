@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
 
     bio: {
       type: String,
-      default: "Dodaj opis o sebi!", 
+      default: "Dodaj opis o sebi!",
     },
     location: {
       type: String,
@@ -49,19 +49,21 @@ const userSchema = new mongoose.Schema(
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
+        ref: "User",
+      },
     ],
     preferences: {
       categories: [{ type: String }],
-      areas: [{ type: String }]
+      areas: [{ type: String }],
     },
     isOnboarded: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   { timestamps: true }
 );
+
+userSchema.index({ name: 1, username: 1 });
 
 module.exports = mongoose.model("User", userSchema);
