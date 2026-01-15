@@ -52,6 +52,12 @@ const userSchema = new mongoose.Schema(
         ref: "User"
       }
     ],
+    savedRecipes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Recipe"
+      }
+    ],
     preferences: {
       categories: [{ type: String }],
       areas: [{ type: String }]

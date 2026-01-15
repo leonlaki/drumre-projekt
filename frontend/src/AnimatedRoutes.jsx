@@ -11,12 +11,12 @@ import Register from './Pages/Register/RegisterPage';
 import Preferences from './Pages/Preferences/Preferences'; // <--- DODANO
 import Home from './Pages/Home/HomePage';
 import Friends from './Pages/Friends/Friends';
-import MyEvents from './Pages/MyEvents/MyEvents';
 import CreateEvent from './Pages/CreateEvent/CreateEvent';
 
 import './App.css';
 import Notifications from './Pages/Notifications/Notifications';
 import ProfilePage from './Pages/ProfilePage/ProfilePage';
+import MyRecepies from './Pages/MyRecepies/MyRecepies';
 
 // PublicRoute: Ako je user logiran, ne daj mu na Login/Register
 const PublicRoute = ({ children }) => {
@@ -66,7 +66,7 @@ const AnimatedRoutes = () => {
         <Route element={<ProtectedRoute requireOnboarding={true} />}>
            <Route path="/home" element={<Home />} />
            <Route path="/friends" element={<Friends />} />
-           <Route path="/my-events" element={<MyEvents />} />
+           <Route path="/my-recepies" element={<MyRecepies />} />
            <Route path="/create-event" element={<CreateEvent />} />
            <Route path="/notifications" element={<Notifications />} />
            <Route path="/profile" element={<ProfilePage />} />

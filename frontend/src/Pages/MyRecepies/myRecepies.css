@@ -1,0 +1,109 @@
+.my-recipes-wrapper {
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-recipes-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  flex: 1;
+}
+
+/* HERO SECTION */
+.recipes-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.recipes-hero h1 {
+  font-size: var(--fs-h1);
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.recipes-subtitle {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
+  line-height: 1.6;
+}
+
+.btn-add-recipe {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 10px rgba(255, 87, 51, 0.3);
+}
+
+.btn-add-recipe:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 87, 51, 0.4);
+}
+
+/* SECTIONS */
+.section-title {
+  font-size: var(--fs-h2);
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--accent-color);
+  padding-left: 12px;
+  color: var(--text-primary);
+}
+
+.empty-state {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+.section-divider {
+  height: 1px;
+  background-color: var(--text-secondary);
+  opacity: 0.1;
+  margin: 4rem 0;
+}
+
+.loading-text {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  margin-top: 3rem;
+}
+
+/* --- MASONRY LAYOUT (MOZAIK) --- */
+
+.masonry-container {
+  display: flex;
+  gap: 1.5rem; /* Razmak između stupaca */
+  width: 100%;
+  align-items: flex-start; /* Ovo je ključno da se ne rastežu po visini */
+}
+
+.masonry-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Razmak između kartica unutar stupca */
+  flex: 1; /* Svaki stupac zauzima jednako širine */
+  min-width: 0; /* Sprječava prelijevanje sadržaja */
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .masonry-container {
+    flex-direction: column; /* Na mobitelu slaži stupce jedan ispod drugog */
+  }
+  
+  .masonry-column {
+    width: 100%;
+  }
+}

@@ -43,7 +43,7 @@ const Navbar = () => {
         <p className="nav-link-separator">|</p>
         <Link to="/create-event" className="nav-link">Create Event</Link>
         <p className="nav-link-separator">|</p>
-        <Link to="/my-events" className="nav-link">My Events</Link>
+        <Link to="/my-recepies" className="nav-link">My Recepies</Link>
         <p className="nav-link-separator">|</p>
         <Link to="/friends" className="nav-link">Friends</Link>
       </div>  
@@ -70,7 +70,7 @@ const Navbar = () => {
           <div className="mobile-only-links">
             <Link to="/home" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Home</Link>
             <Link to="/create-event" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Create Event</Link>
-            <Link to="/my-events" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>My Events</Link>
+            <Link to="/my-recepies" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>My Recepies</Link>
             <Link to="/friends" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Friends</Link>
             {/* Linija razdvajanja */}
             <div className="navbar-dropdown-separator"></div>
