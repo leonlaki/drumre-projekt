@@ -15,6 +15,8 @@ import MyEvents from './Pages/MyEvents/MyEvents';
 import CreateEvent from './Pages/CreateEvent/CreateEvent';
 
 import './App.css';
+import UserProfile from './Pages/UserProfile/UserProfile';
+import Notifications from './Pages/Notifications/Notifications';
 
 // PublicRoute: Ako je user logiran, ne daj mu na Login/Register
 const PublicRoute = ({ children }) => {
@@ -66,6 +68,8 @@ const AnimatedRoutes = () => {
            <Route path="/friends" element={<Friends />} />
            <Route path="/my-events" element={<MyEvents />} />
            <Route path="/create-event" element={<CreateEvent />} />
+           <Route path="/notifications" element={<Notifications />} />
+           <Route path="/profile" element={<UserProfile />} />
         </Route>
 
         {/* Catch-all ruta */}

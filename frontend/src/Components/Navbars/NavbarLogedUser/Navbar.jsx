@@ -80,8 +80,8 @@ const Navbar = () => {
           <Link to="/profile" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>
             User Profile
           </Link>
-          <Link to="/inbox" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>
-            Inbox
+          <Link to="/notifications" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>
+            Notifications
           </Link>
           
           <button className="navbar-logd-user-item navbar-logd-user-logout" onClick={handleLogout}>
