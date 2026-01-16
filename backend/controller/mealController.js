@@ -1,5 +1,5 @@
 const Meal = require("../models/Meal");
-const User = require("../models/User"); // <--- DODANO: Treba nam za getUserMeals
+const User = require("../models/User");
 
 // 1. KREIRAJ OBROK (OBJAVI POST)
 const createMeal = async (req, res) => {
@@ -74,7 +74,6 @@ const getWeeklyMealFeed = async (req, res) => {
           as: "courses.recipeDetails",
         },
       },
-      // --- FIX: OVO SPRJEČAVA NESTAJANJE OBROKA AKO RECEPT FALI ---
       {
         $unwind: {
           path: "$courses.recipeDetails",
@@ -307,9 +306,9 @@ const getMealDetails = async (req, res) => {
     const mealId = req.params.id;
 
     const meal = await Meal.findById(mealId)
-      .populate("author", "username avatar")       // Tko je objavio
-      .populate("playlist")                        // Playlista
-      .populate("courses.recipe")                  // Recepti unutar sljedova
+      .populate("author", "username avatar") // Tko je objavio
+      .populate("playlist") // Playlista
+      .populate("courses.recipe") // Recepti unutar sljedova
       .populate("comments.user", "username avatar"); // Tko je komentirao
 
     if (!meal) {
