@@ -5,7 +5,9 @@ const {
   updateRecipe,
   deleteRecipe,
   toggleSaveRecipe, 
-  getSavedRecipes
+  getSavedRecipes,
+  searchRecipes,
+  getRecipeFilters
 } = require("../controller/recipeController");
 
 const { ensureAuth } = require("../middleware/authMiddleware");
@@ -21,5 +23,7 @@ router.put("/:id", ensureAuth, updateRecipe);
 router.delete("/:id", ensureAuth, deleteRecipe);
 router.get("/saved", ensureAuth, getSavedRecipes); 
 router.post("/:id/save", ensureAuth, toggleSaveRecipe);
+router.get("/search", ensureAuth, searchRecipes);
+router.get("/filters", ensureAuth, getRecipeFilters);
 
 module.exports = router;

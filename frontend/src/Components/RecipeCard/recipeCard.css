@@ -232,3 +232,10 @@
   white-space: pre-wrap;
   margin-bottom: 0; /* Bitno: zadnji element bez margine */
 }
+
+.btn-icon-action.save {
+  font-size: 1.2rem;
+}
+.btn-icon-action.save.saved {
+  color: red; /* Crveno srce ako je spremljeno */
+}

@@ -2,30 +2,23 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./recipeCard.css";
 
-const RecipeCard = ({ recipe, isOwn, onEdit, onDelete }) => {
+// Dodali smo propse: isSaved i onToggleSave
+const RecipeCard = ({ recipe, isOwn, onEdit, onDelete, isSaved, onToggleSave }) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Provjera je li recept verified (MealDB) ili od korisnika
   const isAppVerified = !recipe.author || recipe.author.username === "MealDB";
-
-  // URL avatara (ako ga nema, koristi generic placeholder)
-  // Backend šalje avatar unutar recipe.author.avatar
   const userAvatar = recipe.author?.avatar || "https://ui-avatars.com/api/?name=User&background=random";
 
   return (
     <motion.div
       layout 
       transition={{
-        layout: {
-          duration: 0.4, 
-          type: "tween", 
-          ease: "easeInOut", 
-        },
+        layout: { duration: 0.4, type: "tween", ease: "easeInOut" },
       }}
       className={`recipe-card ${isOpen ? "expanded" : ""}`}
       onClick={() => setIsOpen(!isOpen)}
     >
-      {/* HEADER - Uvijek vidljiv */}
+      {/* HEADER */}
       <motion.div layout="position" className="recipe-card-header">
         <img
           src={recipe.image || "https://via.placeholder.com/150"}
@@ -42,7 +35,6 @@ const RecipeCard = ({ recipe, isOwn, onEdit, onDelete }) => {
               {isAppVerified ? (
                 <span className="badge-verified">✅ Verified</span>
               ) : (
-                // --- OVDJE JE PROMJENA: PRIKAZ SLIKE AVATARA ---
                 <div className="badge-author">
                   <img 
                     src={userAvatar} 
@@ -51,39 +43,49 @@ const RecipeCard = ({ recipe, isOwn, onEdit, onDelete }) => {
                   />
                   <span>{recipe.author?.username || "Nepoznato"}</span>
                 </div>
-                // -----------------------------------------------
               )}
             </motion.div>
 
-            {isOwn && (
-              <div className="card-actions">
+            {/* AKCIJSKI GUMBI */}
+            <div className="card-actions">
+              {isOwn ? (
+                // --- VLASTITI RECEPTI (Edit / Delete) ---
+                <>
+                  <button
+                    className="btn-icon-action edit"
+                    onClick={(e) => { e.stopPropagation(); onEdit(recipe); }}
+                    title="Uredi"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="btn-icon-action delete"
+                    onClick={(e) => { e.stopPropagation(); onDelete(recipe._id); }}
+                    title="Obriši"
+                  >
+                    🗑️
+                  </button>
+                </>
+              ) : (
+                // --- TUĐI RECEPTI (Save / Unsave) ---
                 <button
-                  className="btn-icon-action edit"
+                  className={`btn-icon-action save ${isSaved ? "saved" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(recipe);
+                    onToggleSave(recipe); // Pozivamo funkciju za toggle
                   }}
-                  title="Uredi"
+                  title={isSaved ? "Ukloni iz spremljenih" : "Spremi recept"}
                 >
-                  ✏️
+                  {isSaved ? "❤️" : "🤍"}
                 </button>
-                <button
-                  className="btn-icon-action delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(recipe._id);
-                  }}
-                  title="Obriši"
-                >
-                  🗑️
-                </button>
-              </div>
-            )}
+              )}
+            </div>
+
           </div>
         </div>
       </motion.div>
 
-      {/* DETALJI - Expandable dio */}
+      {/* DETALJI */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
@@ -102,13 +104,19 @@ const RecipeCard = ({ recipe, isOwn, onEdit, onDelete }) => {
             <div className="recipe-card-details-inner">
               <div className="details-divider"></div>
 
+              {/* Prikaz zemlje podrijetla ako postoji */}
+              {recipe.area && (
+                <div className="recipe-origin-tag">
+                   🌍 {recipe.area}
+                </div>
+              )}
+
               <div className="details-section">
                 <h4>Sastojci:</h4>
                 <ul className="ingredients-list-vertical">
                   {recipe.ingredients &&
                     recipe.ingredients.map((ing, i) => {
-                      if (typeof ing === "string")
-                        return <li key={i}>{ing}</li>;
+                      if (typeof ing === "string") return <li key={i}>{ing}</li>;
                       return (
                         <li key={i} className="ingredient-item">
                           <span className="ing-measure">{ing.measure}</span>

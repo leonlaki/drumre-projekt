@@ -1,5 +1,6 @@
 const Recipe = require("../models/Recipe");
 const User = require("../models/User");
+const axios = require("axios");
 
 // 1. SPREMI NOVI RECEPT (Samo hrana, bez glazbe)
 const saveRecipe = async (req, res) => {
@@ -35,7 +36,7 @@ const getUserRecipes = async (req, res) => {
 
     // Jednostavan find, bez agregacija i statistike
     const recipes = await Recipe.find({ author: user._id })
-      .populate("author", "username avatar") 
+      .populate("author", "username avatar")
       .sort({ createdAt: -1 });
 
     res.json(recipes);
@@ -99,14 +100,17 @@ const toggleSaveRecipe = async (req, res) => {
 
     if (isSaved) {
       // Ako je već spremljen, makni ga
-      user.savedRecipes = user.savedRecipes.filter(r => r.toString() !== id);
+      user.savedRecipes = user.savedRecipes.filter((r) => r.toString() !== id);
     } else {
       // Ako nije, dodaj ga
       user.savedRecipes.push(id);
     }
 
     await user.save();
-    res.json({ message: isSaved ? "Recept uklonjen" : "Recept spremljen", isSaved: !isSaved });
+    res.json({
+      message: isSaved ? "Recept uklonjen" : "Recept spremljen",
+      isSaved: !isSaved,
+    });
   } catch (error) {
     res.status(500).json({ message: "Greška pri spremanju recepta" });
   }
@@ -117,14 +121,181 @@ const getSavedRecipes = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "savedRecipes",
-      populate: { path: "author", select: "username avatar" } // Da vidimo čiji je recept
+      populate: { path: "author", select: "username avatar" }, // Da vidimo čiji je recept
     });
-    
+
     res.json(user.savedRecipes);
   } catch (error) {
-    res.status(500).json({ message: "Greška pri dohvatu spremljenih recepata" });
+    res
+      .status(500)
+      .json({ message: "Greška pri dohvatu spremljenih recepata" });
   }
 };
+// Helper za dohvat jedinstvenih vrijednosti
+const getUnique = (arr) => [...new Set(arr)].sort();
+
+// 1. DOHVATI SVE FILTERE (DB + API)
+const getRecipeFilters = async (req, res) => {
+  try {
+    // A. Dohvati iz lokalne baze
+    const dbAreas = await Recipe.distinct("area");
+
+    // B. Dohvati s TheMealDB (Popis svih Area)
+    let apiAreas = [];
+    try {
+      const response = await axios.get("https://www.themealdb.com/api/json/v1/1/list.php?a=list");
+      if (response.data.meals) {
+        apiAreas = response.data.meals.map(m => m.strArea);
+      }
+    } catch (err) {
+      console.error("MealDB Area fetch error:", err.message);
+    }
+
+    // Spoji i makni duplikate i "Unknown"
+    const allAreas = getUnique([...dbAreas, ...apiAreas]).filter(a => a && a !== "Unknown");
+
+    res.json({ areas: allAreas });
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri dohvatu filtera" });
+  }
+};
+
+// 2. SEARCH & DISCOVERY (Napredno filtriranje)
+const searchRecipes = async (req, res) => {
+  const { query, categories, areas, usePreferences } = req.query;
+  const currentUserId = req.user._id;
+
+  try {
+    // --- 1. PRIPREMA FILTERA ---
+    let categoryList = categories ? (Array.isArray(categories) ? categories : [categories]) : [];
+    let areaList = areas ? (Array.isArray(areas) ? areas : [areas]) : [];
+
+    // Dodaj preference korisnika ako je traženo
+    if (usePreferences === 'true') {
+       const user = await User.findById(currentUserId);
+       if (user.preferences) {
+         if (user.preferences.categories) categoryList = [...new Set([...categoryList, ...user.preferences.categories])];
+         if (user.preferences.areas) areaList = [...new Set([...areaList, ...user.preferences.areas])];
+       }
+    }
+
+    // --- 2. PRETRAGA LOKALNE BAZE (MongoDB) ---
+    const dbQuery = { author: { $ne: currentUserId } };
+
+    if (query && query.trim() !== "") {
+      dbQuery.title = { $regex: query, $options: "i" };
+    }
+    if (categoryList.length > 0) {
+      dbQuery.category = { $in: categoryList };
+    }
+    if (areaList.length > 0) {
+      dbQuery.area = { $in: areaList };
+    }
+
+    let localResults = [];
+    
+    // Discovery Mode (Prazan upit i bez filtera) -> Random lokalni
+    const isDiscoveryMode = (!query || query === "") && categoryList.length === 0 && areaList.length === 0;
+
+    if (isDiscoveryMode) {
+      localResults = await Recipe.aggregate([
+        { $match: { author: { $ne: currentUserId } } },
+        { $sample: { size: 10 } },
+        { $lookup: { from: "users", localField: "author", foreignField: "_id", as: "author" } },
+        { $unwind: "$author" },
+        { $project: { "author.password": 0, "author.email": 0 } }
+      ]);
+    } else {
+      localResults = await Recipe.find(dbQuery)
+        .populate("author", "username avatar")
+        .limit(20);
+    }
+
+    // --- 3. PRETRAGA API-ja (MealDB) ---
+    let apiResults = [];
+
+    try {
+      let url = "";
+      
+      // A) Ako ima teksta (BILO KOJA DUŽINA, maknuli smo limit > 2)
+      if (query && query.trim().length > 0) {
+        url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+      } 
+      // B) Ako nema teksta, ali ima kategorija -> Filtriraj po prvoj kategoriji
+      else if (categoryList.length > 0) {
+        url = `https://www.themealdb.com/api/json/v1/1/filter.php?c=${categoryList[0]}`;
+      } 
+      // C) Ako nema teksta, ali ima država -> Filtriraj po prvoj državi
+      else if (areaList.length > 0) {
+        url = `https://www.themealdb.com/api/json/v1/1/filter.php?a=${areaList[0]}`;
+      } 
+      // D) DISCOVERY MODE (0 slova, bez filtera) -> Daj mi nešto s API-ja da nije prazno
+      else {
+        // MealDB nema "list all", pa možemo tražiti sve na slovo 'b' ili 'c' kao fallback
+        // ili koristiti random.php (ali on vraća samo 1 jelo).
+        // Najbolji trik za "puno jela" je search po čestom slovu.
+        url = `https://www.themealdb.com/api/json/v1/1/search.php?s=b`; 
+      }
+
+      if (url) {
+        const response = await axios.get(url);
+        const meals = response.data.meals;
+
+        if (meals) {
+          apiResults = meals.map(meal => ({
+            _id: `ext_${meal.idMeal}`,
+            title: meal.strMeal,
+            image: meal.strMealThumb,
+            category: meal.strCategory, 
+            area: meal.strArea,         
+            instructions: meal.strInstructions || "Instructions available via detailed view.",
+            ingredients: getIngredientsFromMeal(meal), 
+            author: { username: "MealDB", avatar: "https://www.themealdb.com/images/logo-small.png" },
+            isExternal: true
+          }));
+        }
+      }
+    } catch (err) {
+      console.error("API Fetch error:", err.message);
+    }
+
+    // --- 4. JS FILTRIRANJE API REZULTATA ---
+    // (API endpoint filter.php vraća jela, ali ne podržava multi-filter, pa to radimo ovdje)
+    
+    if (categoryList.length > 0) {
+      // Filtriramo samo ako API rezultat ima tu kategoriju (neki endpointi ne vraćaju kategoriju u responseu, ali search.php vraća)
+      apiResults = apiResults.filter(r => !r.category || categoryList.includes(r.category));
+    }
+    if (areaList.length > 0) {
+      apiResults = apiResults.filter(r => !r.area || areaList.includes(r.area));
+    }
+
+    // Spajanje i shuffle
+    const combined = [...localResults, ...apiResults];
+    const shuffled = combined.sort(() => 0.5 - Math.random()).slice(0, 20);
+
+    res.json(shuffled);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Greška pri pretrazi" });
+  }
+};
+
+// Helper za vađenje sastojaka iz MealDB objekta
+function getIngredientsFromMeal(meal) {
+  const ingredients = [];
+  for (let i = 1; i <= 20; i++) {
+    const name = meal[`strIngredient${i}`];
+    const measure = meal[`strMeasure${i}`];
+    if (name && name.trim() !== "") {
+      ingredients.push({ name: name, measure: measure || "" });
+    }
+  }
+  return ingredients;
+}
+
+
 
 module.exports = {
   saveRecipe,
@@ -132,5 +303,7 @@ module.exports = {
   updateRecipe,
   deleteRecipe,
   toggleSaveRecipe,
-  getSavedRecipes
+  searchRecipes,
+  getSavedRecipes,
+  getRecipeFilters,
 };

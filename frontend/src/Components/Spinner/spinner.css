@@ -6,6 +6,7 @@
   width: 100%;
   height: 400px; /* Visina dok se učitava, da sadržaj ne skače */
   background-color: transparent;
+  margin-bottom: 40vh;
 }
 
 .loading-text {

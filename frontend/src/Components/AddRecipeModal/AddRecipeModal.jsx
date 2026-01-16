@@ -4,8 +4,20 @@ import { recipeApi } from "../../api/recipeApi";
 import "./addRecipeModal.css";
 
 const CATEGORIES = [
-  "Main Course", "Breakfast", "Lunch", "Dinner", "Dessert",
-  "Snack", "Appetizer", "Soup", "Side Dish", "Drink",
+  "Beef",
+  "Breakfast",
+  "Chicken",
+  "Dessert",
+  "Goat",
+  "Lamb",
+  "Miscellaneous",
+  "Pasta",
+  "Pork",
+  "Seafood",
+  "Side",
+  "Starter",
+  "Vegan",
+  "Vegetarian"
 ];
 
 // Dodali smo prop 'initialData'
@@ -15,7 +27,8 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     image: initialData?.image || "",
-    category: initialData?.category || "Main Course",
+    category: initialData?.category || "Beef",
+    area: initialData?.area || "", // NOVO POLJE
     instructions: initialData?.instructions || "",
   });
 
