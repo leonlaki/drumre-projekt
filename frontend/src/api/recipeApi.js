@@ -57,4 +57,9 @@ export const recipeApi = {
     });
     return response.data;
   },
+
+  getRecipeById: async (id) => {
+    const response = await axiosClient.get(`/api/recipes/${id}`);
+    return response.data;
+  },
 };

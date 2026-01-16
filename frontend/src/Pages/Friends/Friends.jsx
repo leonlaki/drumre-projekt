@@ -5,7 +5,7 @@ import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import { userApi } from "../../api/userApi";
 import { friendApi } from "../../api/friendApi";
-import "./friends.css";
+import "./Friends.css";
 
 const Friends = () => {
   const [query, setQuery] = useState("");

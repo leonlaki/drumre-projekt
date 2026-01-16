@@ -1,6 +1,8 @@
+const { get } = require("mongoose");
 const Recipe = require("../models/Recipe");
 const User = require("../models/User");
 const axios = require("axios");
+const mealdbService = require("../services/mealdbService");
 
 // 1. SPREMI NOVI RECEPT (Samo hrana, bez glazbe)
 const saveRecipe = async (req, res) => {
@@ -295,7 +297,59 @@ function getIngredientsFromMeal(meal) {
   return ingredients;
 }
 
+const getRecipeById = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    // A) PROVJERA: JE LI RECEPT S MEALDB-a? (ID počinje s "ext_")
+    if (id.startsWith("ext_")) {
+      const realId = id.split("_")[1]; // Mičemo "ext_" prefix (npr. "ext_52772" -> "52772")
+      
+      // Pozivamo postojeću funkciju iz tvog servisa
+      const meal = await mealdbService.getMealById(realId);
+
+      if (!meal) {
+        return res.status(404).json({ message: "Vanjski recept nije pronađen." });
+      }
+
+      // Moramo mapirati podatke da izgledaju isto kao naši iz baze (MongoDB)
+      // Koristimo postojeći helper 'getIngredientsFromMeal' koji već imaš u ovom fileu
+      const formattedRecipe = {
+        _id: id, // Vraćamo originalni "ext_..." ID
+        title: meal.strMeal,
+        image: meal.strMealThumb,
+        instructions: meal.strInstructions,
+        category: meal.strCategory,
+        area: meal.strArea,
+        ingredients: getIngredientsFromMeal(meal), // Tvoj helper funkcija na dnu filea
+        author: { 
+          username: "MealDB", 
+          avatar: "https://www.themealdb.com/images/logo-small.png" 
+        },
+        isExternal: true
+      };
+
+      return res.json(formattedRecipe);
+    }
+
+    // B) AKO NIJE "ext_", ONDA JE LOKALNI (MongoDB)
+    const recipe = await Recipe.findById(id).populate("author", "username avatar");
+
+    if (!recipe) {
+      return res.status(404).json({ message: "Recept nije pronađen." });
+    }
+
+    res.json(recipe);
+
+  } catch (error) {
+    console.error("Greška kod dohvata recepta:", error);
+    // Ako je greška zbog neispravnog MongoDB ID-a, vraćamo 404
+    if (error.kind === 'ObjectId') {
+        return res.status(404).json({ message: "Recept nije pronađen." });
+    }
+    res.status(500).json({ message: "Greška na serveru." });
+  }
+};
 
 module.exports = {
   saveRecipe,
@@ -306,4 +360,5 @@ module.exports = {
   searchRecipes,
   getSavedRecipes,
   getRecipeFilters,
+  getRecipeById,
 };
