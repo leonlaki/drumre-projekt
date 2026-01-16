@@ -55,6 +55,11 @@ passport.use(
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
     },
     async (accessToken, refreshToken, profile, done) => {
+      const email = profile.emails[0].value;
+      const extractedPreferences = {
+        categories: [],
+        areas: [],
+      };
       try {
         let user = await User.findOne({ googleId: profile.id });
         if (!user) {
@@ -72,10 +77,7 @@ passport.use(
               email: email,
               avatar: await getRandomPokemonAvatar(),
               username: await generateRandomUsername(),
-              preferences: {
-                categories: extractedPreferences,
-                areas: [],
-              },
+              preferences: extractedPreferences,
               isOnboarded: false,
             });
           }

@@ -1,9 +1,23 @@
-import axiosClient from './axiosClient';
+import axiosClient from "./axiosClient";
 
 export const friendApi = {
+  // Dohvati moje prijatelje
+  getMyFriends: async () => {
+    const response = await axiosClient.get("/api/friends");
+    return response.data;
+  },
+
+  // Dohvati zahtjeve za prijateljstvo (Pending) - ZA NOTIFIKACIJE
+  getPendingRequests: async () => {
+    const response = await axiosClient.get("/api/friends/requests");
+    return response.data;
+  },
+
   // Pošalji zahtjev
   sendRequest: async (userId) => {
-    const response = await axiosClient.post('/api/friends/request', { to: userId });
+    const response = await axiosClient.post("/api/friends/request", {
+      to: userId,
+    });
     return response.data;
   },
 
@@ -21,7 +35,20 @@ export const friendApi = {
 
   // Ukloni prijatelja (Unfriend)
   unfriend: async (friendId) => {
-    const response = await axiosClient.delete(`/api/friends/unfriend/${friendId}`);
+    const response = await axiosClient.delete(
+      `/api/friends/unfriend/${friendId}`
+    );
     return response.data;
-  }
+  },
+
+  cancelRequest: async (userId) => {
+    const response = await axiosClient.delete(`/api/friends/cancel/${userId}`);
+    return response.data;
+  },
+
+  // Dohvati ljude kojima sam poslao zahtjev
+  getSentRequests: async () => {
+    const response = await axiosClient.get("/api/friends/sent");
+    return response.data;
+  },
 };

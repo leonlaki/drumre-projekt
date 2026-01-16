@@ -1,4 +1,4 @@
-import axiosClient from './axiosClient';
+import axiosClient from "./axiosClient";
 
 export const userApi = {
   // Dohvati javni profil bilo kojeg korisnika
@@ -9,39 +9,54 @@ export const userApi = {
 
   // Ažuriraj MOJ profil (Bio, Location, Avatar...)
   updateMyProfile: async (data) => {
-    const response = await axiosClient.put('/api/users/profile', data);
+    const response = await axiosClient.put("/api/users/profile", data);
     return response.data;
   },
 
   // --- ONBOARDING ---
-  
-  // Dohvati opcije za odabir (Kategorije i Države)
+
+  // Dohvati opcije za odabir (kategorije i države)
   getOnboardingOptions: async () => {
-    const response = await axiosClient.get('/api/users/onboarding/options');
+    const response = await axiosClient.get("/api/users/onboarding/options");
     return response.data;
   },
 
   // Spremi korisnikove preferencije
   savePreferences: async (preferences) => {
     // preferences = { categories: [], areas: [] }
-    const response = await axiosClient.post('/api/users/onboarding/save', preferences);
+    const response = await axiosClient.post(
+      "/api/users/onboarding/save",
+      preferences
+    );
     return response.data;
   },
 
   // Dohvati pametne preporuke (bazirano na preferencijama)
   getRecommendations: async () => {
-    const response = await axiosClient.get('/api/users/recommendations/external');
+    const response = await axiosClient.get(
+      "/api/users/recommendations/external"
+    );
     return response.data;
   },
 
   getPokemonList: async () => {
-    const response = await axiosClient.get('/api/users/pokemon/list');
+    const response = await axiosClient.get("/api/users/pokemon/list");
     return response.data;
   },
 
   // Postavi odabranog pokemona kao avatar
   setPokemonAvatar: async (pokemonId) => {
-    const response = await axiosClient.post('/api/users/pokemon/select', { pokemonId });
-    return response.data; // Vraća { message, avatar }
-  }
+    const response = await axiosClient.post("/api/users/pokemon/select", {
+      pokemonId,
+    });
+    return response.data;
+  },
+
+  // Pretraži korisnike po username-u
+  searchUsers: async (searchTerm) => {
+    const response = await axiosClient.get("/api/users/search", {
+      params: { query: searchTerm },
+    });
+    return response.data;
+  },
 };
