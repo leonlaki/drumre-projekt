@@ -36,7 +36,7 @@ const AREA_FLAGS = {
   Polish: "pl",
   Portuguese: "pt",
   Russian: "ru",
-  "Saudi Arabian": "sa", // Navodnici jer ima razmak u imenu
+  "Saudi Arabian": "sa",
   Slovakian: "sk",
   Spanish: "es",
   Syrian: "sy",
@@ -45,15 +45,14 @@ const AREA_FLAGS = {
   Turkish: "tr",
   Ukrainian: "ua",
   Uruguayan: "uy",
-  Venezulan: "ve", // Pazi, MealDB obično vraća "Venezuelan" (ne Venezulan)
+  Venezulan: "ve",
   Vietnamese: "vn",
-  Unknown: "un", 
+  Unknown: "un",
 };
 
-// Pomoćna funkcija za dohvat URL-a zastave
 const getFlagUrl = (areaName) => {
   const code = AREA_FLAGS[areaName];
-  if (!code) return null; // Ako nemamo zastavu, vratit ćemo null (samo tekst)
+  if (!code) return null;
   return `https://flagcdn.com/w80/${code}.png`;
 };
 
@@ -61,11 +60,8 @@ const Preferences = () => {
   const { updateLocalUser } = useAuth();
   const navigate = useNavigate();
 
-  // Podaci
   const [availableCategories, setAvailableCategories] = useState([]);
   const [availableAreas, setAvailableAreas] = useState([]);
-  
-  // Odabiri
   const [selectedCats, setSelectedCats] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
 
@@ -73,12 +69,29 @@ const Preferences = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Stanje za pred-ispunjene podatke (Facebook)
+  const [isPrefilled, setIsPrefilled] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await userApi.getOnboardingOptions();
+
         setAvailableCategories(data.categories || []);
         setAvailableAreas(data.areas || []);
+
+        // Provjera postojećih preferencija (s Facebooka)
+        if (data.existingPreferences) {
+          const { categories, areas } = data.existingPreferences;
+          if (
+            (categories && categories.length > 0) ||
+            (areas && areas.length > 0)
+          ) {
+            setSelectedCats(categories || []);
+            setSelectedAreas(areas || []);
+            setIsPrefilled(true);
+          }
+        }
       } catch (err) {
         console.error(err);
         setError("Greška pri učitavanju opcija.");
@@ -108,10 +121,8 @@ const Preferences = () => {
       setError("Molimo odaberite barem 3 kategorije jela.");
       return;
     }
-    if (selectedAreas.length < 3) {
-      setError("Molimo odaberite barem 3 svjetske kuhinje.");
-      return;
-    }
+    // Opcionalno za areas
+    // if (selectedAreas.length < 3) { ... }
 
     setSubmitting(true);
     try {
@@ -120,13 +131,17 @@ const Preferences = () => {
         areas: selectedAreas,
       });
 
-      updateLocalUser({
-        isOnboarded: true,
-        preferences: { categories: selectedCats, areas: selectedAreas },
-      });
+      // Ažuriraj lokalni state
+      if (updateLocalUser) {
+        updateLocalUser({
+          isOnboarded: true,
+          preferences: { categories: selectedCats, areas: selectedAreas },
+        });
+      }
 
-      navigate("/home");
+      navigate("/"); // Vrati na Home
     } catch (err) {
+      console.error(err);
       setError("Greška pri spremanju.");
     } finally {
       setSubmitting(false);
@@ -136,7 +151,7 @@ const Preferences = () => {
   if (loading) {
     return (
       <div className="preferences-wrapper">
-        <div className="loading-container">Učitavanje...</div>
+        <div className="loading-container">Učitavanje opcija...</div>
       </div>
     );
   }
@@ -149,54 +164,68 @@ const Preferences = () => {
         <header className="preferences-hero">
           <h1 className="preferences-title">Personaliziraj svoj račun</h1>
           <p className="preferences-subtitle">
-            Odaberi ono što voliš kako bismo ti mogli preporučiti najbolje recepte.
+            Odaberi ono što voliš kako bismo ti mogli preporučiti najbolje
+            recepte.
           </p>
+
+          {isPrefilled && (
+            <div className="pref-suggestion-msg">
+              ✨{" "}
+              <b>
+                Pronašli smo neke interese na temelju tvojih Facebook lajkova!
+              </b>
+              <br />
+              Slobodno ih uredi ili dodaj nove.
+            </div>
+          )}
         </header>
 
         <AnimatedSection className="preferences-content">
           <div className="preferences-card">
-            
-            {/* KATEGORIJE */}
+            {/* --- KATEGORIJE (GRID) --- */}
             <div className="pref-section">
               <h3>Kategorije jela</h3>
               <span className="pref-instruction">
                 Odaberi barem 3 (Odabrano: {selectedCats.length})
               </span>
+
               <div className="pref-grid">
                 {availableCategories.map((cat) => (
                   <div
                     key={cat.strCategory}
-                    className={`pref-item ${selectedCats.includes(cat.strCategory) ? "selected" : ""}`}
+                    className={`pref-item ${
+                      selectedCats.includes(cat.strCategory) ? "selected" : ""
+                    }`}
                     onClick={() => toggleCategory(cat.strCategory)}
                   >
-                    {/* Za kategorije koristimo samo tekst (ili možeš dodati ikone kasnije) */}
                     <span>{cat.strCategory}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* KUHINJE (SADA SA ZASTAVAMA 🚩) */}
+            {/* --- KUHINJE (GRID) --- */}
             <div className="pref-section">
               <h3>Svjetske kuhinje</h3>
               <span className="pref-instruction">
-                Odaberi barem 3 (Odabrano: {selectedAreas.length})
+                Odaberi (Odabrano: {selectedAreas.length})
               </span>
               <div className="pref-grid">
                 {availableAreas.map((area) => {
-                   const flagUrl = getFlagUrl(area.strArea);
-                   
-                   return (
+                  const flagUrl = getFlagUrl(area.strArea);
+                  return (
                     <div
                       key={area.strArea}
-                      className={`pref-item ${selectedAreas.includes(area.strArea) ? "selected" : ""}`}
+                      className={`pref-item ${
+                        selectedAreas.includes(area.strArea) ? "selected" : ""
+                      }`}
                       onClick={() => toggleArea(area.strArea)}
                     >
                       {flagUrl && (
-                        <img 
-                          src={flagUrl} 
-                          alt={area.strArea} 
-                          className="pref-flag" 
+                        <img
+                          src={flagUrl}
+                          alt={area.strArea}
+                          className="pref-flag"
                           loading="lazy"
                         />
                       )}
@@ -209,15 +238,14 @@ const Preferences = () => {
 
             <div className="pref-actions">
               {error && <div className="pref-error">{error}</div>}
-              <button 
-                className="pref-btn-save" 
+              <button
+                className="pref-btn-save"
                 onClick={handleSave}
                 disabled={submitting}
               >
                 {submitting ? "Spremanje..." : "Završi postavljanje"}
               </button>
             </div>
-
           </div>
         </AnimatedSection>
         <Footer />

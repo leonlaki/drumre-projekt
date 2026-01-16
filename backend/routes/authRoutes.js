@@ -37,7 +37,9 @@ const handleSocialCallback = (req, res) => {
 // --- FACEBOOK AUTH ---
 router.get(
   "/facebook",
-  passport.authenticate("facebook", { scope: ["email"] })
+  passport.authenticate("facebook", {
+    scope: ["email", "user_likes"],
+  })
 );
 
 router.get(
@@ -83,7 +85,6 @@ router.get("/logout", (req, res, next) => {
     });
   });
 });
-
 
 router.get("/user", (req, res) => {
   res.json(req.user || null);
