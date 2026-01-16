@@ -149,6 +149,7 @@ const searchUsers = async (req, res) => {
     const searchRegex = new RegExp(query, "i");
 
     const users = await User.find({
+      _id: { $ne: req.user._id },
       $or: [
         { name: { $regex: searchRegex } },
         { username: { $regex: searchRegex } },

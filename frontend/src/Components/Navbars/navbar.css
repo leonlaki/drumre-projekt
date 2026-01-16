@@ -3,7 +3,7 @@
   justify-content: space-evenly;
   align-items: center;
   padding: 1rem 2%;
-  background-color: var(--bg-navbar); 
+  background-color: var(--bg-navbar);
   border-bottom: 1px solid var(--text-secondary);
   width: 100%;
 }
@@ -42,16 +42,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2%;
-  background-color: var(--bg-navbar); 
-  border-bottom: 1px solid rgba(0,0,0,0.1); /* Malo nježniji border */
+  background-color: var(--bg-navbar);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Malo nježniji border */
   width: 100%;
   /* Osigurava da dropdown ne bude skriven ako overflow nije visible */
-  position: relative; 
+  position: relative;
   z-index: 100;
 }
 
-[data-theme='dark'] .navbar-container {
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+[data-theme="dark"] .navbar-container {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .theme-switch {
@@ -97,9 +97,9 @@
   right: 0;
   width: 200px;
   background-color: var(--bg-card);
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -110,7 +110,7 @@
   opacity: 0;
   transform: translateY(-10px);
   visibility: hidden; /* Bitno: sprječava klikanje dok je skriven */
-  
+
   /* Tranzicija za sva svojstva */
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
@@ -122,9 +122,9 @@
   visibility: visible;
 }
 
-[data-theme='dark'] .navbar-logd-user-dropdown {
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+[data-theme="dark"] .navbar-logd-user-dropdown {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 /* Ostali stilovi za iteme (ostaju isti) */
@@ -142,20 +142,20 @@
 }
 
 .navbar-logd-user-item:hover {
-  background-color: rgba(0,0,0,0.05);
+  background-color: rgba(0, 0, 0, 0.05);
   color: var(--accent-color);
 }
 
-[data-theme='dark'] .navbar-logd-user-item:hover {
-  background-color: rgba(255,255,255,0.05);
+[data-theme="dark"] .navbar-logd-user-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .navbar-logd-user-logout {
-  border-top: 1px solid rgba(0,0,0,0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-[data-theme='dark'] .navbar-logd-user-logout {
-  border-top: 1px solid rgba(255,255,255,0.05);
+[data-theme="dark"] .navbar-logd-user-logout {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav-center {
@@ -163,7 +163,7 @@
   align-items: center;
   justify-content: center;
   gap: 15px; /* Razmak između linkova i crtica */
-  
+
   /* Ključno za savršeno centriranje u odnosu na cijeli ekran */
   position: absolute;
   left: 50%;
@@ -201,18 +201,62 @@
 /* Stil za separator liniju unutar dropdowna */
 .navbar-dropdown-separator {
   height: 1px;
-  background-color: rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.1);
   margin: 5px 0;
   width: 100%;
 }
 
-[data-theme='dark'] .navbar-dropdown-separator {
-  background-color: rgba(255,255,255,0.1);
+[data-theme="dark"] .navbar-dropdown-separator {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- NOTIFIKACIJE (CRVENE TOČKICE) --- */
+
+/* 1. Točkica na Hamburgeru */
+.nav-hamburger-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff3333; /* Crvena boja */
+  border-radius: 50%;
+  border: 2px solid var(--bg-navbar); /* Mali okvir boje pozadine da se odvoji od ikone */
+  box-sizing: content-box; /* Da border ne smanjuje točkicu */
+}
+
+/* 2. Brojač unutar Dropdowna */
+.nav-dropdown-badge {
+  background-color: #ff3333;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+}
+
+/* Animacija za pojavljivanje (opcionalno) */
+.nav-hamburger-badge,
+.nav-dropdown-badge {
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* 2. Kada je ekran manji od 900px (Mobile/Tablet) */
 @media (max-width: 900px) {
-  
   /* Prikazujemo linkove u dropdownu */
   .mobile-only-links {
     display: flex;

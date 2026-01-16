@@ -145,9 +145,82 @@ const unfriend = async (req, res) => {
   }
 };
 
+// Dohvat liste zahtjeva za prijateljstvo
+const getPendingRequests = async (req, res) => {
+  try {
+    const requests = await FriendRequest.find({
+      to: req.user._id,
+      status: "pending",
+    })
+      .populate("from", "username avatar")
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Otkazivanje poslanog zahtjeva za prijateljstvo
+const cancelFriendRequest = async (req, res) => {
+  try {
+    const from = req.user._id;
+    const { toId } = req.params;
+
+    const deleted = await FriendRequest.findOneAndDelete({
+      from: from,
+      to: toId,
+      status: "pending",
+    });
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ message: "Zahtjev nije pronađen ili je već prihvaćen." });
+    }
+
+    res.json({ message: "Zahtjev otkazan." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Dohvat liste prijatelja
+const getMyFriends = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate(
+      "friends",
+      "username avatar"
+    );
+    res.json(user.friends);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Dohvat liste poslanih zahtjeva
+const getSentRequests = async (req, res) => {
+  try {
+    const requests = await FriendRequest.find({
+      from: req.user._id,
+      status: "pending",
+    }).select("to");
+
+    const recipientIds = requests.map((req) => req.to);
+
+    res.json(recipientIds);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
   unfriend,
+  getPendingRequests,
+  getMyFriends,
+  cancelFriendRequest,
+  getSentRequests,
 };
