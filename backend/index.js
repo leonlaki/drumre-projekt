@@ -31,9 +31,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,     
+      secure: false,
       httpOnly: true,
       sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 2,
     },
   })
 );
@@ -54,8 +55,8 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/meals", require("./routes/mealRoutes"));
 app.use("/api/music", musicRoutes);
 
-app.use("/api/friends", require('./routes/friendRoute'));
-app.use("/api/mealdb", require('./routes/mealdbRoutes'))
+app.use("/api/friends", require("./routes/friendRoute"));
+app.use("/api/mealdb", require("./routes/mealdbRoutes"));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
