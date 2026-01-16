@@ -12,6 +12,7 @@ import Preferences from './Pages/Preferences/Preferences'; // <--- DODANO
 import Home from './Pages/Home/HomePage';
 import Friends from './Pages/Friends/Friends';
 import CreateEvent from './Pages/CreateEvent/CreateEvent';
+import RecipeDetailsPage from './Pages/RecipeDetails/RecipeDetailsPage'; // Dodaj import
 
 import './App.css';
 import Notifications from './Pages/Notifications/Notifications';
@@ -71,6 +72,7 @@ const AnimatedRoutes = () => {
            <Route path="/notifications" element={<Notifications />} />
            <Route path="/profile" element={<ProfilePage />} />
            <Route path="/profile/:username" element={<ProfilePage />} />
+           <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
         </Route>
 
         {/* Catch-all ruta */}

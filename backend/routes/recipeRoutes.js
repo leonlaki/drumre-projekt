@@ -7,7 +7,8 @@ const {
   toggleSaveRecipe, 
   getSavedRecipes,
   searchRecipes,
-  getRecipeFilters
+  getRecipeFilters,
+  getRecipeById,
 } = require("../controller/recipeController");
 
 const { ensureAuth } = require("../middleware/authMiddleware");
@@ -25,5 +26,6 @@ router.get("/saved", ensureAuth, getSavedRecipes);
 router.post("/:id/save", ensureAuth, toggleSaveRecipe);
 router.get("/search", ensureAuth, searchRecipes);
 router.get("/filters", ensureAuth, getRecipeFilters);
+router.get('/:id', ensureAuth,getRecipeById);
 
 module.exports = router;

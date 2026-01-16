@@ -133,7 +133,7 @@ const MyRecepies = () => {
       if (!user) return;
       
       // Timer 3 sekunde za smooth intro
-      const minLoading = new Promise(resolve => setTimeout(resolve, 3000));
+      const minLoading = new Promise(resolve => setTimeout(resolve, 1500));
       
       try {
         const [myRes, savedRes, filtersRes] = await Promise.all([
