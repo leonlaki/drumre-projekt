@@ -1,0 +1,317 @@
+.my-recipes-wrapper {
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-recipes-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  flex: 1;
+}
+
+/* HERO */
+.recipes-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.recipes-hero h1 {
+  font-size: var(--fs-h1);
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+.recipes-subtitle {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
+  line-height: 1.6;
+}
+.btn-add-recipe {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 10px rgba(255, 87, 51, 0.3);
+}
+.btn-add-recipe:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 87, 51, 0.4);
+}
+
+/* SEKCIJE */
+.section-title {
+  font-size: var(--fs-h2);
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--accent-color);
+  padding-left: 12px;
+  color: var(--text-primary);
+}
+
+.centered-title {
+  text-align: center;
+  border-left: none;
+  margin-top: 3rem;
+}
+
+.empty-state {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  width: 100%;
+}
+
+.section-divider {
+  height: 1px;
+  background-color: var(--text-secondary);
+  opacity: 0.1;
+  margin: 4rem 0;
+}
+
+/* MASONRY LAYOUT */
+.masonry-container {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.masonry-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* SEARCH & FILTERS */
+.search-section {
+  margin-top: 2rem;
+}
+
+.search-bar-wrapper {
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  position: relative;
+}
+
+.search-input-large {
+  width: 100%;
+  padding: 1.2rem 2rem;
+  border-radius: 50px;
+  border: 2px solid transparent;
+  background-color: var(--bg-card);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.search-input-large:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 25px rgba(255, 87, 51, 0.2);
+  outline: none;
+}
+
+.filters-container {
+  max-width: 900px;
+  margin: 0 auto 3rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: rgba(128,128,128,0.05); /* Vrlo blaga pozadina */
+  padding: 1.5rem;
+  border-radius: 20px;
+}
+
+.filter-row-preferences {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.pref-btn {
+  background: transparent;
+  border: 2px dashed var(--accent-color);
+  color: var(--accent-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pref-btn.active {
+  background: var(--accent-color);
+  color: white;
+  border-style: solid;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+/* CHIPS */
+.chips-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.chip {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(0,0,0,0.1);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.chip.selected {
+  background-color: var(--text-primary);
+  color: var(--bg-main);
+  border-color: var(--text-primary);
+  font-weight: 600;
+  transform: scale(1.05);
+}
+
+.mini-loader {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .masonry-container {
+    flex-direction: column;
+  }
+  .masonry-column {
+    width: 100%;
+  }
+}
+
+.multi-select-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  z-index: 10; /* Bitno da dropdown ide preko ostalog */
+}
+
+.multi-select-header {
+  background: var(--bg-card);
+  padding: 12px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+.multi-select-header:hover {
+  border-color: var(--accent-color);
+}
+
+.multi-select-options {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  border: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.multi-select-item {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(0,0,0,0.02);
+}
+
+.multi-select-item:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.multi-select-item.active {
+  background: rgba(var(--accent-rgb), 0.08); /* Ovisno o tvojoj temi */
+  font-weight: 600;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-secondary);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--accent-color);
+}
+
+.multi-select-item.active .checkbox-custom {
+  border-color: var(--accent-color);
+}
+
+.flag-icon {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.option-text {
+  flex: 1;
+}
+
+/* Scrollbar */
+.multi-select-options::-webkit-scrollbar {
+  width: 8px;
+}
+.multi-select-options::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
