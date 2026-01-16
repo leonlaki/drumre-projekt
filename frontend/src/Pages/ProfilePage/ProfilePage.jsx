@@ -104,14 +104,14 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) return <div className="loading-screen"></div>;
-  if (!profileData) return <div className="error-screen"></div>;
+  if (loading) return <div className="loading-screen"><Navbar /></div>;
+  if (!profileData) return <div className="error-screen"><Navbar /></div>;
 
   return (
-    <SlidePageTransition>
+    
       <div className="profile-wrapper">
         <Navbar />
-        
+        <SlidePageTransition>
         <div className="profile-container">
           
           {/* HEADER PROFILA */}
@@ -211,8 +211,8 @@ const ProfilePage = () => {
         </div>
 
         <Footer />
+        </SlidePageTransition>
       </div>
-    </SlidePageTransition>
   );
 };
 

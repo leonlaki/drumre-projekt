@@ -3,12 +3,13 @@ const User = require("../models/User");
 
 // 1. KREIRAJ OBROK (OBJAVI POST)
 const createMeal = async (req, res) => {
-  const { title, description, courses, playlistId } = req.body;
+  // Dodajemo date, location, participants u destructuring
+  const { title, description, courses, playlistId, date, location, participants } = req.body;
 
   if (!courses || courses.length === 0) {
     return res
       .status(400)
-      .json({ message: "Obrok mora imati barem jedan slijed!" });
+      .json({ message: "Event mora imati barem jedan slijed (recept)!" });
   }
 
   try {
@@ -18,11 +19,19 @@ const createMeal = async (req, res) => {
       courses,
       playlist: playlistId || null,
       author: req.user._id,
+      // Nova polja:
+      date: date || new Date(),
+      location: location || "Kod autora",
+      participants: participants || [] // Očekujemo niz ID-eva korisnika
     });
+    
+    // OVDJE BI KASNIJE IŠLA LOGIKA ZA SLANJE NOTIFIKACIJA SUDIONICIMA
+    // createNotificationForParticipants(participants, meal._id, req.user.username);
+
     res.status(201).json(meal);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error creating meal post" });
+    res.status(500).json({ message: "Greška pri kreiranju eventa" });
   }
 };
 

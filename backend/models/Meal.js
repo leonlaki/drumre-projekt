@@ -2,12 +2,21 @@ const mongoose = require("mongoose");
 
 const mealSchema = new mongoose.Schema(
   {
-    // Naslov posta (npr. "Nedjeljni ručak za ekipu")
     title: { type: String, required: true },
     description: { type: String },
-    
-    // Slika obroka (URL ili path)
     image: { type: String }, 
+
+    // Datum i vrijeme održavanja eventa
+    date: { 
+      type: Date, 
+      default: Date.now 
+    },
+    
+    // Lokacija (npr. "Kod mene doma", "Jarun", itd.)
+    location: {
+      type: String,
+      default: "Kod autora"
+    },
 
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,18 +24,32 @@ const mealSchema = new mongoose.Schema(
       required: true,
     },
 
-    // --- SLJEDOVI (COURSES) ---
+    // --- SUDIONICI (Gosti) ---
+    participants: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    // --- SLJEDOVI (Prošireni Enum) ---
     courses: [
       {
         courseType: {
           type: String,
           enum: [
-            "Appetizer",
-            "Soup",
-            "Main Course",
-            "Side Dish",
-            "Dessert",
-            "Drink",
+            "Aperitif",       // Piće dobrodošlice
+            "Appetizer",      // Hladno predjelo
+            "Warm Appetizer", // Toplo predjelo
+            "Soup",           // Juha
+            "Main Course",    // Glavno jelo
+            "Side Dish",      // Prilog
+            "Salad",          // Salata
+            "Dessert",        // Desert
+            "Cheese",         // Sir
+            "Digestif",       // Piće nakon jela
+            "Drink",          // Općenito piće
+            "Snack"           // Grickalice
           ],
           required: true,
         },
@@ -38,25 +61,19 @@ const mealSchema = new mongoose.Schema(
       },
     ],
 
-    // --- ATMOSFERA (PLAYLISTA) ---
     playlist: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Playlist",
     },
 
-    // --- DRUŠTVENI DIO ---
-    
-    // 1. Ocjene (rating)
     ratings: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         value: { type: Number, min: 1, max: 5 },
       },
     ],
-    // Pomoćno polje za brzo sortiranje po popularnosti
     averageRating: { type: Number, default: 0 },
 
-    // 2. Komentari (Comments)
     comments: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -65,15 +82,8 @@ const mealSchema = new mongoose.Schema(
       },
     ],
 
-    // 3. Brojači pregleda i dijeljenja (NOVO ZA PROJEKT) 📈
-    viewCount: {
-      type: Number,
-      default: 0
-    },
-    shareCount: {
-      type: Number,
-      default: 0
-    }
+    viewCount: { type: Number, default: 0 },
+    shareCount: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
