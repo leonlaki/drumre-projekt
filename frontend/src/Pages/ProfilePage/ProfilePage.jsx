@@ -2,52 +2,55 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { userApi } from "../../api/userApi";
+import { mealApi } from "../../api/mealApi"; // <--- NOVI IMPORT
 import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PokemonSelector from "../../Components/PokemonSelector/PokemonSelector";
-import "./profilePage.css"; // CSS ćemo dodati ispod
+import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
+import "./profilePage.css";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
 const ProfilePage = () => {
-  const { username } = useParams(); // Čitamo username iz URL-a
-  const { user: currentUser, updateLocalUser } = useAuth(); // Trenutno logirani user
+  const { username } = useParams();
+  const { user: currentUser, updateLocalUser } = useAuth();
   const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState(null);
+  
+  // Novi state za evente
+  const [myEvents, setMyEvents] = useState([]);
+  const [participatingEvents, setParticipatingEvents] = useState([]);
+
   const [stats, setStats] = useState({ 
     meals: 0, 
     recipes: 0, 
     views: 0, 
-    likes: 0 
+    likes: 0,
+    avgRating: 0 // <--- NOVO
   });
+  
   const [loading, setLoading] = useState(true);
-
-  // --- STATE ZA EDIT MODE ---
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({
-    bio: "",
-    location: "",
-    avatar: "", // URL avatara
-  });
-  const [selectedPokemonId, setSelectedPokemonId] = useState(null); // ID za selector
+  const [editForm, setEditForm] = useState({ bio: "", location: "", avatar: "" });
+  const [selectedPokemonId, setSelectedPokemonId] = useState(null);
 
-  // 1. Provjeri čiji profil gledamo
-  // Ako nema parametra u URL-u ili je parametar isti kao moj username -> gledam svoj profil
-  const isMyProfile =
-    !username || (currentUser && username === currentUser.username);
+  const isMyProfile = !username || (currentUser && username === currentUser.username);
 
+  // --- FETCH DATA ---
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Ako gledamo svoj, uzmi currentUser.username, inače onaj iz URL-a
         const targetUsername = username || currentUser?.username;
         if (!targetUsername) return;
 
         const data = await userApi.getUserProfile(targetUsername);
         setProfileData(data.profile);
         setStats(data.stats);
+        
+        // Postavi evente
+        setMyEvents(data.myEvents || []);
+        setParticipatingEvents(data.participatingEvents || []);
 
-        // Pripremi formu za editiranje
         if (isMyProfile) {
           setEditForm({
             bio: data.profile.bio || "",
@@ -65,41 +68,44 @@ const ProfilePage = () => {
     fetchProfile();
   }, [username, currentUser, isMyProfile]);
 
-  // HANDLERS ZA EDITIRANJE
-  const handleEditChange = (e) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  // --- HANDLERS ---
+  const handleDeleteEvent = async (e, eventId) => {
+    e.stopPropagation(); // Da ne otvori detalje
+    if (!window.confirm("Jeste li sigurni da želite obrisati ovaj event?")) return;
+    try {
+      await mealApi.deleteMeal(eventId);
+      setMyEvents(prev => prev.filter(ev => ev._id !== eventId));
+    } catch (err) {
+      alert("Greška pri brisanju.");
+    }
   };
 
+  const handleLeaveEvent = async (e, eventId) => {
+    e.stopPropagation();
+    if (!window.confirm("Želite li napustiti ovaj event?")) return;
+    try {
+      await mealApi.leaveMeal(eventId);
+      setParticipatingEvents(prev => prev.filter(ev => ev._id !== eventId));
+    } catch (err) {
+      alert("Greška pri izlasku.");
+    }
+  };
+
+  const handleEditChange = (e) => setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  
   const handlePokemonSelect = (pokemon) => {
     setSelectedPokemonId(pokemon.id);
-    setEditForm({ ...editForm, avatar: pokemon.avatar }); // Odmah prikaži preview
+    setEditForm({ ...editForm, avatar: pokemon.avatar });
   };
 
   const handleSaveProfile = async () => {
     try {
-      // 1. Ako je odabran novi Pokemon, prvo to spremi (poseban API call)
-      // (Ili možemo sve u jednom updateMyProfile, ali tvoj backend ima odvojene rute)
-      // Tvoj backend za updateMyProfile prima 'avatar' string, tako da možemo sve odjednom
-      // ako pošaljemo URL gifa. Ali tvoj userController za pokemone ima posebnu logiku.
-      // Najsigurnije je koristiti tvoju Pokemon rutu ako je ID promijenjen.
-      
-      if (selectedPokemonId) {
-          await userApi.setPokemonAvatar(selectedPokemonId);
-      }
-
-      // 2. Ažuriraj tekstualne podatke
-      const updatedUser = await userApi.updateMyProfile({
-        bio: editForm.bio,
-        location: editForm.location,
-        avatar: editForm.avatar // Šaljemo i URL za svaki slučaj
-      });
-
-      // 3. Ažuriraj lokalni context i state stranice
+      if (selectedPokemonId) await userApi.setPokemonAvatar(selectedPokemonId);
+      const updatedUser = await userApi.updateMyProfile({ ...editForm });
       updateLocalUser(updatedUser);
       setProfileData(updatedUser);
       setIsEditing(false);
     } catch (error) {
-      console.error("Greška pri spremanju:", error);
       alert("Došlo je do greške pri spremanju profila.");
     }
   };
@@ -108,7 +114,6 @@ const ProfilePage = () => {
   if (!profileData) return <div className="error-screen"><Navbar /></div>;
 
   return (
-    
       <div className="profile-wrapper">
         <Navbar />
         <SlidePageTransition>
@@ -117,15 +122,9 @@ const ProfilePage = () => {
           {/* HEADER PROFILA */}
           <div className="profile-header-card">
             <div className="profile-avatar-section">
-              <img 
-                src={profileData.avatar || "https://via.placeholder.com/150"} 
-                alt="Avatar" 
-                className="profile-avatar-lg" 
-              />
+              <img src={profileData.avatar || "https://via.placeholder.com/150"} alt="Avatar" className="profile-avatar-lg" />
               {isMyProfile && !isEditing && (
-                <button className="btn-edit-profile" onClick={() => setIsEditing(true)}>
-                  Uredi Profil
-                </button>
+                <button className="btn-edit-profile" onClick={() => setIsEditing(true)}>Uredi Profil</button>
               )}
             </div>
 
@@ -140,33 +139,12 @@ const ProfilePage = () => {
                   </div>
                 </>
               ) : (
-                /* FORMA ZA EDITIRANJE */
                 <div className="edit-profile-form">
                   <h3>Uredi Profil</h3>
-                  
-                  <label>Tvoj Bio</label>
-                  <textarea 
-                    name="bio" 
-                    value={editForm.bio} 
-                    onChange={handleEditChange} 
-                    rows="3"
-                  />
-
-                  <label>Lokacija</label>
-                  <input 
-                    type="text" 
-                    name="location" 
-                    value={editForm.location} 
-                    onChange={handleEditChange} 
-                  />
-
+                  <textarea name="bio" value={editForm.bio} onChange={handleEditChange} rows="3" placeholder="Opis..." />
+                  <input type="text" name="location" value={editForm.location} onChange={handleEditChange} placeholder="Lokacija" />
                   <label>Promijeni Pokémona</label>
-                  {/* Ovdje ubacujemo naš selector */}
-                  <PokemonSelector 
-                    selectedId={selectedPokemonId} 
-                    onSelect={handlePokemonSelect} 
-                  />
-
+                  <PokemonSelector selectedId={selectedPokemonId} onSelect={handlePokemonSelect} />
                   <div className="edit-actions">
                     <button className="btn-save" onClick={handleSaveProfile}>Spremi</button>
                     <button className="btn-cancel" onClick={() => setIsEditing(false)}>Odustani</button>
@@ -175,27 +153,20 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* STATISTIKA */}
+            {/* AŽURIRANA STATISTIKA */}
             <div className="profile-stats">
-               {/* 1. OBROCI */}
                <div className="stat-box">
                  <span className="stat-number">{stats.meals}</span>
                  <span className="stat-label">Objava</span>
                </div>
-               
-               {/* 2. RECEPTI */}
-               <div className="stat-box">
-                 <span className="stat-number">{stats.recipes}</span>
-                 <span className="stat-label">Recepta</span>
-               </div>
-
-               {/* 3. TOTAL LIKES (Umjesto playlista) */}
                <div className="stat-box">
                  <span className="stat-number">{stats.likes}</span>
-                 <span className="stat-label">Lajkova</span>
+                 <span className="stat-label">Glasova</span>
                </div>
-
-               {/* 4. TOTAL VIEWS (Novo) */}
+               <div className="stat-box">
+                 <span className="stat-number">{stats.avgRating ? stats.avgRating.toFixed(1) : "0.0"}</span>
+                 <span className="stat-label">Prosjek</span>
+               </div>
                <div className="stat-box">
                  <span className="stat-number">{stats.views}</span>
                  <span className="stat-label">Pregleda</span>
@@ -203,13 +174,56 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* OVDJE ĆE IĆI TABOVI ZA OBROKE/RECEPTE (Kasnije) */}
-          <div className="profile-content-placeholder">
-            <p>Ovdje će se prikazivati korisnikovi postovi (Obroci, Recepti, Playliste).</p>
+          {/* LISTE EVENATA */}
+          <div className="profile-events-section">
+            
+            {/* 1. MOJI EVENTI */}
+            <div className="events-group">
+               <h3 className="group-title">Moji Eventi ({myEvents.length})</h3>
+               {myEvents.length > 0 ? (
+                 <div className="events-grid-profile">
+                    {myEvents.map(event => (
+                       <div key={event._id} className="profile-event-wrapper">
+                          <EventCard event={event} />
+                          {/* Gumb za brisanje (samo ako je moj profil i moj event) */}
+                          {isMyProfile && (
+                             <button className="btn-delete-event" onClick={(e) => handleDeleteEvent(e, event._id)}>
+                                🗑️ Obriši
+                             </button>
+                          )}
+                       </div>
+                    ))}
+                 </div>
+               ) : (
+                 <p className="empty-msg">Još nisi kreirao nijedan event.</p>
+               )}
+            </div>
+
+            {/* 2. SUDJELOVANJA */}
+            <div className="events-group">
+               <h3 className="group-title">Sudjelovanja ({participatingEvents.length})</h3>
+               {participatingEvents.length > 0 ? (
+                 <div className="events-grid-profile">
+                    {participatingEvents.map(event => (
+                       <div key={event._id} className="profile-event-wrapper">
+                          <EventCard event={event} />
+                          {/* Gumb za izlazak (samo ako je moj profil) */}
+                          {isMyProfile && (
+                             <button className="btn-leave-event" onClick={(e) => handleLeaveEvent(e, event._id)}>
+                                🚪 Izađi
+                             </button>
+                          )}
+                       </div>
+                    ))}
+                 </div>
+               ) : (
+                 <p className="empty-msg">Nemaš evenata u kojima sudjeluješ.</p>
+               )}
+            </div>
+
           </div>
 
         </div>
-
         <Footer />
         </SlidePageTransition>
       </div>

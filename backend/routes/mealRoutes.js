@@ -15,6 +15,8 @@ const {
   getMealDetails,
   searchMeals,
   getRecommendedMeals,
+  deleteMeal,
+  leaveMeal,
 } = require("../controller/mealController");
 const { ensureAuth } = require("../middleware/authMiddleware");
 
@@ -33,6 +35,8 @@ router.post("/:id/view", ensureAuth, incrementViewCount); // Povećaj broj pregl
 router.post("/:id/share", ensureAuth, incrementShareCount); // Povećaj broj dijeljenja
 router.get("/recommendations/facebook", ensureAuth, getFacebookRecommendations);
 router.get("/recommendations/internal", ensureAuth, getRecommendedMeals);
+router.delete("/:id", ensureAuth, deleteMeal); // Brisanje
+router.post("/:id/leave", ensureAuth, leaveMeal); // Izlazak
 
 
 module.exports = router;

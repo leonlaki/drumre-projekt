@@ -475,6 +475,41 @@ const getRecommendedMeals = async (req, res) => {
   }
 };
 
+// 8. OBRIŠI EVENT (Samo autor)
+const deleteMeal = async (req, res) => {
+  try {
+    const meal = await Meal.findById(req.params.id);
+    if (!meal) return res.status(404).json({ message: "Event nije pronađen" });
+
+    if (meal.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Niste autor ovog eventa" });
+    }
+
+    await meal.deleteOne();
+    res.json({ message: "Event obrisan" });
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri brisanju" });
+  }
+};
+
+// 9. IZAĐI IZ EVENTA (Samo sudionik)
+const leaveMeal = async (req, res) => {
+  try {
+    const meal = await Meal.findById(req.params.id);
+    if (!meal) return res.status(404).json({ message: "Event nije pronađen" });
+
+    // Makni usera iz participants arraya
+    meal.participants = meal.participants.filter(
+      (id) => id.toString() !== req.user._id.toString()
+    );
+
+    await meal.save();
+    res.json({ message: "Napustili ste event" });
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri izlasku" });
+  }
+};
+
 module.exports = {
   createMeal,
   getWeeklyMealFeed,
@@ -486,4 +521,6 @@ module.exports = {
   getMealDetails,
   searchMeals,
   getRecommendedMeals,
+  deleteMeal, 
+  leaveMeal,
 };

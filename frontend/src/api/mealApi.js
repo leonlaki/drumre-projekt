@@ -61,4 +61,14 @@ export const mealApi = {
     const response = await axiosClient.get('/api/meals/recommendations/internal');
     return response.data;
   },
+
+  deleteMeal: async (id) => {
+    const response = await axiosClient.delete(`/api/meals/${id}`);
+    return response.data;
+  },
+
+  leaveMeal: async (id) => {
+    const response = await axiosClient.post(`/api/meals/${id}/leave`);
+    return response.data;
+  },
 };
