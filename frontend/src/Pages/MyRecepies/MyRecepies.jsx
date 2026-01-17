@@ -11,21 +11,63 @@ import "./myRecepies.css";
 
 // 1. TOČNE KATEGORIJE (TheMealDB Standard)
 const CATEGORY_OPTIONS = [
-  "Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous",
-  "Pasta", "Pork", "Seafood", "Side", "Starter",
-  "Vegan", "Vegetarian", "Breakfast", "Goat"
+  "Beef",
+  "Chicken",
+  "Dessert",
+  "Lamb",
+  "Miscellaneous",
+  "Pasta",
+  "Pork",
+  "Seafood",
+  "Side",
+  "Starter",
+  "Vegan",
+  "Vegetarian",
+  "Breakfast",
+  "Goat",
 ];
 
 // 2. MAPIRANJE ZASTAVA (TheMealDB Adjectives -> ISO Codes)
 // Ovo pretvara "American" u "us", "Croatian" u "hr" itd. za prikaz zastave.
 const AREA_FLAGS = {
-  "American": "us", "British": "gb", "Canadian": "ca", "Chinese": "cn",
-  "Croatian": "hr", "Dutch": "nl", "Egyptian": "eg", "Filipino": "ph",
-  "French": "fr", "Greek": "gr", "Indian": "in", "Irish": "ie",
-  "Italian": "it", "Jamaican": "jm", "Japanese": "jp", "Kenyan": "ke",
-  "Malaysian": "my", "Mexican": "mx", "Moroccan": "ma", "Polish": "pl",
-  "Portuguese": "pt", "Russian": "ru", "Spanish": "es", "Thai": "th",
-  "Tunisian": "tn", "Turkish": "tr", "Vietnamese": "vn", "Unknown": "un"
+  Algerian: "dz",
+  American: "us",
+  Argentinian: "ar",
+  Australian: "au",
+  British: "gb",
+  Canadian: "ca",
+  Chinese: "cn",
+  Croatian: "hr",
+  Dutch: "nl",
+  Egyptian: "eg",
+  Filipino: "ph",
+  French: "fr",
+  Greek: "gr",
+  Indian: "in",
+  Irish: "ie",
+  Italian: "it",
+  Jamaican: "jm",
+  Japanese: "jp",
+  Kenyan: "ke",
+  Malaysian: "my",
+  Mexican: "mx",
+  Moroccan: "ma",
+  Norwegian: "no",
+  Polish: "pl",
+  Portuguese: "pt",
+  Russian: "ru",
+  "Saudi Arabian": "sa",
+  Slovakian: "sk",
+  Spanish: "es",
+  Syrian: "sy",
+  Thai: "th",
+  Tunisian: "tn",
+  Turkish: "tr",
+  Ukrainian: "ua",
+  Uruguayan: "uy",
+  Venezulan: "ve",
+  Vietnamese: "vn",
+  Unknown: "un",
 };
 
 const getFlagUrl = (areaName) => {
@@ -61,7 +103,7 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
 
   const toggleOption = (option) => {
     if (selected.includes(option)) {
-      onChange(selected.filter(item => item !== option));
+      onChange(selected.filter((item) => item !== option));
     } else {
       onChange([...selected, option]);
     }
@@ -71,25 +113,33 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
     <div className="multi-select-container" ref={dropdownRef}>
       <div className="multi-select-header" onClick={() => setIsOpen(!isOpen)}>
         <span>
-           {selected.length > 0 ? `Odabrano država: ${selected.length}` : placeholder}
+          {selected.length > 0
+            ? `Odabrano država: ${selected.length}`
+            : placeholder}
         </span>
         <span className="arrow">{isOpen ? "▲" : "▼"}</span>
       </div>
-      
+
       {isOpen && (
         <div className="multi-select-options">
           {options.map((option) => (
-            <div 
-              key={option} 
-              className={`multi-select-item ${selected.includes(option) ? "active" : ""}`}
+            <div
+              key={option}
+              className={`multi-select-item ${
+                selected.includes(option) ? "active" : ""
+              }`}
               onClick={() => toggleOption(option)}
             >
               <div className="checkbox-custom">
                 {selected.includes(option) && <span>✓</span>}
               </div>
-              
+
               {getFlagUrl(option) && (
-                <img src={getFlagUrl(option)} alt={option} className="flag-icon" />
+                <img
+                  src={getFlagUrl(option)}
+                  alt={option}
+                  className="flag-icon"
+                />
               )}
               <span className="option-text">{option}</span>
             </div>
@@ -100,11 +150,10 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
   );
 };
 
-
 // --- GLAVNA KOMPONENTA: MY RECEPIES ---
 const MyRecepies = () => {
   const { user } = useAuth();
-  
+
   // PODACI
   const [ownRecipes, setOwnRecipes] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState([]);
@@ -130,27 +179,26 @@ const MyRecepies = () => {
   useEffect(() => {
     const initData = async () => {
       if (!user) return;
-      
+
       // Timer 3 sekunde za smooth intro
-      const minLoading = new Promise(resolve => setTimeout(resolve, 1500));
-      
+      const minLoading = new Promise((resolve) => setTimeout(resolve, 1500));
+
       try {
         const [myRes, savedRes, filtersRes] = await Promise.all([
           recipeApi.getUserRecipes(user.username),
           recipeApi.getSavedRecipes(),
-          recipeApi.getFilters() // Backend vraća { areas: ["American", "Croatian"...] }
+          recipeApi.getFilters(), // Backend vraća { areas: ["American", "Croatian"...] }
         ]);
-        
+
         await minLoading; // Čekaj timer
 
         setOwnRecipes(myRes);
         setSavedRecipes(savedRes);
         setAvailableAreas(filtersRes.areas || []);
-        
+
         // Odmah napravi "Discovery" pretragu (random)
         const discoveryRes = await recipeApi.searchRecipes("", [], [], false);
         setSearchResults(discoveryRes);
-
       } catch (error) {
         console.error("Init error:", error);
       } finally {
@@ -184,8 +232,13 @@ const MyRecepies = () => {
     };
 
     performSearch();
-  }, [debouncedSearchTerm, selectedCategories, selectedAreas, usePreferences, loading]);
-
+  }, [
+    debouncedSearchTerm,
+    selectedCategories,
+    selectedAreas,
+    usePreferences,
+    loading,
+  ]);
 
   // 3. RESPONSIVE MASONRY
   useEffect(() => {
@@ -213,38 +266,49 @@ const MyRecepies = () => {
   const savedColumns = distributeRecipes(savedRecipes);
   const searchColumns = distributeRecipes(searchResults);
 
-
   // --- HANDLERI ---
 
-  const openNewModal = () => { setEditingRecipe(null); setIsModalOpen(true); };
-  const openEditModal = (recipe) => { setEditingRecipe(recipe); setIsModalOpen(true); };
+  const openNewModal = () => {
+    setEditingRecipe(null);
+    setIsModalOpen(true);
+  };
+  const openEditModal = (recipe) => {
+    setEditingRecipe(recipe);
+    setIsModalOpen(true);
+  };
 
   const handleRecipeSaved = (savedRecipe, isEditMode) => {
     if (isEditMode) {
-      setOwnRecipes((prev) => prev.map((r) => r._id === savedRecipe._id ? savedRecipe : r));
+      setOwnRecipes((prev) =>
+        prev.map((r) => (r._id === savedRecipe._id ? savedRecipe : r))
+      );
     } else {
       setOwnRecipes((prev) => [savedRecipe, ...prev]);
     }
   };
 
   const handleDeleteRecipe = async (id) => {
-    if (!window.confirm("Jeste li sigurni da želite obrisati ovaj recept?")) return;
+    if (!window.confirm("Jeste li sigurni da želite obrisati ovaj recept?"))
+      return;
     try {
       await recipeApi.deleteRecipe(id);
       setOwnRecipes((prev) => prev.filter((r) => r._id !== id));
-    } catch (error) { console.error(error); alert("Greška pri brisanju."); }
+    } catch (error) {
+      console.error(error);
+      alert("Greška pri brisanju.");
+    }
   };
 
   // TOGGLE SAVE (Srce)
   const handleToggleSave = async (recipe) => {
     try {
       await recipeApi.toggleSave(recipe._id);
-      
-      const isAlreadySaved = savedRecipes.some(r => r._id === recipe._id);
+
+      const isAlreadySaved = savedRecipes.some((r) => r._id === recipe._id);
       if (isAlreadySaved) {
-        setSavedRecipes(prev => prev.filter(r => r._id !== recipe._id));
+        setSavedRecipes((prev) => prev.filter((r) => r._id !== recipe._id));
       } else {
-        setSavedRecipes(prev => [recipe, ...prev]);
+        setSavedRecipes((prev) => [recipe, ...prev]);
       }
     } catch (error) {
       console.error("Error toggling save:", error);
@@ -252,21 +316,22 @@ const MyRecepies = () => {
   };
 
   const toggleCategory = (cat) => {
-    setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c!==cat) : [...prev, cat]);
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
   };
 
-  const isRecipeSaved = (id) => savedRecipes.some(r => r._id === id);
-
+  const isRecipeSaved = (id) => savedRecipes.some((r) => r._id === id);
 
   return (
     <div className="my-recipes-wrapper">
       <PageTransition>
         <div className="my-recipes-container">
-          
           <header className="recipes-hero">
             <h1>Moja Kuharica</h1>
             <p className="recipes-subtitle">
-              Upravljaj svojim kulinarskim remek-djelima, pretražuj nove okuse i čuvaj omiljene recepte.
+              Upravljaj svojim kulinarskim remek-djelima, pretražuj nove okuse i
+              čuvaj omiljene recepte.
             </p>
             <button className="btn-add-recipe" onClick={openNewModal}>
               + Dodaj Novi Recept
@@ -275,32 +340,40 @@ const MyRecepies = () => {
 
           <AnimatePresence mode="wait">
             {loading ? (
-               <motion.div key="loader" exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }}>
-                 <Spinner />
-               </motion.div>
+              <motion.div
+                key="loader"
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Spinner />
+              </motion.div>
             ) : (
-              <motion.div 
+              <motion.div
                 key="content"
-                initial={{ opacity: 0, y: 20 }} 
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
                 {/* --- 1. MOJI RECEPTI --- */}
                 <section className="recipes-section">
-                  <h2 className="section-title">Moji Recepti ({ownRecipes.length})</h2>
+                  <h2 className="section-title">
+                    Moji Recepti ({ownRecipes.length})
+                  </h2>
                   {ownRecipes.length === 0 ? (
-                    <p className="empty-state">Još nisi kreirao/la nijedan recept.</p>
+                    <p className="empty-state">
+                      Još nisi kreirao/la nijedan recept.
+                    </p>
                   ) : (
                     <div className="masonry-container">
                       {ownColumns.map((column, colIndex) => (
                         <div key={colIndex} className="masonry-column">
                           {column.map((recipe) => (
-                            <RecipeCard 
-                              key={recipe._id} 
-                              recipe={recipe} 
-                              isOwn={true} 
-                              onEdit={openEditModal} 
-                              onDelete={handleDeleteRecipe} 
+                            <RecipeCard
+                              key={recipe._id}
+                              recipe={recipe}
+                              isOwn={true}
+                              onEdit={openEditModal}
+                              onDelete={handleDeleteRecipe}
                             />
                           ))}
                         </div>
@@ -313,17 +386,19 @@ const MyRecepies = () => {
 
                 {/* --- 2. SPREMLJENI RECEPTI --- */}
                 <section className="recipes-section">
-                  <h2 className="section-title">Spremljeno ({savedRecipes.length})</h2>
+                  <h2 className="section-title">
+                    Spremljeno ({savedRecipes.length})
+                  </h2>
                   {savedRecipes.length === 0 ? (
-                     <p className="empty-state">Nemaš spremljenih recepata.</p>
+                    <p className="empty-state">Nemaš spremljenih recepata.</p>
                   ) : (
                     <div className="masonry-container">
                       {savedColumns.map((column, colIndex) => (
                         <div key={colIndex} className="masonry-column">
                           {column.map((recipe) => (
-                            <RecipeCard 
-                              key={recipe._id} 
-                              recipe={recipe} 
+                            <RecipeCard
+                              key={recipe._id}
+                              recipe={recipe}
                               isOwn={false}
                               isSaved={true}
                               onToggleSave={handleToggleSave}
@@ -339,12 +414,14 @@ const MyRecepies = () => {
 
                 {/* --- 3. SEARCH & DISCOVERY --- */}
                 <section className="recipes-section search-section">
-                  <h2 className="section-title centered-title">Otkrij Nove Okuse</h2>
+                  <h2 className="section-title centered-title">
+                    Otkrij Nove Okuse
+                  </h2>
 
                   {/* SEARCH BAR */}
                   <div className="search-bar-wrapper">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       className="search-input-large"
                       placeholder="Što ti se danas kuha?..."
                       value={searchQuery}
@@ -354,15 +431,16 @@ const MyRecepies = () => {
 
                   {/* FILTER PANEL */}
                   <div className="filters-container">
-                    
                     {/* Preferencije */}
                     <div className="filter-row-preferences">
-                       <button 
-                         className={`pref-btn ${usePreferences ? "active" : ""}`}
-                         onClick={() => setUsePreferences(!usePreferences)}
-                       >
-                         {usePreferences ? "★ Koristim tvoje postavke" : "☆ Uključi moje postavke"}
-                       </button>
+                      <button
+                        className={`pref-btn ${usePreferences ? "active" : ""}`}
+                        onClick={() => setUsePreferences(!usePreferences)}
+                      >
+                        {usePreferences
+                          ? "★ Koristim tvoje postavke"
+                          : "☆ Uključi moje postavke"}
+                      </button>
                     </div>
 
                     <div className="filters-grid">
@@ -370,10 +448,14 @@ const MyRecepies = () => {
                       <div className="filter-group">
                         <span className="filter-label">Kategorije:</span>
                         <div className="chips-wrapper">
-                          {CATEGORY_OPTIONS.map(cat => (
+                          {CATEGORY_OPTIONS.map((cat) => (
                             <button
                               key={cat}
-                              className={`chip ${selectedCategories.includes(cat) ? "selected" : ""}`}
+                              className={`chip ${
+                                selectedCategories.includes(cat)
+                                  ? "selected"
+                                  : ""
+                              }`}
                               onClick={() => toggleCategory(cat)}
                             >
                               {cat}
@@ -385,11 +467,11 @@ const MyRecepies = () => {
                       {/* Zemlje (Multi-select Dropdown) */}
                       <div className="filter-group">
                         <span className="filter-label">Podrijetlo:</span>
-                        <MultiSelectDropdown 
-                           options={availableAreas} 
-                           selected={selectedAreas}
-                           onChange={setSelectedAreas}
-                           placeholder="Odaberi države..."
+                        <MultiSelectDropdown
+                          options={availableAreas}
+                          selected={selectedAreas}
+                          onChange={setSelectedAreas}
+                          placeholder="Odaberi države..."
                         />
                       </div>
                     </div>
@@ -397,30 +479,31 @@ const MyRecepies = () => {
 
                   {/* SEARCH RESULTS */}
                   {isSearching ? (
-                     <div className="mini-loader">Miješam sastojke... 🍲</div>
+                    <div className="mini-loader">Miješam sastojke... 🍲</div>
                   ) : (
                     <div className="masonry-container">
-                       {searchResults.length > 0 ? (
-                         searchColumns.map((column, colIndex) => (
-                           <div key={colIndex} className="masonry-column">
-                             {column.map((recipe) => (
-                               <RecipeCard 
-                                 key={recipe._id} 
-                                 recipe={recipe} 
-                                 isOwn={false}
-                                 isSaved={isRecipeSaved(recipe._id)}
-                                 onToggleSave={handleToggleSave} 
-                               />
-                             ))}
-                           </div>
-                         ))
-                       ) : (
-                          <p className="empty-state">Nema recepata za odabrane kriterije.</p>
-                       )}
+                      {searchResults.length > 0 ? (
+                        searchColumns.map((column, colIndex) => (
+                          <div key={colIndex} className="masonry-column">
+                            {column.map((recipe) => (
+                              <RecipeCard
+                                key={recipe._id}
+                                recipe={recipe}
+                                isOwn={false}
+                                isSaved={isRecipeSaved(recipe._id)}
+                                onToggleSave={handleToggleSave}
+                              />
+                            ))}
+                          </div>
+                        ))
+                      ) : (
+                        <p className="empty-state">
+                          Nema recepata za odabrane kriterije.
+                        </p>
+                      )}
                     </div>
                   )}
                 </section>
-
               </motion.div>
             )}
           </AnimatePresence>
@@ -428,14 +511,13 @@ const MyRecepies = () => {
           {/* MODAL */}
           <AnimatePresence>
             {isModalOpen && (
-              <AddRecipeModal 
-                onClose={() => setIsModalOpen(false)} 
-                onRecipeSaved={handleRecipeSaved} 
-                initialData={editingRecipe} 
+              <AddRecipeModal
+                onClose={() => setIsModalOpen(false)}
+                onRecipeSaved={handleRecipeSaved}
+                initialData={editingRecipe}
               />
             )}
           </AnimatePresence>
-          
         </div>
         <Footer />
       </PageTransition>

@@ -93,27 +93,68 @@ const deleteRecipe = async (req, res) => {
 };
 
 const toggleSaveRecipe = async (req, res) => {
-  const { id } = req.params; // ID recepta
+  let { id } = req.params; // Ovo može biti "ext_12345" ili pravi ObjectId
   const userId = req.user._id;
 
   try {
     const user = await User.findById(userId);
-    const isSaved = user.savedRecipes.includes(id);
+    let recipeIdToSave = id;
+
+    // --- 1. DETEKCIJA: JE LI OVO VANJSKI RECEPT? ---
+    if (id.startsWith("ext_")) {
+      const realApiId = id.split("_")[1]; // npr. "52772"
+
+      // Provjerimo postoji li taj recept već u našoj bazi (da ne dupliramo bezveze)
+      // Oprez: Tvoja shema nema 'externalId', pa ćemo provjeriti po naslovu + autoru, 
+      // ili ćemo jednostavno kreirati novi svaki put (najsigurnije za sad da ne kompliciramo shemu).
+      
+      // Dohvati detalje s API-ja jer ih trebamo za spremanje u bazu
+      const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${realApiId}`);
+      const meal = response.data.meals ? response.data.meals[0] : null;
+
+      if (!meal) {
+        return res.status(404).json({ message: "Vanjski recept više ne postoji." });
+      }
+
+      // KREIRAJ LOKALNU KOPIJU RECEPTA
+      const newRecipe = await Recipe.create({
+        title: meal.strMeal,
+        image: meal.strMealThumb,
+        instructions: meal.strInstructions,
+        category: meal.strCategory, // Pazi da odgovara tvojim Enumima (Beef, Chicken...) ili makni enum validaciju
+        area: meal.strArea,
+        ingredients: getIngredientsFromMeal(meal),
+        author: userId, // Dodijeli korisniku koji ga je spremio (ili napravi sistemskog admina)
+      });
+
+      // Sada koristimo NOVI ObjectId iz naše baze
+      recipeIdToSave = newRecipe._id;
+    }
+
+    // --- 2. STANDARDNA LOGIKA SPREMANJA ---
+    // Provjeri jel taj ID (sada sigurno ObjectId) već u nizu
+    // Moramo pretvoriti u string za usporedbu
+    const isSaved = user.savedRecipes.some(r => r.toString() === recipeIdToSave.toString());
 
     if (isSaved) {
-      // Ako je već spremljen, makni ga
-      user.savedRecipes = user.savedRecipes.filter((r) => r.toString() !== id);
+      // Makni ga
+      user.savedRecipes = user.savedRecipes.filter((r) => r.toString() !== recipeIdToSave.toString());
     } else {
-      // Ako nije, dodaj ga
-      user.savedRecipes.push(id);
+      // Dodaj ga
+      user.savedRecipes.push(recipeIdToSave);
     }
 
     await user.save();
+
+    // Vraćamo i novi ID frontend-u ako zatreba
     res.json({
       message: isSaved ? "Recept uklonjen" : "Recept spremljen",
       isSaved: !isSaved,
+      newId: recipeIdToSave // Korisno za frontend da zna pravi ID
     });
+
   } catch (error) {
+    console.error("Toggle Save Error:", error);
     res.status(500).json({ message: "Greška pri spremanju recepta" });
   }
 };
