@@ -1,25 +1,54 @@
 /* registerPage.css */
 
-/* Poravnanje sadržaja unutar AnimatedSection-a */
+.register-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- NOVI HERO SECTION (ISTO KAO LOGIN) --- */
+.register-hero-section {
+  text-align: center;
+  padding: 4rem 1rem 2rem 1rem;
+}
+
+.register-hero-title {
+  font-size: var(--fs-h1);
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.register-hero-subtitle {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  max-width: 600px; /* Isto kao na login */
+  margin: 0 auto;
+}
+/* ------------------------------------------- */
+
+
+/* Poravnanje sadržaja */
 .register-content {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-bottom: 4rem; /* Malo prostora prije footera */
+  padding-bottom: 4rem; 
 }
 
-/* Glavna kartica forme */
+/* Glavna kartica */
 .register-card {
   background-color: var(--bg-card);
   width: 100%;
-  max-width: 550px; /* Optimalna širina za formu */
+  max-width: 550px;
   padding: 2.5rem;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Vrlo blaga sjena */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Forma i Inputi */
+/* Forma */
 .register-form {
   display: flex;
   flex-direction: column;
@@ -54,7 +83,7 @@ input {
   padding: 14px 16px;
   border-radius: 12px;
   border: 2px solid transparent;
-  background-color: var(--bg-main); /* Input je boje pozadine body-a */
+  background-color: var(--bg-main);
   color: var(--text-primary);
   font-family: inherit;
   font-size: var(--fs-body);
@@ -76,8 +105,8 @@ input::placeholder {
 .btn-submit {
   margin-top: 1rem;
   padding: 16px;
-  background-color: var(--bg-main-contrast); /* Crno u light, bijelo u dark */
-  color: var(--text-primary-contrast);      /* Bijelo u light, crno u dark */
+  background-color: var(--bg-main-contrast);
+  color: var(--text-primary-contrast);
   border: none;
   border-radius: 12px;
   font-size: var(--fs-body);
@@ -97,7 +126,7 @@ input::placeholder {
   transform: none;
 }
 
-/* Divider "ili nastavi putem" */
+/* Divider */
 .divider {
   display: flex;
   align-items: center;
@@ -119,7 +148,7 @@ input::placeholder {
   padding: 0 15px;
 }
 
-/* Social Login Gumbi */
+/* Social Buttons (Ažurirano za flex ikone) */
 .social-login-buttons {
   display: flex;
   gap: 1rem;
@@ -136,6 +165,12 @@ input::placeholder {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
+
+  /* Poravnanje ikona */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 [data-theme='dark'] .btn-social {
@@ -143,7 +178,7 @@ input::placeholder {
 }
 
 .btn-social:hover {
-  background-color: var(--bg-card); /* Malo promjeni boju na hover */
+  background-color: var(--bg-card);
   transform: translateY(-2px);
 }
 
@@ -168,9 +203,9 @@ input::placeholder {
   text-decoration: underline;
 }
 
-/* Prikaz grešaka */
+/* Error */
 .form-error {
-  background-color: rgba(255, 87, 51, 0.1); /* Accent color ali prozirno */
+  background-color: rgba(255, 87, 51, 0.1);
   color: #ff3333;
   padding: 12px;
   border-radius: 10px;
@@ -184,11 +219,11 @@ input::placeholder {
 @media (max-width: 600px) {
   .register-card {
     padding: 1.5rem;
-    margin: 0 15px; /* Margina da se ne lijepi za rub mobitela */
+    margin: 0 15px;
   }
   
   .form-row {
-    flex-direction: column; /* Na mobitelu lozinke jedna ispod druge */
+    flex-direction: column;
     gap: 1.2rem;
   }
 }

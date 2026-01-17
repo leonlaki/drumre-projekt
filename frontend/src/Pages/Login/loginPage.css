@@ -159,6 +159,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
+  
+  /* --- NOVO: Poravnanje ikona --- */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Razmak između ikone i teksta */
 }
 
 [data-theme='dark'] .login-btn-social {
