@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
+const getRandomPokemonAvatar = require("../utils/pokemonAvatar");
+
 // 1. REGISTRACIJA (Lokalna - email/pass)
 const registerUser = async (req, res) => {
   const { name, email, password, username } = req.body;
@@ -25,11 +27,14 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const avatar = await getRandomPokemonAvatar();
+
     user = await User.create({
       name,
       email,
       username,
       password: hashedPassword,
+      avatar,
     });
 
     req.login(user, (err) => {
