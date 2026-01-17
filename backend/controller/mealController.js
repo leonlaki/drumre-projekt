@@ -1,30 +1,56 @@
 const Meal = require("../models/Meal");
 const User = require("../models/User");
+const EventInvite = require("../models/EventInvite");
 
-// 1. KREIRAJ OBROK (OBJAVI POST)
+// 1. KREIRAJ OBROK (EVENT)
 const createMeal = async (req, res) => {
-  const { title, description, courses, playlistId } = req.body;
+  // Destructuring
+  const { title, description, courses, playlistId, date, location, image, participants } = req.body;
 
   if (!courses || courses.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Obrok mora imati barem jedan slijed!" });
+    return res.status(400).json({ message: "Event mora imati barem jedan slijed!" });
   }
 
   try {
+    // 1. Kreiraj Meal
+    // NAPOMENA: U participants stavljamo SAMO AUTORA (sebe) jer ostali još nisu prihvatili!
     const meal = await Meal.create({
       title,
       description,
+      image,
       courses,
       playlist: playlistId || null,
       author: req.user._id,
+      date: date || new Date(),
+      location: location || "Kod autora",
+      participants: [req.user._id] // <--- Samo autor je siguran sudionik
     });
+
+    // 2. Kreiraj Pozivnice (EventInvites) za odabrane prijatelje
+    if (participants && participants.length > 0) {
+      // Filtriraj da ne šalješ sam sebi (za svaki slučaj)
+      const guestsToInvite = participants.filter(id => id.toString() !== req.user._id.toString());
+
+      const invites = guestsToInvite.map(guestId => ({
+        from: req.user._id,
+        to: guestId,
+        meal: meal._id,
+        status: 'pending'
+      }));
+
+      if (invites.length > 0) {
+        await EventInvite.insertMany(invites);
+      }
+    }
+    
     res.status(201).json(meal);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error creating meal post" });
+    res.status(500).json({ message: "Greška pri kreiranju eventa" });
   }
 };
+
+// ... ostatak filea ostaje isti ...
 
 // 2. FEED (TRENDING OBROCI - ZADNJIH 7 DANA)
 const getWeeklyMealFeed = async (req, res) => {
@@ -45,10 +71,13 @@ const getWeeklyMealFeed = async (req, res) => {
         },
       },
 
-      // C. Sortiranje (Popularnost)
-      { $sort: { voteCount: -1, averageRating: -1 } },
+      // C. Sortiranje (Najviše lajkova)
+      { $sort: { voteCount: -1 } },
 
-      // D. POPULATE
+      // D. LIMIT - SAMO 15 NAJPOPULARNIJIH
+      { $limit: 15 },
+
+      // E. POPULATE (Spajanje s ostalim podacima)
       {
         $lookup: {
           from: "users",
@@ -57,66 +86,21 @@ const getWeeklyMealFeed = async (req, res) => {
           as: "authorDetails",
         },
       },
-      {
-        $lookup: {
-          from: "playlists",
-          localField: "playlist",
-          foreignField: "_id",
-          as: "playlistDetails",
-        },
-      },
-      { $unwind: "$courses" },
-      {
-        $lookup: {
-          from: "recipes",
-          localField: "courses.recipe",
-          foreignField: "_id",
-          as: "courses.recipeDetails",
-        },
-      },
-      {
-        $unwind: {
-          path: "$courses.recipeDetails",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      // ------------------------------------------------------------
-      {
-        $group: {
-          _id: "$_id",
-          title: { $first: "$title" },
-          description: { $first: "$description" },
-          createdAt: { $first: "$createdAt" },
-          authorDetails: { $first: "$authorDetails" },
-          playlistDetails: { $first: "$playlistDetails" },
-          voteCount: { $first: "$voteCount" },
-          averageRating: { $first: "$averageRating" },
-          commentCount: { $first: "$commentCount" },
-          courses: { $push: "$courses" },
-        },
-      },
-      { $unwind: "$authorDetails" },
-      {
-        $unwind: { path: "$playlistDetails", preserveNullAndEmptyArrays: true },
-      },
-
-      // E. Projekcija
+      { $unwind: "$authorDetails" }, // Pretvara array u objekt
+      
+      // ... (Ostatak projekcije da podaci budu čisti za frontend) ...
       {
         $project: {
           title: 1,
           description: 1,
+          image: 1, // Dodali smo sliku
           createdAt: 1,
           voteCount: 1,
           averageRating: 1,
           commentCount: 1,
-          "authorDetails.username": 1,
-          "authorDetails.avatar": 1,
-          "playlistDetails.name": 1,
-          "playlistDetails.songs": 1,
-          courses: {
-            courseType: 1,
-            recipeDetails: { title: 1, image: 1, _id: 1 },
-          },
+          viewCount: 1, // Dodali viewCount
+          author: "$authorDetails", // Mapiramo authorDetails direktno u author
+          // Možeš dodati i ostalo ako trebaš
         },
       },
     ]);
@@ -322,6 +306,210 @@ const getMealDetails = async (req, res) => {
   }
 };
 
+const searchMeals = async (req, res) => {
+  const { query, page = 1, limit = 20, sort = 'newest' } = req.query;
+
+  // Pretvori u brojeve
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const skip = (pageNum - 1) * limitNum;
+
+  try {
+    // 1. OSNOVNI PIPELINE (Joinovi koji trebaju uvijek)
+    const pipeline = [
+      // Spoji s Userima
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails",
+        },
+      },
+      { $unwind: "$authorDetails" },
+
+      // Spoji s Receptima (da izvučemo imena za pretragu)
+      { $unwind: "$courses" },
+      {
+        $lookup: {
+          from: "recipes",
+          localField: "courses.recipe",
+          foreignField: "_id",
+          as: "courseRecipeDetails",
+        },
+      },
+      { $unwind: "$courseRecipeDetails" },
+
+      // Grupiraj natrag
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          image: { $first: "$image" },
+          author: { $first: "$authorDetails" },
+          createdAt: { $first: "$createdAt" },
+          ratings: { $first: "$ratings" },
+          averageRating: { $first: "$averageRating" },
+          viewCount: { $first: "$viewCount" },
+          recipeNames: { $push: "$courseRecipeDetails.title" },
+        },
+      },
+    ];
+
+    // 2. SEARCH FILTER (Samo ako ima queryja)
+    if (query && query.trim() !== "") {
+      const regex = new RegExp(query, "i");
+      pipeline.push({
+        $match: {
+          $or: [
+            { title: { $regex: regex } },
+            { "author.username": { $regex: regex } },
+            { recipeNames: { $elemMatch: { $regex: regex } } },
+          ],
+        },
+      });
+    }
+
+    // 3. SORTIRANJE
+    let sortStage = { createdAt: -1 }; // Default: Najnovije
+    if (sort === 'popular') {
+      sortStage = { viewCount: -1 };
+    }
+    pipeline.push({ $sort: sortStage });
+
+    // 4. PAGINACIJA
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limitNum });
+
+    const results = await Meal.aggregate(pipeline);
+
+    res.json(results);
+  } catch (error) {
+    console.error("Search meals error:", error);
+    res.status(500).json({ message: "Greška pri pretrazi eventova" });
+  }
+};
+
+// 9. PREPORUKE ZA KORISNIKA (Interni Eventi)
+const getRecommendedMeals = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    
+    // Fallback ako nema preferencija
+    if (!user.preferences || 
+       (user.preferences.categories.length === 0 && user.preferences.areas.length === 0)) {
+       // Vrati random 15 ako nema preferencija
+       const random = await Meal.aggregate([{ $sample: { size: 15 } }]);
+       const populated = await User.populate(random, { path: "author", select: "username avatar" });
+       return res.json(populated);
+    }
+
+    const { categories, areas } = user.preferences;
+
+    const recommendations = await Meal.aggregate([
+      // 1. Prvo moramo "dohvatiti" recepte unutar courses da vidimo njihove kategorije/zemlje
+      { $unwind: "$courses" },
+      {
+        $lookup: {
+          from: "recipes",
+          localField: "courses.recipe",
+          foreignField: "_id",
+          as: "recipeDetails"
+        }
+      },
+      { $unwind: "$recipeDetails" },
+
+      // 2. Grupiraj natrag po Eventu (Meal), ali usput RAČUNAJ BODOVE
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          image: { $first: "$image" },
+          authorId: { $first: "$author" }, // Čuvamo ID za kasnije populate
+          viewCount: { $first: "$viewCount" },
+          createdAt: { $first: "$createdAt" },
+          ratings: { $first: "$ratings" },
+          
+          // --- ALGORITAM BODOVANJA ---
+          score: {
+            $sum: {
+              $add: [
+                // Bod za kategoriju? (1 ako je u listi, 0 ako nije)
+                { $cond: [{ $in: ["$recipeDetails.category", categories] }, 1, 0] },
+                // Bod za zemlju? (1 ako je u listi, 0 ako nije)
+                { $cond: [{ $in: ["$recipeDetails.area", areas] }, 1, 0] }
+              ]
+            }
+          }
+        }
+      },
+
+      // 3. Izbaci one koji imaju 0 bodova (nisu relevantni)
+      { $match: { score: { $gt: 0 } } },
+
+      // 4. Sortiraj po bodovima (Najveći score prvi)
+      { $sort: { score: -1 } },
+
+      // 5. Limitiraj na 15
+      { $limit: 15 },
+
+      // 6. Populate Autora (jer smo gore imali samo ID)
+      {
+        $lookup: {
+          from: "users",
+          localField: "authorId",
+          foreignField: "_id",
+          as: "author"
+        }
+      },
+      { $unwind: "$author" }
+    ]);
+
+    res.json(recommendations);
+
+  } catch (error) {
+    console.error("Recommendation error:", error);
+    res.status(500).json({ message: "Greška pri dohvatu preporuka" });
+  }
+};
+
+// 8. OBRIŠI EVENT (Samo autor)
+const deleteMeal = async (req, res) => {
+  try {
+    const meal = await Meal.findById(req.params.id);
+    if (!meal) return res.status(404).json({ message: "Event nije pronađen" });
+
+    if (meal.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Niste autor ovog eventa" });
+    }
+
+    await meal.deleteOne();
+    res.json({ message: "Event obrisan" });
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri brisanju" });
+  }
+};
+
+// 9. IZAĐI IZ EVENTA (Samo sudionik)
+const leaveMeal = async (req, res) => {
+  try {
+    const meal = await Meal.findById(req.params.id);
+    if (!meal) return res.status(404).json({ message: "Event nije pronađen" });
+
+    // Makni usera iz participants arraya
+    meal.participants = meal.participants.filter(
+      (id) => id.toString() !== req.user._id.toString()
+    );
+
+    await meal.save();
+    res.json({ message: "Napustili ste event" });
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri izlasku" });
+  }
+};
+
 module.exports = {
   createMeal,
   getWeeklyMealFeed,
@@ -331,4 +519,8 @@ module.exports = {
   incrementViewCount,
   incrementShareCount,
   getMealDetails,
+  searchMeals,
+  getRecommendedMeals,
+  deleteMeal, 
+  leaveMeal,
 };

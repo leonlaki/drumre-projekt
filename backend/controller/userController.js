@@ -17,41 +17,53 @@ const getUserProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // --- AGREGACIJA STATISTIKE ---
-
-    // 1. Broj recepata (klasika)
-    const recipeCount = await Recipe.countDocuments({ author: user._id });
-
-    // 2. Broj obroka (klasika)
-    const mealCount = await Meal.countDocuments({ author: user._id });
-
-    // 3. NAPREDNA STATISTIKA (Zbroj pregleda i lajkova na svim obrocima)
+    // --- AGREGACIJA STATISTIKE (Samo za evente koje je ON kreirao) ---
     const engagementStats = await Meal.aggregate([
-      // A. Filtriraj: Uzmi samo obroke ovog korisnika
       { $match: { author: user._id } },
-
-      // B. Grupiraj i zbrajaj
       {
         $group: {
-          _id: null, // Grupiramo sve u jedan rezultat
-          totalViews: { $sum: "$viewCount" }, // Zbroji polje viewCount
-          totalLikes: { $sum: { $size: "$ratings" } }, // Zbroji duljinu niza ratings
+          _id: null,
+          totalViews: { $sum: "$viewCount" },
+          totalVotes: { $sum: { $size: "$ratings" } }, // Ukupan broj glasova
+          // Prosječna ocjena svih njegovih evenata
+          // Prvo moramo unwindati ratings da bi izračunali prosjek svih glasova ikad
+          // ILI jednostavnije: uzeti prosjek 'averageRating' polja svakog eventa
+          avgRatingSum: { $avg: "$averageRating" } 
         },
       },
     ]);
 
-    // Aggregate vraća niz. Ako korisnik nema postova, niz je prazan, pa stavljamo default nule.
-    const statsResult = engagementStats[0] || { totalViews: 0, totalLikes: 0 };
+    const statsResult = engagementStats[0] || { totalViews: 0, totalVotes: 0, avgRatingSum: 0 };
+
+    // --- DOHVAT EVENATA ---
+    
+    // 1. MOJI EVENTI (Gdje sam ja autor)
+    const myEvents = await Meal.find({ author: user._id })
+      .sort({ createdAt: -1 })
+      .populate("author", "username avatar");
+
+    // 2. EVENTI U KOJIMA SUDJELUJEM (Gdje sam u participants, ali NISAM autor)
+    const participatingEvents = await Meal.find({
+      participants: user._id,
+      author: { $ne: user._id } // Ne želim vidjeti svoje evente ovdje
+    })
+      .sort({ createdAt: -1 })
+      .populate("author", "username avatar");
+
 
     res.json({
       profile: user,
       stats: {
-        recipes: recipeCount,
-        meals: mealCount,
+        recipes: await Recipe.countDocuments({ author: user._id }),
+        meals: await Meal.countDocuments({ author: user._id }),
         views: statsResult.totalViews,
-        likes: statsResult.totalLikes,
+        likes: statsResult.totalVotes, // Broj glasova
+        avgRating: statsResult.avgRatingSum // Prosječna ocjena
       },
+      myEvents, // <--- Šaljemo listu
+      participatingEvents // <--- Šaljemo listu
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching profile" });

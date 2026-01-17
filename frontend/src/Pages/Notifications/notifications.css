@@ -1,3 +1,4 @@
+/* notifications.css */
 .notifications-wrapper {
   min-height: 100vh;
   background-color: var(--bg-main);
@@ -13,102 +14,174 @@
   flex: 1;
 }
 
-.notifications-card {
-  background-color: var(--bg-card);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+h1 {
+  color: var(--text-primary);
+  margin-bottom: 2rem;
+}
+
+h3 {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
   margin-top: 1rem;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem 0;
-  color: var(--text-secondary);
-}
-
-.requests-list {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.request-item {
+.notif-card {
+  background-color: var(--bg-card);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: var(--bg-main);
-  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  animation: slideIn 0.3s ease-out;
 }
 
-.req-user-info {
+.notif-info {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-.req-avatar {
+.notif-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.req-username {
+/* EVENT SPECIFIC STYLES */
+.event-img-wrapper {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+.event-thumb {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.host-avatar-small {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  border: 2px solid var(--bg-card);
+}
+
+.event-name-highlight {
+  font-weight: 700;
+  color: var(--accent-color);
+  font-size: 1.1rem;
+}
+
+.event-meta {
+  font-size: 0.8rem;
+  color: gray;
+}
+
+.notif-user {
   font-weight: bold;
   color: var(--text-primary);
 }
 
-.req-text {
-  color: var(--text-secondary);
-}
-
-.req-actions {
+.notif-actions {
   display: flex;
   gap: 10px;
+}
+
+.btn-accept, .btn-reject {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s;
 }
 
 .btn-accept {
   background-color: var(--accent-color);
   color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: opacity 0.2s;
 }
 
 .btn-reject {
-  background-color: transparent;
-  color: var(--text-secondary);
+  background-color: rgba(255,0,0,0.1);
+  color: red;
+}
+
+.btn-accept:hover, .btn-reject:hover {
+  transform: translateY(-2px);
+}
+
+.section-divider {
+  border: 0;
+  height: 1px;
+  background: rgba(128,128,128,0.2);
+  margin: 2rem 0;
+}
+
+.empty-msg {
+  color: gray;
+  font-style: italic;
+}
+
+/* TABS */
+.notif-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.notif-tabs button {
+  background: transparent;
   border: 1px solid var(--text-secondary);
-  padding: 8px 20px;
+  color: var(--text-secondary);
+  padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
 }
 
-.btn-accept:hover {
-  opacity: 0.9;
+.notif-tabs button.active {
+  background: var(--text-primary);
+  color: var(--bg-main);
+  border-color: var(--text-primary);
 }
 
-.btn-reject:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+/* Centriranje spinnera */
+.spinner-center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+/* Tab Badge (mali broj pored teksta u tabu) */
+.tab-badge {
+  background-color: var(--bg-card);
   color: var(--text-primary);
+  border: 1px solid var(--text-secondary);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+  font-weight: bold;
 }
 
-@media (max-width: 600px) {
-  .request-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
+.notif-tabs button.active .tab-badge {
+  background-color: white;
+  color: var(--accent-color);
+  border: none;
+}
 
-  .req-actions {
-    width: 100%;
-    justify-content: flex-end;
-  }
+.empty-msg-large {
+  text-align: center;
+  margin-top: 4rem;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
 }
