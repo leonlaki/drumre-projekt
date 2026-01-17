@@ -55,5 +55,10 @@ export const mealApi = {
 
   incrementShare: async (id) => {
     await axiosClient.post(`/api/meals/${id}/share`);
-  }
+  },
+
+  getRecommendations: async () => {
+    const response = await axiosClient.get('/api/meals/recommendations/internal');
+    return response.data;
+  },
 };

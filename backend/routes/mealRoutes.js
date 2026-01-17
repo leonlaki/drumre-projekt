@@ -14,6 +14,7 @@ const {
   incrementShareCount,
   getMealDetails,
   searchMeals,
+  getRecommendedMeals,
 } = require("../controller/mealController");
 const { ensureAuth } = require("../middleware/authMiddleware");
 
@@ -31,6 +32,7 @@ router.post("/:id/rate", ensureAuth, rateMeal); // Ocijeni
 router.post("/:id/view", ensureAuth, incrementViewCount); // Povećaj broj pregleda
 router.post("/:id/share", ensureAuth, incrementShareCount); // Povećaj broj dijeljenja
 router.get("/recommendations/facebook", ensureAuth, getFacebookRecommendations);
+router.get("/recommendations/internal", ensureAuth, getRecommendedMeals);
 
 
 module.exports = router;

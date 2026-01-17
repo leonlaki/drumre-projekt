@@ -71,10 +71,13 @@ const getWeeklyMealFeed = async (req, res) => {
         },
       },
 
-      // C. Sortiranje (Popularnost)
-      { $sort: { voteCount: -1, averageRating: -1 } },
+      // C. Sortiranje (Najviše lajkova)
+      { $sort: { voteCount: -1 } },
 
-      // D. POPULATE
+      // D. LIMIT - SAMO 15 NAJPOPULARNIJIH
+      { $limit: 15 },
+
+      // E. POPULATE (Spajanje s ostalim podacima)
       {
         $lookup: {
           from: "users",
@@ -83,66 +86,21 @@ const getWeeklyMealFeed = async (req, res) => {
           as: "authorDetails",
         },
       },
-      {
-        $lookup: {
-          from: "playlists",
-          localField: "playlist",
-          foreignField: "_id",
-          as: "playlistDetails",
-        },
-      },
-      { $unwind: "$courses" },
-      {
-        $lookup: {
-          from: "recipes",
-          localField: "courses.recipe",
-          foreignField: "_id",
-          as: "courses.recipeDetails",
-        },
-      },
-      {
-        $unwind: {
-          path: "$courses.recipeDetails",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      // ------------------------------------------------------------
-      {
-        $group: {
-          _id: "$_id",
-          title: { $first: "$title" },
-          description: { $first: "$description" },
-          createdAt: { $first: "$createdAt" },
-          authorDetails: { $first: "$authorDetails" },
-          playlistDetails: { $first: "$playlistDetails" },
-          voteCount: { $first: "$voteCount" },
-          averageRating: { $first: "$averageRating" },
-          commentCount: { $first: "$commentCount" },
-          courses: { $push: "$courses" },
-        },
-      },
-      { $unwind: "$authorDetails" },
-      {
-        $unwind: { path: "$playlistDetails", preserveNullAndEmptyArrays: true },
-      },
-
-      // E. Projekcija
+      { $unwind: "$authorDetails" }, // Pretvara array u objekt
+      
+      // ... (Ostatak projekcije da podaci budu čisti za frontend) ...
       {
         $project: {
           title: 1,
           description: 1,
+          image: 1, // Dodali smo sliku
           createdAt: 1,
           voteCount: 1,
           averageRating: 1,
           commentCount: 1,
-          "authorDetails.username": 1,
-          "authorDetails.avatar": 1,
-          "playlistDetails.name": 1,
-          "playlistDetails.songs": 1,
-          courses: {
-            courseType: 1,
-            recipeDetails: { title: 1, image: 1, _id: 1 },
-          },
+          viewCount: 1, // Dodali viewCount
+          author: "$authorDetails", // Mapiramo authorDetails direktno u author
+          // Možeš dodati i ostalo ako trebaš
         },
       },
     ]);
@@ -433,6 +391,90 @@ const searchMeals = async (req, res) => {
   }
 };
 
+// 9. PREPORUKE ZA KORISNIKA (Interni Eventi)
+const getRecommendedMeals = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    
+    // Fallback ako nema preferencija
+    if (!user.preferences || 
+       (user.preferences.categories.length === 0 && user.preferences.areas.length === 0)) {
+       // Vrati random 15 ako nema preferencija
+       const random = await Meal.aggregate([{ $sample: { size: 15 } }]);
+       const populated = await User.populate(random, { path: "author", select: "username avatar" });
+       return res.json(populated);
+    }
+
+    const { categories, areas } = user.preferences;
+
+    const recommendations = await Meal.aggregate([
+      // 1. Prvo moramo "dohvatiti" recepte unutar courses da vidimo njihove kategorije/zemlje
+      { $unwind: "$courses" },
+      {
+        $lookup: {
+          from: "recipes",
+          localField: "courses.recipe",
+          foreignField: "_id",
+          as: "recipeDetails"
+        }
+      },
+      { $unwind: "$recipeDetails" },
+
+      // 2. Grupiraj natrag po Eventu (Meal), ali usput RAČUNAJ BODOVE
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          image: { $first: "$image" },
+          authorId: { $first: "$author" }, // Čuvamo ID za kasnije populate
+          viewCount: { $first: "$viewCount" },
+          createdAt: { $first: "$createdAt" },
+          ratings: { $first: "$ratings" },
+          
+          // --- ALGORITAM BODOVANJA ---
+          score: {
+            $sum: {
+              $add: [
+                // Bod za kategoriju? (1 ako je u listi, 0 ako nije)
+                { $cond: [{ $in: ["$recipeDetails.category", categories] }, 1, 0] },
+                // Bod za zemlju? (1 ako je u listi, 0 ako nije)
+                { $cond: [{ $in: ["$recipeDetails.area", areas] }, 1, 0] }
+              ]
+            }
+          }
+        }
+      },
+
+      // 3. Izbaci one koji imaju 0 bodova (nisu relevantni)
+      { $match: { score: { $gt: 0 } } },
+
+      // 4. Sortiraj po bodovima (Najveći score prvi)
+      { $sort: { score: -1 } },
+
+      // 5. Limitiraj na 15
+      { $limit: 15 },
+
+      // 6. Populate Autora (jer smo gore imali samo ID)
+      {
+        $lookup: {
+          from: "users",
+          localField: "authorId",
+          foreignField: "_id",
+          as: "author"
+        }
+      },
+      { $unwind: "$author" }
+    ]);
+
+    res.json(recommendations);
+
+  } catch (error) {
+    console.error("Recommendation error:", error);
+    res.status(500).json({ message: "Greška pri dohvatu preporuka" });
+  }
+};
+
 module.exports = {
   createMeal,
   getWeeklyMealFeed,
@@ -443,4 +485,5 @@ module.exports = {
   incrementShareCount,
   getMealDetails,
   searchMeals,
+  getRecommendedMeals,
 };
