@@ -3,8 +3,8 @@ const User = require("../models/User");
 const EventInvite = require("../models/EventInvite");
 
 // 1. KREIRAJ OBROK (EVENT)
+// 1. KREIRAJ OBROK (EVENT)
 const createMeal = async (req, res) => {
-  // Destructuring
   const { title, description, courses, playlistId, date, location, image, participants } = req.body;
 
   if (!courses || courses.length === 0) {
@@ -13,8 +13,7 @@ const createMeal = async (req, res) => {
 
   try {
     // 1. Kreiraj Meal
-    // NAPOMENA: U participants stavljamo SAMO AUTORA (sebe) jer ostali još nisu prihvatili!
-    const meal = await Meal.create({
+    let meal = await Meal.create({
       title,
       description,
       image,
@@ -23,26 +22,27 @@ const createMeal = async (req, res) => {
       author: req.user._id,
       date: date || new Date(),
       location: location || "Kod autora",
-      participants: [req.user._id] // <--- Samo autor je siguran sudionik
+      participants: [req.user._id]
     });
 
-    // 2. Kreiraj Pozivnice (EventInvites) za odabrane prijatelje
+    // 2. Kreiraj Pozivnice
     if (participants && participants.length > 0) {
-      // Filtriraj da ne šalješ sam sebi (za svaki slučaj)
       const guestsToInvite = participants.filter(id => id.toString() !== req.user._id.toString());
-
       const invites = guestsToInvite.map(guestId => ({
         from: req.user._id,
         to: guestId,
         meal: meal._id,
         status: 'pending'
       }));
-
       if (invites.length > 0) {
         await EventInvite.insertMany(invites);
       }
     }
     
+    // --- KLJUČNI POPRAVAK: POPULATE PRIJE SLANJA NA FRONTEND ---
+    // Frontend očekuje meal.author.avatar, a ne samo ID
+    meal = await meal.populate("author", "username avatar");
+
     res.status(201).json(meal);
   } catch (error) {
     console.error(error);
@@ -74,33 +74,38 @@ const getWeeklyMealFeed = async (req, res) => {
       // C. Sortiranje (Najviše lajkova)
       { $sort: { voteCount: -1 } },
 
-      // D. LIMIT - SAMO 15 NAJPOPULARNIJIH
+      // D. LIMIT
       { $limit: 15 },
 
-      // E. POPULATE (Spajanje s ostalim podacima)
+      // E. POPULATE (OVDJE JE BILA RAZLIKA)
+      // Umjesto "authorDetails", spremamo direktno u "author"
       {
         $lookup: {
           from: "users",
           localField: "author",
           foreignField: "_id",
-          as: "authorDetails",
+          as: "author", 
         },
       },
-      { $unwind: "$authorDetails" }, // Pretvara array u objekt
-      
-      // ... (Ostatak projekcije da podaci budu čisti za frontend) ...
+      { $unwind: "$author" }, // Sada je author puni objekt
+
+      // F. Projekcija (Čistimo podatke)
       {
         $project: {
           title: 1,
           description: 1,
-          image: 1, // Dodali smo sliku
+          image: 1,
           createdAt: 1,
           voteCount: 1,
           averageRating: 1,
           commentCount: 1,
-          viewCount: 1, // Dodali viewCount
-          author: "$authorDetails", // Mapiramo authorDetails direktno u author
-          // Možeš dodati i ostalo ako trebaš
+          viewCount: 1,
+          // Samo odaberemo polja koja želimo od autora
+          author: { 
+             username: 1, 
+             avatar: 1, 
+             _id: 1 
+          }
         },
       },
     ]);
@@ -115,7 +120,7 @@ const getWeeklyMealFeed = async (req, res) => {
 // 3. DOHVATI OBROKE KORISNIKA (ZA PROFIL)
 const getUserMeals = async (req, res) => {
   const { username } = req.params;
-  const { sort } = req.query; // ?sort=newest ili ?sort=popular
+  const { sort } = req.query;
 
   try {
     const user = await User.findOne({ username });
@@ -123,19 +128,30 @@ const getUserMeals = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Odredi sortiranje
     let sortStage = {};
     if (sort === "newest") {
       sortStage = { createdAt: -1 };
     } else {
-      sortStage = { voteCount: -1, averageRating: -1 }; // Default: Popularno
+      sortStage = { voteCount: -1, averageRating: -1 };
     }
 
     const meals = await Meal.aggregate([
-      // A. FILTER: Samo obroci ovog korisnika (nema vremenskog ograničenja)
       { $match: { author: user._id } },
 
-      // B. Statistika
+      // --- KLJUČNI POPRAVAK: DODAJ PODATKE O AUTORU ---
+      // Iako smo na profilu tog usera, EventCard je "glupa" komponenta 
+      // i očekuje podatke unutar objekta 'author'
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails"
+        }
+      },
+      { $unwind: "$authorDetails" }, 
+      // -----------------------------------------------
+
       {
         $addFields: {
           voteCount: { $size: "$ratings" },
@@ -144,10 +160,8 @@ const getUserMeals = async (req, res) => {
         },
       },
 
-      // C. Sortiranje
       { $sort: sortStage },
 
-      // D. Populate
       {
         $lookup: {
           from: "playlists",
@@ -176,11 +190,24 @@ const getUserMeals = async (req, res) => {
           _id: "$_id",
           title: { $first: "$title" },
           description: { $first: "$description" },
+          image: { $first: "$image" }, // Pazi da šalješ i sliku eventa
           createdAt: { $first: "$createdAt" },
+          
+          // --- DODAJEMO AUTORA U GRUPIRANJE ---
+          author: { 
+            $first: { 
+              username: "$authorDetails.username", 
+              avatar: "$authorDetails.avatar",
+              _id: "$authorDetails._id"
+            } 
+          },
+          // ------------------------------------
+
           playlistDetails: { $first: "$playlistDetails" },
           voteCount: { $first: "$voteCount" },
           averageRating: { $first: "$averageRating" },
           commentCount: { $first: "$commentCount" },
+          viewCount: { $first: "$viewCount" }, // Dodaj viewCount
           courses: { $push: "$courses" },
         },
       },
@@ -188,15 +215,17 @@ const getUserMeals = async (req, res) => {
         $unwind: { path: "$playlistDetails", preserveNullAndEmptyArrays: true },
       },
 
-      // E. Projekcija
       {
         $project: {
           title: 1,
           description: 1,
+          image: 1,
           createdAt: 1,
           voteCount: 1,
           averageRating: 1,
           commentCount: 1,
+          viewCount: 1,
+          author: 1, // <--- OVO JE BITNO
           "playlistDetails.name": 1,
           courses: {
             courseType: 1,

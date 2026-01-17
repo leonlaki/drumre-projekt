@@ -83,15 +83,7 @@ const HomePage = () => {
           mealApi.getRecommendations(),
         ]);
 
-        // 1. Priprema Trending podataka (Feed vraća authorDetails, EventCard traži author)
-        const formattedFeed = feedData.map((item) => ({
-          ...item,
-          author: item.authorDetails, // Mapiramo authorDetails u author
-          // Slika i ostalo su ok
-        }));
-        setTrendingEvents(formattedFeed);
-
-        // 2. Priprema Recommended podataka (Oni su već ok iz Controllera)
+        setTrendingEvents(feedData);    
         setRecommendedEvents(recData);
       } catch (error) {
         console.error("Error loading homepage data", error);

@@ -1,39 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './eventCard.css';
 
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
 
-  // Sigurna provjera slike
-  const coverImage = event.image || "https://placehold.co/600x400/orange/white?text=FoodTune";
-  const authorAvatar = event.author?.avatar || "https://ui-avatars.com/api/?name=User";
-  const authorName = event.author?.username || "Nepoznati chef";
+  // 1. SIGURNO IZVLAČENJE PODATAKA
+  // Ako author ne postoji (undefined), koristimo "dummy" objekt
+  const author = event.author || {}; 
+  
+  const authorName = author.username || "Nepoznati Chef";
+  
+  // Ako nema avatara, generiraj ga na temelju imena (ili "Unknown")
+  const placeholderAvatar = `https://ui-avatars.com/api/?name=${authorName}&background=random&color=fff`;
+  const authorAvatarUrl = author.avatar || placeholderAvatar;
 
-  // Izračun prosječne ocjene (ako već nije izračunato na backendu)
+  const coverImage = event.image || "https://placehold.co/600x400/orange/white?text=FoodTune";
+
+  // State za slike (za fallback ako link pukne)
+  const [avatarSrc, setAvatarSrc] = useState(authorAvatarUrl);
+  const [coverSrc, setCoverSrc] = useState(coverImage);
+
+  // Ažuriraj state ako se props promijene (npr. kod pretrage)
+  useEffect(() => {
+    setAvatarSrc(authorAvatarUrl);
+    setCoverSrc(coverImage);
+  }, [event]);
+
+  // Izračun ocjene
   const rating = event.averageRating 
     ? event.averageRating.toFixed(1) 
-    : (event.ratings && event.ratings.length > 0 
-        ? (event.ratings.reduce((a, b) => a + b.value, 0) / event.ratings.length).toFixed(1) 
-        : "0.0");
+    : "0.0";
 
   return (
     <div className="event-card" onClick={() => navigate(`/event/${event._id}`)}>
       
-      {/* 1. GORNJI DIO: SLIKA */}
       <div className="event-card-header">
-        <img src={coverImage} alt={event.title} className="event-cover-img" />
+        <img 
+          src={coverSrc} 
+          alt={event.title} 
+          className="event-cover-img"
+          onError={() => setCoverSrc("https://placehold.co/600x400/orange/white?text=No+Image")}
+        />
         
-        {/* 2. SREDINA: AVATAR (Pozicioniran apsolutno) */}
         <div className="event-author-avatar-wrapper">
-           <img src={authorAvatar} alt={authorName} className="event-author-avatar" />
+           <img 
+             src={avatarSrc} 
+             alt={authorName} 
+             className="event-author-avatar"
+             // Ako slika avatara pukne (404), vrati na placeholder sa slovima
+             onError={() => setAvatarSrc(placeholderAvatar)}
+           />
         </div>
       </div>
 
-      {/* 3. DONJI DIO: DETALJI */}
       <div className="event-card-body">
         <h3 className="event-title">{event.title}</h3>
-        <span className="event-author-name">by {authorName}</span>
+        <span className="event-author-name">
+            by {authorName}
+        </span>
         
         <div className="event-stats">
            <div className="stat-item">
@@ -46,7 +71,6 @@ const EventCard = ({ event }) => {
            </div>
         </div>
       </div>
-
     </div>
   );
 };
