@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const musicRoutes = require("./routes/musicRoutes");
 const playlistRoutes = require("./routes/playlistRoutes");
+const eventInviteRoutes = require("./routes/eventInviteRoutes");
 
 dotenv.config();
 connectDB();
@@ -57,6 +58,7 @@ app.use("/api/music", musicRoutes);
 
 app.use("/api/friends", require("./routes/friendRoute"));
 app.use("/api/mealdb", require("./routes/mealdbRoutes"));
+app.use("/api/invites", eventInviteRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

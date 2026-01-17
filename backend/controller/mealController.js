@@ -1,39 +1,56 @@
 const Meal = require("../models/Meal");
 const User = require("../models/User");
+const EventInvite = require("../models/EventInvite");
 
-// 1. KREIRAJ OBROK (OBJAVI POST)
+// 1. KREIRAJ OBROK (EVENT)
 const createMeal = async (req, res) => {
-  // Dodajemo date, location, participants u destructuring
-  const { title, description, courses, playlistId, date, location, participants } = req.body;
+  // Destructuring
+  const { title, description, courses, playlistId, date, location, image, participants } = req.body;
 
   if (!courses || courses.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Event mora imati barem jedan slijed (recept)!" });
+    return res.status(400).json({ message: "Event mora imati barem jedan slijed!" });
   }
 
   try {
+    // 1. Kreiraj Meal
+    // NAPOMENA: U participants stavljamo SAMO AUTORA (sebe) jer ostali još nisu prihvatili!
     const meal = await Meal.create({
       title,
       description,
+      image,
       courses,
       playlist: playlistId || null,
       author: req.user._id,
-      // Nova polja:
       date: date || new Date(),
       location: location || "Kod autora",
-      participants: participants || [] // Očekujemo niz ID-eva korisnika
+      participants: [req.user._id] // <--- Samo autor je siguran sudionik
     });
-    
-    // OVDJE BI KASNIJE IŠLA LOGIKA ZA SLANJE NOTIFIKACIJA SUDIONICIMA
-    // createNotificationForParticipants(participants, meal._id, req.user.username);
 
+    // 2. Kreiraj Pozivnice (EventInvites) za odabrane prijatelje
+    if (participants && participants.length > 0) {
+      // Filtriraj da ne šalješ sam sebi (za svaki slučaj)
+      const guestsToInvite = participants.filter(id => id.toString() !== req.user._id.toString());
+
+      const invites = guestsToInvite.map(guestId => ({
+        from: req.user._id,
+        to: guestId,
+        meal: meal._id,
+        status: 'pending'
+      }));
+
+      if (invites.length > 0) {
+        await EventInvite.insertMany(invites);
+      }
+    }
+    
     res.status(201).json(meal);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Greška pri kreiranju eventa" });
   }
 };
+
+// ... ostatak filea ostaje isti ...
 
 // 2. FEED (TRENDING OBROCI - ZADNJIH 7 DANA)
 const getWeeklyMealFeed = async (req, res) => {

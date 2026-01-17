@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../../Context/ThemeContext";
 import { useAuth } from "../../../Context/AuthContext";
+// Dodajemo import za eventInviteApi
 import { friendApi } from "../../../api/friendApi";
+import { eventInviteApi } from "../../../api/eventInviteApi"; 
 import "../navbar.css";
 
 const Navbar = () => {
@@ -13,18 +15,32 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [notifCount, setNotifCount] = useState(0);
 
+  // --- IZMJENA OVDJE ---
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const requests = await friendApi.getPendingRequests();
-        setNotifCount(requests.length);
+        // Koristimo Promise.all da dohvatimo oboje paralelno
+        const [friendRequests, eventInvites] = await Promise.all([
+          friendApi.getPendingRequests(),
+          eventInviteApi.getMyInvites()
+        ]);
+
+        // Zbrajamo dužinu oba niza (pazimo da nisu undefined)
+        const total = (friendRequests?.length || 0) + (eventInvites?.length || 0);
+        
+        setNotifCount(total);
       } catch (error) {
         console.error("Failed to fetch notifications count", error);
       }
     };
 
     fetchNotifications();
-  }, []);
+    
+    // Opcionalno: Možeš dodati interval da provjerava svakih 30s
+    // const interval = setInterval(fetchNotifications, 30000);
+    // return () => clearInterval(interval);
+
+  }, []); // Prazan array znači da se izvršava samo pri prvom renderu (ili refreshu)
 
   const handleLogout = async () => {
     await logoutUser();
@@ -91,6 +107,7 @@ const Navbar = () => {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
 
+          {/* Ovdje prikazujemo crvenu točkicu na hamburgeru */}
           {notifCount > 0 && <span className="nav-hamburger-badge"></span>}
         </button>
 
@@ -98,7 +115,6 @@ const Navbar = () => {
           className={`navbar-logd-user-dropdown ${isMenuOpen ? "show" : ""}`}
         >
           {/* --- MOBILE ONLY LINKOVI --- */}
-          {/* Ovi linkovi su po defaultu skriveni, vide se samo na MOBITELU (< 900px) */}
           <div className="mobile-only-links">
             <Link to="/home" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Home</Link>
             <Link to="/create-event" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Create Event</Link>
@@ -122,6 +138,7 @@ const Navbar = () => {
             onClick={() => setIsMenuOpen(false)}
           >
             Notifications
+            {/* Ovdje prikazujemo broj u dropdownu */}
             {notifCount > 0 && (
               <span className="nav-dropdown-badge">{notifCount}</span>
             )}
