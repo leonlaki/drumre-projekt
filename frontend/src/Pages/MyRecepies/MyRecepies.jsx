@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../Context/AuthContext";
 import { recipeApi } from "../../api/recipeApi";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import RecipeCard from "../../Components/RecipeCard/RecipeCard";
@@ -261,7 +260,6 @@ const MyRecepies = () => {
 
   return (
     <div className="my-recipes-wrapper">
-      <Navbar />
       <PageTransition>
         <div className="my-recipes-container">
           

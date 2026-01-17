@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import Spinner from "../../Components/Spinner/Spinner";
@@ -209,7 +208,6 @@ const EventDetailsPage = () => {
 
   return (
     <div className="event-details-wrapper">
-      <Navbar />
       <PageTransition>
         <div className="event-details-container">
           

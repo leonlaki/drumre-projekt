@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from 'react-router-dom';
-import Navbar from "../../Components/Navbars/NavbarLandingPage/Navbar";
+import { Link } from "react-router-dom";
 import Footer from "../../Components/Footer/Footer";
 import VinylReveal from "./VinylReveal";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection"; // <--- NOVI IMPORT (prilagodi putanju)
@@ -18,9 +17,8 @@ const LandingPage = () => {
   return (
     <SlidePageTransition animateOnMount={shouldAnimate}>
       <div className="landing-wrapper">
-        <Navbar />
-
         <header className="hero-section">
+          <h1 className="homepage-hero-title">FOODTUNE</h1>
           <h1 className="hero-title">Savršena večera uz savršenu glazbu</h1>
           <p className="hero-subtitle">
             FoodTune povezuje tvoje omiljene recepte s idealnim playlistama.

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { userApi } from "../../api/userApi";
-import Navbar from "../../Components/Navbars/NavbarLogin/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import SlidePageTransition from "../../Context/SlidePageTransition";
@@ -159,7 +158,6 @@ const Preferences = () => {
   return (
     <SlidePageTransition>
       <div className="preferences-wrapper">
-        <Navbar />
 
         <header className="preferences-hero">
           <h1 className="preferences-title">Personaliziraj svoj račun</h1>

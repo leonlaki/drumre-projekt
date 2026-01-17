@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext"; // Prilagodi putanju
-import Navbar from "../../Components/Navbars/NavbarLogin/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import "./loginPage.css";
@@ -53,8 +52,6 @@ const LoginPage = () => {
   return (
     <SlidePageTransition>
       <div className="login-wrapper">
-        <Navbar />
-
         <header className="login-hero-section">
           <h1 className="login-hero-title">Dobrodošli natrag</h1>
           <p className="login-hero-subtitle">

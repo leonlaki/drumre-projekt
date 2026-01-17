@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { recipeApi } from "../../api/recipeApi";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar"; // Prilagodi putanju
 import Footer from "../../Components/Footer/Footer"; // Prilagodi putanju
 import Spinner from "../../Components/Spinner/Spinner"; // Prilagodi putanju
 import "./recipeDetails.css"; // CSS ćemo definirati ispod
@@ -35,7 +34,6 @@ const RecipeDetailsPage = () => {
 
   return (
     <div className="details-page-wrapper">
-      <Navbar />
       
       <PageTransition>
         <div className="details-container">

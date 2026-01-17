@@ -7,7 +7,7 @@ import { friendApi } from "../../../api/friendApi";
 import { eventInviteApi } from "../../../api/eventInviteApi"; 
 import "../navbar.css";
 
-const Navbar = () => {
+const NavbarLoged = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -156,4 +156,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavbarLoged;

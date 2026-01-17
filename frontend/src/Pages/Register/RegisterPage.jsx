@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import Navbar from "../../Components/Navbars/NavbarRegister/Navbar";
 import "./registerPage.css";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import Footer from "../../Components/Footer/Footer";
@@ -74,8 +73,6 @@ const Register = () => {
   return (
     <SlidePageTransition>
       <div className="register-wrapper">
-        <Navbar />
-
         <header className="hero-section">
           <h1 className="hero-title">Registriraj se</h1>
           <p className="hero-subtitle">
