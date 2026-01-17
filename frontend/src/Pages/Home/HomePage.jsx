@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom"; // Bitno za linkove
 import "./homePage.css";
 import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
@@ -6,8 +6,68 @@ import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import CardRotator from "../../Components/CardRotator/CardRotator";
 import PageTransition from "../../Context/PageTransition";
+import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
+import { mealApi } from "../../api/mealApi";
+
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+};
 
 const HomePage = () => {
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery, 400); // 400ms odgode
+  const [filterSort, setFilterSort] = useState("newest"); // 'newest' ili 'popular'
+
+  const [events, setEvents] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // 1. GLAVNA FUNKCIJA ZA DOHVAT (Reset vs Append)
+  const fetchEvents = async (query, pageNum, sortType, shouldAppend = false) => {
+    setIsLoading(true);
+    try {
+      const newEvents = await mealApi.searchMeals(query, pageNum, sortType);
+      
+      if (shouldAppend) {
+        setEvents(prev => [...prev, ...newEvents]);
+      } else {
+        setEvents(newEvents);
+      }
+
+      // Ako vrati manje od 20, znači da nema više
+      setHasMore(newEvents.length === 20);
+    } catch (error) {
+      console.error("Error fetching events", error);
+    } finally {
+      setIsLoading(false);
+      setIsInitialLoad(false);
+    }
+  };
+
+  // 2. EFEKT: OKIDANJE PRETRAGE (Kad se promijeni Query ili Filter)
+  useEffect(() => {
+    // Resetiramo page na 1 i radimo svježi fetch
+    setPage(1);
+    fetchEvents(debouncedQuery, 1, filterSort, false);
+  }, [debouncedQuery, filterSort]);
+
+  // 3. HANDLER: LOAD MORE (Klik na gumb)
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchEvents(debouncedQuery, nextPage, filterSort, true);
+  };
+
   return (
     <div className="homepage-wrapper">
       <Navbar />
@@ -103,6 +163,60 @@ const HomePage = () => {
               <img src="/images/homepage3.jpg" alt="Prijatelji" />
             </div>
           </AnimatedSection>
+
+         <div className="homepage-search-section">
+             <div className="search-header">
+               <h2>Istraži Evente 🔍</h2>
+               <p>Pretraži po nazivu, autoru ili sastojcima.</p>
+             </div>
+
+             {/* TRAŽILICA I FILTERI */}
+             <div className="search-controls-wrapper">
+                <input 
+                  type="text" 
+                  placeholder="Upiši za pretragu..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="big-search-input"
+                />
+                
+                {/* Jednostavni Filter Sort */}
+                <select 
+                  className="search-filter-select"
+                  value={filterSort}
+                  onChange={(e) => setFilterSort(e.target.value)}
+                >
+                  <option value="newest">📅 Najnovije</option>
+                  <option value="popular">🔥 Popularno</option>
+                </select>
+             </div>
+
+             {/* REZULTATI PRETRAGE */}
+             <div className="search-results-grid">
+                {events.map(event => (
+                   <EventCard key={event._id} event={event} />
+                ))}
+             </div>
+
+             {/* LOADING I EMPTY STATES */}
+             {isLoading && (
+               <div style={{marginTop: 20, textAlign: 'center'}}>
+                 <p>Učitavanje...</p> 
+                 {/* Ovdje možeš staviti <Spinner /> ako želiš */}
+               </div>
+             )}
+
+             {!isLoading && events.length === 0 && (
+               <p className="no-results-msg">Nema rezultata za tvoj upit.</p>
+             )}
+
+             {/* LOAD MORE GUMB */}
+             {!isLoading && hasMore && events.length > 0 && (
+               <button className="btn-load-more" onClick={handleLoadMore}>
+                 Prikaži još
+               </button>
+             )}
+          </div>
 
         </div>
         <Footer />

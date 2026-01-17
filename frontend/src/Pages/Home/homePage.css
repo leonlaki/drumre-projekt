@@ -223,3 +223,183 @@
     font-size: 1.2rem;
   }
 }
+
+.homepage-search-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 6rem auto 4rem auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.search-header h2 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.search-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.homepage-search-form {
+  display: flex;
+  width: 100%;
+  max-width: 700px;
+  gap: 10px;
+  margin-bottom: 3rem;
+}
+
+.big-search-input {
+  flex: 1;
+  padding: 18px 25px;
+  border-radius: 50px;
+  border: 2px solid rgba(0,0,0,0.1);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.big-search-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 20px rgba(255, 87, 51, 0.2);
+}
+
+.big-search-btn {
+  padding: 0 35px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 15px rgba(255, 87, 51, 0.3);
+}
+
+.big-search-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* GRID ZA KARTICE */
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .homepage-search-form {
+    flex-direction: column;
+  }
+  .big-search-btn {
+    padding: 15px;
+    width: 100%;
+  }
+}
+
+.search-controls-wrapper {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 3rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Veći search input */
+.big-search-input {
+  flex: 2; /* Zauzima više mjesta */
+  padding: 18px 25px;
+  border-radius: 50px;
+  border: 2px solid rgba(0,0,0,0.1);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.big-search-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 20px rgba(255, 87, 51, 0.2);
+}
+
+/* Filter Select */
+.search-filter-select {
+  flex: 0.5; /* Manji od inputa */
+  padding: 18px 20px;
+  border-radius: 50px;
+  border: 2px solid rgba(0,0,0,0.1);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: none; /* Miče defaultnu strelicu browsera */
+  /* Možeš dodati custom strelicu background-imageom ako želiš */
+}
+
+.search-filter-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+/* Grid rezultata */
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+/* Gumb za učitavanje još */
+.btn-load-more {
+  padding: 12px 30px;
+  background-color: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  border-radius: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.btn-load-more:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.no-results-msg {
+  text-align: center;
+  color: gray;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .search-controls-wrapper {
+    flex-direction: column;
+  }
+  .big-search-input, .search-filter-select {
+    width: 100%;
+    flex: none;
+  }
+}

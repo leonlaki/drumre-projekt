@@ -27,6 +27,13 @@ export const mealApi = {
     return response.data;
   },
 
+  searchMeals: async (query, page = 1, sort = 'newest') => {
+    const response = await axiosClient.get('/api/meals/search', {
+      params: { query, page, limit: 20, sort }
+    });
+    return response.data;
+  },
+
   // --- INTERAKCIJE ---
 
   commentOnMeal: async (id, text) => {
@@ -40,8 +47,10 @@ export const mealApi = {
     return response.data;
   },
 
-  incrementView: async (id) => {
-    await axiosClient.post(`/api/meals/${id}/view`);
+  incrementViewCount: async (id) => {
+    // Backend ruta je definisana kao POST /api/meals/:id/view
+    const response = await axiosClient.post(`/api/meals/${id}/view`);
+    return response.data;
   },
 
   incrementShare: async (id) => {

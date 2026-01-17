@@ -1,0 +1,102 @@
+.event-card {
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  overflow: visible; /* Bitno jer avatar viri van okvira slike, ali unutar kartice */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: 10px; /* Malo prostora gore za hover efekt */
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.event-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+/* GORNJI DIO - SLIKA */
+.event-card-header {
+  height: 180px;
+  width: 100%;
+  position: relative;
+}
+
+.event-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px 20px 0 0;
+  filter: brightness(0.9);
+}
+
+/* SREDINA - AVATAR */
+.event-author-avatar-wrapper {
+  position: absolute;
+  bottom: -25px; /* Pola avatara viri dolje */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--bg-card); /* Okvir boje kartice */
+  padding: 4px; /* Debljina okvira */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.event-author-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* DONJI DIO - DETALJI */
+.event-card-body {
+  padding: 35px 20px 20px 20px; /* Top padding veći zbog avatara */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.event-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-author-name {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.event-stats {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 5px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: rgba(0,0,0,0.03);
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-icon {
+  color: var(--accent-color);
+}

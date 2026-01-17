@@ -348,6 +348,91 @@ const getMealDetails = async (req, res) => {
   }
 };
 
+const searchMeals = async (req, res) => {
+  const { query, page = 1, limit = 20, sort = 'newest' } = req.query;
+
+  // Pretvori u brojeve
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const skip = (pageNum - 1) * limitNum;
+
+  try {
+    // 1. OSNOVNI PIPELINE (Joinovi koji trebaju uvijek)
+    const pipeline = [
+      // Spoji s Userima
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails",
+        },
+      },
+      { $unwind: "$authorDetails" },
+
+      // Spoji s Receptima (da izvučemo imena za pretragu)
+      { $unwind: "$courses" },
+      {
+        $lookup: {
+          from: "recipes",
+          localField: "courses.recipe",
+          foreignField: "_id",
+          as: "courseRecipeDetails",
+        },
+      },
+      { $unwind: "$courseRecipeDetails" },
+
+      // Grupiraj natrag
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          image: { $first: "$image" },
+          author: { $first: "$authorDetails" },
+          createdAt: { $first: "$createdAt" },
+          ratings: { $first: "$ratings" },
+          averageRating: { $first: "$averageRating" },
+          viewCount: { $first: "$viewCount" },
+          recipeNames: { $push: "$courseRecipeDetails.title" },
+        },
+      },
+    ];
+
+    // 2. SEARCH FILTER (Samo ako ima queryja)
+    if (query && query.trim() !== "") {
+      const regex = new RegExp(query, "i");
+      pipeline.push({
+        $match: {
+          $or: [
+            { title: { $regex: regex } },
+            { "author.username": { $regex: regex } },
+            { recipeNames: { $elemMatch: { $regex: regex } } },
+          ],
+        },
+      });
+    }
+
+    // 3. SORTIRANJE
+    let sortStage = { createdAt: -1 }; // Default: Najnovije
+    if (sort === 'popular') {
+      sortStage = { viewCount: -1 };
+    }
+    pipeline.push({ $sort: sortStage });
+
+    // 4. PAGINACIJA
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limitNum });
+
+    const results = await Meal.aggregate(pipeline);
+
+    res.json(results);
+  } catch (error) {
+    console.error("Search meals error:", error);
+    res.status(500).json({ message: "Greška pri pretrazi eventova" });
+  }
+};
+
 module.exports = {
   createMeal,
   getWeeklyMealFeed,
@@ -357,4 +442,5 @@ module.exports = {
   incrementViewCount,
   incrementShareCount,
   getMealDetails,
+  searchMeals,
 };

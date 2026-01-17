@@ -128,6 +128,7 @@
 // };
 
 const Playlist = require("../models/Playlist");
+const Meal = require("../models/Meal");
 
 // 1. KREIRAJ NOVU PLAYLISTU
 const createPlaylist = async (req, res) => {
@@ -173,16 +174,36 @@ const getPlaylistById = async (req, res) => {
 // Frontend prvo pretraži Deezer, a onda pošalje podatke o pjesmi ovdje
 const addSongToPlaylist = async (req, res) => {
   try {
+    const { id } = req.params; // ID Playliste
     const { deezerId, title, artist, albumCover, previewUrl } = req.body;
-    
-    const playlist = await Playlist.findById(req.params.id);
-    
-    // Provjera vlasništva (samo autor može dodavati)
-    if (playlist.creator.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Niste vlasnik ove playliste" });
+
+    const playlist = await Playlist.findById(id);
+    if (!playlist) return res.status(404).json({ message: "Playlista nije pronađena" });
+
+    // --- NOVA PROVJERA DOZVOLA ---
+    const userId = req.user._id.toString();
+    const isCreator = playlist.creator.toString() === userId;
+
+    // Ako nije kreator, provjeri je li sudionik Eventa (Meal-a) koji koristi ovu playlistu
+    let isParticipant = false;
+    if (!isCreator) {
+      const meal = await Meal.findOne({ playlist: id });
+      if (meal && meal.participants.includes(userId)) {
+        isParticipant = true;
+      }
     }
 
-    // Dodaj pjesmu u niz
+    if (!isCreator && !isParticipant) {
+      return res.status(403).json({ message: "Nemate dozvolu za uređivanje ove playliste." });
+    }
+    // -----------------------------
+
+    // Provjera duplikata
+    const exists = playlist.songs.find(s => s.deezerId === deezerId);
+    if (exists) {
+      return res.status(400).json({ message: "Pjesma je već na listi" });
+    }
+
     playlist.songs.push({ deezerId, title, artist, albumCover, previewUrl });
     
     await playlist.save();

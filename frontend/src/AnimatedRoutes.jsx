@@ -18,6 +18,7 @@ import './App.css';
 import Notifications from './Pages/Notifications/Notifications';
 import ProfilePage from './Pages/ProfilePage/ProfilePage';
 import MyRecepies from './Pages/MyRecepies/MyRecepies';
+import EventDetailsPage from './Pages/EventDetailsPage/EventDetailsPage';
 
 // PublicRoute: Ako je user logiran, ne daj mu na Login/Register
 const PublicRoute = ({ children }) => {
@@ -73,6 +74,7 @@ const AnimatedRoutes = () => {
            <Route path="/profile" element={<ProfilePage />} />
            <Route path="/profile/:username" element={<ProfilePage />} />
            <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
+           <Route path="/event/:id" element={<EventDetailsPage />}/>
         </Route>
 
         {/* Catch-all ruta */}
