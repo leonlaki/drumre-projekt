@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const checkUserLoggedIn = async () => {
       try {
         const data = await authApi.getCurrentUser();
-        // Backend vraća user objekt ili null
+       
         if (data && data._id) {
           setUser(data);
         } else {
@@ -45,8 +45,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // NOVA FUNKCIJA: Ažurira podatke o korisniku u stanju bez ponovnog fetchanja
-  // Koristit ćemo ovo kad spremimo preference da postavimo isOnboarded: true
+ 
   const updateLocalUser = (updatedData) => {
     setUser((prev) => ({ ...prev, ...updatedData }));
   };

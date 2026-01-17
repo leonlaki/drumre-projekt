@@ -4,7 +4,7 @@ import './dinnerCard.css';
 const DinnerCard = ({ data }) => {
   return (
     <div className="dinner-card">
-      {/* Kasnije ovdje staviš <img> tag */}
+      {}
       <div className="card-image-placeholder"></div> 
       
       <div className="card-content">

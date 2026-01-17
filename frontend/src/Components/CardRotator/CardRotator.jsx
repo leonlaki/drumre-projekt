@@ -8,11 +8,11 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import './cardRotator.css';
-import EventCard from '../EventCard/EventCard'; // <--- KORISTIMO NOVI CARD
+import EventCard from '../EventCard/EventCard'; 
 
 const CardRotator = ({ events }) => {
   
-  // Sigurnosna provjera
+  
   if (!events || events.length === 0) {
     return <div className="rotator-empty">Nema sadržaja za prikaz.</div>;
   }
@@ -23,7 +23,7 @@ const CardRotator = ({ events }) => {
         effect={'coverflow'}
         grabCursor={true}
         centeredSlides={true}
-        loop={events.length >= 3} // Loop samo ako ima dovoljno kartica
+        loop={events.length >= 3} 
         slidesPerView={'auto'}
         speed={800}
         
@@ -60,7 +60,7 @@ const CardRotator = ({ events }) => {
       >
         {events.map((event) => (
           <SwiperSlide key={event._id}>
-             {/* Omotač za EventCard */}
+             {}
              <div style={{ width: '100%', height: '100%' }}>
                 <EventCard event={event} />
              </div>

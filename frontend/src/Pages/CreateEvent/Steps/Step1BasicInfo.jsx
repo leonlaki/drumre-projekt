@@ -1,4 +1,4 @@
-// src/Pages/CreateEvent/Steps/Step1BasicInfo.jsx
+
 import React from 'react';
 
 const Step1BasicInfo = ({ eventData, setEventData }) => {

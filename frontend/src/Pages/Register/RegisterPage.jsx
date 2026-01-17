@@ -1,4 +1,4 @@
-// src/pages/Register.jsx
+
 import { useState } from "react";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -12,7 +12,7 @@ const Register = () => {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
 
-  // State za podatke forme
+ 
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -24,35 +24,35 @@ const Register = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Ažuriranje input polja
+  
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    if (error) setError(""); // Makni grešku čim korisnik počne tipkati
+    if (error) setError(""); 
   };
 
-  // Slanje forme
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // 1. Validacija lozinki
+  
     if (formData.password !== formData.confirmPassword) {
       setError("Lozinke se ne podudaraju.");
       setIsLoading(false);
       return;
     }
 
-    // 2. Poziv API-ja za registraciju
+ 
     try {
-      // Izdvajamo confirmPassword jer ga backend ne očekuje
+      
       const { confirmPassword, ...dataToSend } = formData;
 
       await registerUser(dataToSend);
 
-      // Ako je uspješno, vodi na Home
+     
       navigate("/home");
     } catch (err) {
       console.error(err);
@@ -65,9 +65,9 @@ const Register = () => {
     }
   };
 
-  // Social Login handler
+ 
   const handleSocialLogin = (provider) => {
-    // Redirekcija na backend rutu koja pokreće OAuth flow
+    
     window.open(`http://localhost:3000/auth/${provider}`, "_self");
   };
 
@@ -89,7 +89,7 @@ const Register = () => {
             {error && <div className="form-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="register-form">
-              {/* Ime i Prezime */}
+             
               <div className="form-group">
                 <label htmlFor="name">Ime i prezime</label>
                 <input
@@ -103,7 +103,7 @@ const Register = () => {
                 />
               </div>
 
-              {/* Korisničko ime */}
+            
               <div className="form-group">
                 <label htmlFor="username">Korisničko ime</label>
                 <input
@@ -117,7 +117,7 @@ const Register = () => {
                 />
               </div>
 
-              {/* Email */}
+              
               <div className="form-group">
                 <label htmlFor="email">Email adresa</label>
                 <input
@@ -131,7 +131,7 @@ const Register = () => {
                 />
               </div>
 
-              {/* Lozinke - u jednom redu radi uštede prostora */}
+              
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="password">Lozinka</label>

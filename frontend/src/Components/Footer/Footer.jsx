@@ -4,7 +4,7 @@ import './Footer.css';
 const Footer = () => {
   return (
     <footer className="footer-container">
-      {/* Sekcija sa slikom koja se mijenja ovisno o temi */}
+      
       <div className="footer-image-section"></div>
 
       <div className="footer-content">

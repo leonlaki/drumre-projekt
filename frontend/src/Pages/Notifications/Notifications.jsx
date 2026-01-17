@@ -5,7 +5,7 @@ import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import Spinner from "../../Components/Spinner/Spinner";
 
-// API
+
 import { friendApi } from "../../api/friendApi";
 import { eventInviteApi } from "../../api/eventInviteApi";
 
@@ -15,11 +15,11 @@ const Notifications = () => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [eventInvites, setEventInvites] = useState([]);
   
-  // UI STATE
+ 
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("all"); // 'all', 'friends', 'events'
+  const [activeTab, setActiveTab] = useState("all");
 
-  // --- FETCH DATA ---
+  
   useEffect(() => {
     const initData = async () => {
        const minLoading = new Promise(resolve => setTimeout(resolve, 1500));
@@ -34,7 +34,7 @@ const Notifications = () => {
          setFriendRequests(friendsRes);
          setEventInvites(eventsRes);
          
-         // Ažuriraj localStorage da navbar bude sinkroniziran odmah
+         
          const total = (friendsRes?.length || 0) + (eventsRes?.length || 0);
          localStorage.setItem("notifCount", total);
 
@@ -48,7 +48,7 @@ const Notifications = () => {
     initData();
   }, []);
 
-  // --- HANDLERS ---
+  
   const handleFriendAction = async (id, action) => {
     try {
       if (action === 'accept') await friendApi.acceptRequest(id);
@@ -57,10 +57,10 @@ const Notifications = () => {
       const updatedList = friendRequests.filter(req => req._id !== id);
       setFriendRequests(updatedList);
       
-      // Ažuriraj localStorage za navbar
+      
       const total = updatedList.length + eventInvites.length;
       localStorage.setItem("notifCount", total);
-      // Trigger event da navbar zna da se promijenilo (opcionalno, ali dobro za UX)
+      
       window.dispatchEvent(new Event("storage"));
 
     } catch (error) {
@@ -76,7 +76,7 @@ const Notifications = () => {
       const updatedList = eventInvites.filter(inv => inv._id !== id);
       setEventInvites(updatedList);
 
-      // Ažuriraj localStorage
+      
       const total = friendRequests.length + updatedList.length;
       localStorage.setItem("notifCount", total);
       window.dispatchEvent(new Event("storage"));
@@ -86,29 +86,29 @@ const Notifications = () => {
     }
   };
 
-  // --- RENDER CONTENT ---
+  
   const renderContent = () => {
     const hasFriendRequests = friendRequests.length > 0;
     const hasEventInvites = eventInvites.length > 0;
 
-    // 1. SCENARIJ: TAB "SVE" JE PRAZAN (Nema ničega uopće)
+    
     if (activeTab === 'all' && !hasFriendRequests && !hasEventInvites) {
         return <p className="empty-msg-large">Trenutno nemaš novih obavijesti. 📭</p>;
     }
 
-    // 2. SCENARIJ: ODABRAN TAB "PRIJATELJI", A NEMA IH
+   
     if (activeTab === 'friends' && !hasFriendRequests) {
         return <p className="empty-msg-large">Nemaš zahtjeva za prijateljstvo. 👥</p>;
     }
 
-    // 3. SCENARIJ: ODABRAN TAB "EVENTI", A NEMA IH
+    
     if (activeTab === 'events' && !hasEventInvites) {
         return <p className="empty-msg-large">Nemaš zahtjeva za eventove. 🍽️</p>;
     }
 
     return (
       <div className="notif-content-wrapper">
-         {/* SEKCIJA PRIJATELJI (Prikaži ako smo na 'all' ili 'friends', I ako ima zahtjeva) */}
+         
          {(activeTab === 'all' || activeTab === 'friends') && hasFriendRequests && (
            <div className="section-block">
              <h3>Zahtjevi za prijateljstvo</h3>
@@ -136,12 +136,12 @@ const Notifications = () => {
            </div>
          )}
 
-         {/* DIVIDER (Samo ako su oba prikazana u 'all' tabu) */}
+         
          {activeTab === 'all' && hasFriendRequests && hasEventInvites && (
             <div className="section-divider" />
          )}
 
-         {/* SEKCIJA EVENTI (Prikaži ako smo na 'all' ili 'events', I ako ima pozivnica) */}
+         
          {(activeTab === 'all' || activeTab === 'events') && hasEventInvites && (
            <div className="section-block">
              <h3>Pozivnice za Evente</h3>
@@ -196,7 +196,7 @@ const Notifications = () => {
             ) : (
               <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 
-                {/* TABS */}
+                
                 <div className="notif-tabs">
                    <button className={activeTab === 'all' ? 'active' : ''} onClick={() => setActiveTab('all')}>
                      Sve

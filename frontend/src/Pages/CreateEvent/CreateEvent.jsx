@@ -1,4 +1,4 @@
-// src/Pages/CreateEvent/CreateEvent.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +12,7 @@ import { mealApi } from "../../api/mealApi";
 import { playlistApi } from "../../api/playlistApi";
 import { friendApi } from "../../api/friendApi";
 
-// Import koraka
+
 import Step1BasicInfo from "./Steps/Step1BasicInfo";
 import Step2Menu from "./Steps/Step2Menu";
 import Step3Atmosphere from "./Steps/Step3Atmosphere";
@@ -35,7 +35,7 @@ const CreateEvent = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // --- GLAVNI STATE ---
+  
   const [eventData, setEventData] = useState({
     title: "",
     description: "",
@@ -48,11 +48,11 @@ const CreateEvent = () => {
     guests: []
   });
 
-  // Podaci potrebni za korake
+  
   const [availableRecipes, setAvailableRecipes] = useState([]);
   const [friendsList, setFriendsList] = useState([]);
 
-  // --- DOHVAT PODATAKA ---
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,12 +62,12 @@ const CreateEvent = () => {
            friendApi.getMyFriends()
         ]);
         
-        // Obrada recepata
+       
         const allRecipes = [...myRes, ...savedRes];
         const uniqueRecipes = Array.from(new Map(allRecipes.map(item => [item._id, item])).values());
         setAvailableRecipes(uniqueRecipes);
 
-        // Obrada prijatelja
+       
         setFriendsList(friendsRes || []);
       } catch (err) {
         console.error("Failed fetching initial data", err);
@@ -76,11 +76,11 @@ const CreateEvent = () => {
     fetchData();
   }, [user]);
 
-  // --- NAVIGACIJA ---
+ 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 5));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
-  // --- SUBMIT LOGIKA ---
+ 
   const handleCreateEvent = async () => {
     setLoading(true);
     try {
@@ -89,7 +89,7 @@ const CreateEvent = () => {
 
       let finalPlaylistId = null;
 
-      // 1. Kreiraj playlistu ako postoji
+      
       if (eventData.playlistSongs.length > 0) {
         const newPlaylist = await playlistApi.createPlaylist({
           name: `Playlist: ${eventData.title}`,
@@ -109,7 +109,7 @@ const CreateEvent = () => {
         await Promise.all(songPromises);
       }
 
-      // 2. Kreiraj Meal
+     
       const mealPayload = {
         title: eventData.title,
         description: eventData.description,
@@ -143,7 +143,7 @@ const CreateEvent = () => {
       <PageTransition>
         <div className="create-event-container">
           
-          {/* PROGRESS BAR */}
+          
           <div className="wizard-progress">
              {STEPS.map((step) => (
                 <div key={step.id} className={`wizard-step ${currentStep === step.id ? 'active' : ''} ${currentStep > step.id ? 'completed' : ''}`}>
@@ -153,7 +153,7 @@ const CreateEvent = () => {
              ))}
           </div>
 
-          {/* RENDER KORAKA */}
+          
           <AnimatePresence mode="wait">
              <motion.div
                key={currentStep}
@@ -180,7 +180,7 @@ const CreateEvent = () => {
              </motion.div>
           </AnimatePresence>
 
-          {/* AKCIJE */}
+          
           <div className="wizard-actions">
              <button className="btn-prev" onClick={prevStep} disabled={currentStep === 1} style={{visibility: currentStep === 1 ? 'hidden' : 'visible'}}>
                Natrag

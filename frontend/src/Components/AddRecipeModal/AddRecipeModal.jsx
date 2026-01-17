@@ -20,23 +20,23 @@ const CATEGORIES = [
   "Vegetarian"
 ];
 
-// Dodali smo prop 'initialData'
+
 const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
   
-  // Ako imamo initialData (edit mode), popuni formu, inače prazno
+ 
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     image: initialData?.image || "",
     category: initialData?.category || "Beef",
-    area: initialData?.area || "", // NOVO POLJE
+    area: initialData?.area || "", 
     instructions: initialData?.instructions || "",
   });
 
-  // Parsiranje sastojaka: Ako editiramo, uzmi iz initialData, inače jedan prazan red
+
   const [ingredients, setIngredients] = useState(
     initialData?.ingredients?.length > 0 
       ? initialData.ingredients.map(i => 
-          typeof i === 'string' ? { name: i, measure: '' } : i // Kompatibilnost sa starim podacima
+          typeof i === 'string' ? { name: i, measure: '' } : i 
         )
       : [{ name: "", measure: "" }]
   );
@@ -44,13 +44,13 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const isEditMode = !!initialData; // Boolean flag
+  const isEditMode = !!initialData; 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- LOGIKA ZA SASTOJKE (Ista kao prije) ---
+
   const handleIngredientChange = (index, field, value) => {
     const newIngredients = [...ingredients];
     newIngredients[index][field] = value;
@@ -65,7 +65,7 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
     const newIngredients = ingredients.filter((_, i) => i !== index);
     setIngredients(newIngredients);
   };
-  // ------------------------------------------
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,14 +88,14 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
       let savedRecipe;
       
       if (isEditMode) {
-        // UPDATE POSTOJEĆEG
+        
         savedRecipe = await recipeApi.updateRecipe(initialData._id, payload);
       } else {
-        // KREIRANJE NOVOG
+        
         savedRecipe = await recipeApi.saveRecipe(payload);
       }
 
-      onRecipeSaved(savedRecipe, isEditMode); // Šaljemo info roditelju
+      onRecipeSaved(savedRecipe, isEditMode); 
       onClose();
     } catch (err) {
       console.error(err);
@@ -115,7 +115,7 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          {/* Naslov ovisi o modu */}
+          {}
           <h2>{isEditMode ? "Uredi Recept" : "Novi Recept"}</h2>
           <button className="btn-close" onClick={onClose}>&times;</button>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
-import './animatedSection.css'; // Uvozimo pripadajući CSS
+import './animatedSection.css'; 
 
 const AnimatedSection = ({ children, className }) => {
   const { ref, inView } = useInView({

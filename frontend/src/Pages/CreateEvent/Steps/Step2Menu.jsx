@@ -1,4 +1,4 @@
-// src/Pages/CreateEvent/Steps/Step2Menu.jsx
+
 import React, { useState } from 'react';
 
 const COURSE_TYPES = [
@@ -12,12 +12,12 @@ const Step2Menu = ({ eventData, setEventData, availableRecipes }) => {
   const [recipeSearchQuery, setRecipeSearchQuery] = useState("");
   const [currentCourseType, setCurrentCourseType] = useState("Main Course");
 
-  // Filter logika
+
   const filteredRecipes = availableRecipes.filter(r => 
     r.title.toLowerCase().includes(recipeSearchQuery.toLowerCase())
   );
 
-  // Helperi za manipulaciju liste
+  
   const moveCourse = (index, direction) => {
     const newCourses = [...eventData.courses];
     if (direction === 'up' && index > 0) {
@@ -54,7 +54,7 @@ const Step2Menu = ({ eventData, setEventData, availableRecipes }) => {
       <h2>Planiranje Jelovnika</h2>
       <p style={{marginBottom: '1.5rem', color: 'gray'}}>Složi svoj savršeni menu.</p>
       
-      {/* LISTA DODANIH SLJEDOVA */}
+      
       {eventData.courses.length > 0 ? (
         <div className="added-courses-list">
           {eventData.courses.map((course, index) => (
@@ -82,7 +82,7 @@ const Step2Menu = ({ eventData, setEventData, availableRecipes }) => {
 
       <button className="btn-add-course" onClick={() => setIsRecipeModalOpen(true)}>+ Dodaj Slijed</button>
 
-      {/* MODAL */}
+      
       {isRecipeModalOpen && (
         <div className="modal-backdrop" onClick={() => setIsRecipeModalOpen(false)}>
            <div className="modal-content" onClick={e => e.stopPropagation()}>

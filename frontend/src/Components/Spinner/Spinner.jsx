@@ -4,11 +4,8 @@ import { motion } from "framer-motion";
 import "./spinner.css";
 
 const Spinner = () => {
-  // Možemo dohvatiti boju iz CSS varijable ili staviti hardcodiranu.
-  // Ovdje koristimo tvoju narančastu boju kao default.
-  // Ako želiš da vuče točno iz CSS-a, možeš koristiti getComputedStyle, 
-  // ali ovo je brže i radi super.
-  const color = "#ff5722"; // Tvoja accent boja
+ 
+  const color = "#ff5722"; 
 
   return (
     <motion.div 
@@ -20,10 +17,10 @@ const Spinner = () => {
     >
       <ScaleLoader 
         color={color} 
-        height={50} // Visina crtica
-        width={6}   // Širina crtica
-        radius={4}  // Zaobljenost
-        margin={4}  // Razmak
+        height={50} 
+        width={6}   
+        radius={4}  
+        margin={4}  
       />
       <motion.p 
         initial={{ opacity: 0, y: 10 }}

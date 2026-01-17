@@ -6,7 +6,7 @@ import PageTransition from "../../Context/PageTransition";
 import Spinner from "../../Components/Spinner/Spinner";
 import { useAuth } from "../../Context/AuthContext";
 
-// API
+
 import { mealApi } from "../../api/mealApi";
 import { playlistApi } from "../../api/playlistApi";
 import { musicApi } from "../../api/musicApi";
@@ -22,39 +22,37 @@ const EventDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const hasCountedView = useRef(false);
 
-  // States for interactions
+ 
   const [userRating, setUserRating] = useState(0);
   const [commentText, setCommentText] = useState("");
 
-  // Music States
   const [isMusicModalOpen, setIsMusicModalOpen] = useState(false);
   const [musicSearchQuery, setMusicSearchQuery] = useState("");
   const [musicResults, setMusicResults] = useState([]);
-  const [isSearchingMusic, setIsSearchingMusic] = useState(false); // NOVO: Spinner za glazbu
+  const [isSearchingMusic, setIsSearchingMusic] = useState(false); 
 
-  // Audio Player
+  
   const [currentPreview, setCurrentPreview] = useState(null);
   const audioRef = useRef(new Audio());
 
-  // --- FETCH DATA ---
   const fetchMealDetails = async () => {
     try {
       const data = await mealApi.getMealDetails(id);
       setMeal(data);
 
-      // Postavi moju ocjenu ako postoji
+      
       if (user && data.ratings) {
         const myRating = data.ratings.find((r) => r.user === user._id);
         if (myRating) setUserRating(myRating.value);
       }
       if (user && data.author._id !== user._id && !hasCountedView.current) {
         
-        hasCountedView.current = true; // Označi da smo brojali
+        hasCountedView.current = true; 
         
-        // Pozovi API (u pozadini)
+        
         await mealApi.incrementViewCount(id);
         
-        // Odmah ažuriraj UI za +1 (da korisnik vidi promjenu)
+       
         setMeal(prevMeal => ({
           ...prevMeal,
           viewCount: (prevMeal.viewCount || 0) + 1
@@ -70,7 +68,7 @@ const EventDetailsPage = () => {
   useEffect(() => {
     fetchMealDetails();
     hasCountedView.current = false;
-    // Cleanup audio on unmount
+    
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -79,14 +77,14 @@ const EventDetailsPage = () => {
     };
   }, [id]);
 
-  // --- PERMISSIONS ---
+  
   const isParticipant =
     meal &&
     user &&
     (meal.author._id === user._id ||
       (meal.participants && meal.participants.includes(user._id)));
 
-  // --- HANDLERS ---
+  
   const handleRate = async (value) => {
     try {
       await mealApi.rateMeal(id, value);
@@ -109,13 +107,13 @@ const EventDetailsPage = () => {
     }
   };
 
-  // --- MUSIC LOGIC (POPRAVLJENO) ---
+ 
 
-  // Tražilica glazbe (Debounce + Logs)
+  
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (musicSearchQuery.trim().length > 2) {
-        setIsSearchingMusic(true); // Upali loading
+        setIsSearchingMusic(true); 
         console.log("🔍 Tražim glazbu:", musicSearchQuery);
         
         try {
@@ -125,7 +123,7 @@ const EventDetailsPage = () => {
         } catch (e) {
           console.error("❌ Greška kod pretrage glazbe:", e);
         } finally {
-          setIsSearchingMusic(false); // Ugasi loading
+          setIsSearchingMusic(false); 
         }
       } else {
         setMusicResults([]);
@@ -135,31 +133,31 @@ const EventDetailsPage = () => {
     return () => clearTimeout(timer);
   }, [musicSearchQuery]);
 
-  // POPRAVLJEN AUDIO PLAYER
+  
   const togglePreview = async (url) => {
     if (!url) return alert("Ova pjesma nema dostupan isječak.");
 
     try {
       const audio = audioRef.current;
 
-      // Ako je ista pjesma i svira -> Pauziraj
+     
       if (currentPreview === url && !audio.paused) {
         audio.pause();
         setCurrentPreview(null);
       } 
-      // Ako je nova pjesma ili je stara pauzirana
+      
       else {
-        // 1. Resetiraj
+       
         audio.pause();
         audio.currentTime = 0;
         
-        // 2. Postavi novi izvor
+        
         audio.src = url;
         
-        // 3. Učitaj (bitno za NotSupportedError)
+        
         audio.load();
 
-        // 4. Pokušaj pustiti (ovo vraća Promise)
+       
         const playPromise = audio.play();
         
         if (playPromise !== undefined) {
@@ -169,7 +167,7 @@ const EventDetailsPage = () => {
             })
             .catch((error) => {
               console.error("Audio play blocked/error:", error);
-              // Ako browser blokira, resetiraj state
+              
               setCurrentPreview(null);
             });
         }
@@ -197,7 +195,7 @@ const EventDetailsPage = () => {
 
       setIsMusicModalOpen(false);
       setMusicSearchQuery("");
-      fetchMealDetails(); // Osvježi
+      fetchMealDetails(); 
     } catch (error) {
       console.error("Greška pri dodavanju:", error);
       alert("Nismo uspjeli dodati pjesmu.");
@@ -213,7 +211,7 @@ const EventDetailsPage = () => {
       <PageTransition>
         <div className="event-details-container">
           
-          {/* HEADER */}
+          
           <header className="event-header">
             <img src={meal.image || "https://placehold.co/1200x400"} alt={meal.title} className="event-hero-image" />
             <div className="event-header-info">
@@ -233,7 +231,7 @@ const EventDetailsPage = () => {
           <p className="event-description">{meal.description}</p>
 
           <div className="event-grid">
-            {/* MENU */}
+            
             <div className="section-box">
               <h2 className="section-title">Jelovnik 🍽️</h2>
               <div className="menu-list">
@@ -250,7 +248,7 @@ const EventDetailsPage = () => {
               </div>
             </div>
 
-            {/* PLAYLIST */}
+            
             <div className="section-box">
               <h2 className="section-title">Playlist 🎵</h2>
               {meal.playlist ? (
@@ -290,7 +288,7 @@ const EventDetailsPage = () => {
             </div>
           </div>
 
-          {/* COMMENTS */}
+          
           <div className="comments-section">
             <h2 className="section-title">Dojmovi ({meal.comments.length})</h2>
             <div className="rating-container">
@@ -323,7 +321,7 @@ const EventDetailsPage = () => {
             </form>
           </div>
 
-          {/* --- MUSIC SEARCH MODAL --- */}
+          
           {isMusicModalOpen && (
             <div className="music-search-overlay" onClick={() => setIsMusicModalOpen(false)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -338,7 +336,7 @@ const EventDetailsPage = () => {
                   style={{ width: "100%", marginBottom: "15px" }}
                 />
                 
-                {/* REZULTATI PRETRAGE */}
+                
                 <div className="playlist-tracks" style={{ maxHeight: "300px", minHeight: "100px" }}>
                   {isSearchingMusic ? (
                      <div style={{textAlign: 'center', padding: '20px'}}>🎵 Tražim...</div>
@@ -350,7 +348,7 @@ const EventDetailsPage = () => {
                           <div style={{ fontWeight: "bold" }}>{track.title}</div>
                           <div style={{ fontSize: "0.8rem" }}>{track.artist}</div>
                         </div>
-                        {/* Play u searchu */}
+                        
                         <button
                           onClick={(e) => { e.stopPropagation(); togglePreview(track.previewUrl); }}
                           style={{ background: "transparent", border: "none", marginRight: 10, cursor: "pointer" }}

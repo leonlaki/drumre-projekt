@@ -1,9 +1,8 @@
 import axiosClient from './axiosClient';
 
 export const musicApi = {
-  // Pretraži Deezer (preko našeg backenda)
+  // Pretraži Deezer 
   searchMusic: async (query) => {
-    // Poziva /api/music/search?q=query
     const response = await axiosClient.get(`/api/music/search`, {
       params: { q: query }
     });

@@ -1,4 +1,4 @@
-// src/Pages/CreateEvent/Steps/Step4Guests.jsx
+
 import React, { useState } from 'react';
 
 const Step4Guests = ({ eventData, setEventData, friendsList }) => {

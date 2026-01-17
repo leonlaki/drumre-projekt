@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from "../../Components/Navbars/NavbarLandingPage/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import VinylReveal from "./VinylReveal";
-import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection"; // <--- NOVI IMPORT (prilagodi putanju)
+import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection"; 
 import "./LandingPage.css";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
@@ -28,7 +28,7 @@ const LandingPage = () => {
           </p>
         </header>
 
-        {/* 1. CJELINA */}
+       
         <AnimatedSection>
           <div className="section-text">
             <h2>Gurmanski Recepti</h2>
@@ -42,7 +42,7 @@ const LandingPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* 2. CJELINA (Obrnuto) */}
+       
         <AnimatedSection className="section-reverse">
           <div className="section-text">
             <h2>Ritam tvoje kuhinje</h2>
@@ -56,7 +56,7 @@ const LandingPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* 3. CJELINA */}
+        
         <AnimatedSection>
           <div className="section-text">
             <h2>Zajednica i Dijeljenje</h2>
@@ -81,7 +81,7 @@ const LandingPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* MAGIC SECTION */}
+        
         <AnimatedSection className="landing-page-magic-section">
           <div className="section-text">
             <h2>Istraži magiju</h2>

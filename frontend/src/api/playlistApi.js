@@ -20,7 +20,6 @@ export const playlistApi = {
   },
 
   // Dodaj pjesmu
-  // PAZI: Putanja mora biti /api/playlists/{ID}/songs
   addSongToPlaylist: async (playlistId, songData) => {
     const response = await axiosClient.post(`/api/playlists/${playlistId}/songs`, songData);
     return response.data;

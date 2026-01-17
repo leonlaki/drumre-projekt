@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { userApi } from "../../api/userApi";
-import { mealApi } from "../../api/mealApi"; // <--- NOVI IMPORT
+import { mealApi } from "../../api/mealApi";
 import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PokemonSelector from "../../Components/PokemonSelector/PokemonSelector";
-import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
+import EventCard from "../../Components/EventCard/EventCard"; 
 import "./profilePage.css";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
@@ -17,7 +17,7 @@ const ProfilePage = () => {
 
   const [profileData, setProfileData] = useState(null);
   
-  // Novi state za evente
+  
   const [myEvents, setMyEvents] = useState([]);
   const [participatingEvents, setParticipatingEvents] = useState([]);
 
@@ -26,7 +26,7 @@ const ProfilePage = () => {
     recipes: 0, 
     views: 0, 
     likes: 0,
-    avgRating: 0 // <--- NOVO
+    avgRating: 0 
   });
   
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const ProfilePage = () => {
 
   const isMyProfile = !username || (currentUser && username === currentUser.username);
 
-  // --- FETCH DATA ---
+  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,7 +47,7 @@ const ProfilePage = () => {
         setProfileData(data.profile);
         setStats(data.stats);
         
-        // Postavi evente
+        
         setMyEvents(data.myEvents || []);
         setParticipatingEvents(data.participatingEvents || []);
 
@@ -68,9 +68,9 @@ const ProfilePage = () => {
     fetchProfile();
   }, [username, currentUser, isMyProfile]);
 
-  // --- HANDLERS ---
+  
   const handleDeleteEvent = async (e, eventId) => {
-    e.stopPropagation(); // Da ne otvori detalje
+    e.stopPropagation(); 
     if (!window.confirm("Jeste li sigurni da želite obrisati ovaj event?")) return;
     try {
       await mealApi.deleteMeal(eventId);
@@ -119,7 +119,7 @@ const ProfilePage = () => {
         <SlidePageTransition>
         <div className="profile-container">
           
-          {/* HEADER PROFILA */}
+          
           <div className="profile-header-card">
             <div className="profile-avatar-section">
               <img src={profileData.avatar || "https://via.placeholder.com/150"} alt="Avatar" className="profile-avatar-lg" />
@@ -153,7 +153,7 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* AŽURIRANA STATISTIKA */}
+            
             <div className="profile-stats">
                <div className="stat-box">
                  <span className="stat-number">{stats.meals}</span>
@@ -174,10 +174,10 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* LISTE EVENATA */}
+         
           <div className="profile-events-section">
             
-            {/* 1. MOJI EVENTI */}
+            
             <div className="events-group">
                <h3 className="group-title">Moji Eventi ({myEvents.length})</h3>
                {myEvents.length > 0 ? (
@@ -185,7 +185,7 @@ const ProfilePage = () => {
                     {myEvents.map(event => (
                        <div key={event._id} className="profile-event-wrapper">
                           <EventCard event={event} />
-                          {/* Gumb za brisanje (samo ako je moj profil i moj event) */}
+                          
                           {isMyProfile && (
                              <button className="btn-delete-event" onClick={(e) => handleDeleteEvent(e, event._id)}>
                                 🗑️ Obriši
@@ -199,7 +199,7 @@ const ProfilePage = () => {
                )}
             </div>
 
-            {/* 2. SUDJELOVANJA */}
+            
             <div className="events-group">
                <h3 className="group-title">Sudjelovanja ({participatingEvents.length})</h3>
                {participatingEvents.length > 0 ? (
@@ -207,7 +207,7 @@ const ProfilePage = () => {
                     {participatingEvents.map(event => (
                        <div key={event._id} className="profile-event-wrapper">
                           <EventCard event={event} />
-                          {/* Gumb za izlazak (samo ako je moj profil) */}
+                          
                           {isMyProfile && (
                              <button className="btn-leave-event" onClick={(e) => handleLeaveEvent(e, event._id)}>
                                 🚪 Izađi

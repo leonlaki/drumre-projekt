@@ -9,7 +9,6 @@ export const mealApi = {
 
   // Dohvati obroke specifičnog korisnika (za profil)
   getUserMeals: async (username, sort = 'popular') => {
-    // sort može biti 'popular' ili 'newest'
     const response = await axiosClient.get(`/api/meals/user/${username}?sort=${sort}`);
     return response.data;
   },
@@ -34,7 +33,6 @@ export const mealApi = {
     return response.data;
   },
 
-  // --- INTERAKCIJE ---
 
   commentOnMeal: async (id, text) => {
     const response = await axiosClient.post(`/api/meals/${id}/comment`, { text });
@@ -42,13 +40,11 @@ export const mealApi = {
   },
 
   rateMeal: async (id, value) => {
-    // value = 1 do 5
     const response = await axiosClient.post(`/api/meals/${id}/rate`, { value });
     return response.data;
   },
 
   incrementViewCount: async (id) => {
-    // Backend ruta je definisana kao POST /api/meals/:id/view
     const response = await axiosClient.post(`/api/meals/${id}/view`);
     return response.data;
   },

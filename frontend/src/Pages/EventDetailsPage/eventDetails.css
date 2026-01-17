@@ -1,4 +1,4 @@
-/* eventDetails.css */
+
 
 .event-details-wrapper {
   background-color: var(--bg-main);
@@ -15,7 +15,7 @@
   flex: 1;
 }
 
-/* HEADER EVENTA */
+
 .event-header {
   position: relative;
   margin-bottom: 3rem;
@@ -31,7 +31,7 @@
 }
 
 .event-header-info {
-  margin-top: -60px; /* Preklapanje preko slike */
+  margin-top: -60px; 
   margin-left: 20px;
   margin-right: 20px;
   background-color: var(--bg-card);
@@ -79,7 +79,7 @@
 .author-pill:hover { opacity: 0.8; }
 .author-avatar { width: 30px; height: 30px; border-radius: 50%; }
 
-/* OPIS */
+
 .event-description {
   font-size: 1.1rem;
   line-height: 1.6;
@@ -88,10 +88,10 @@
   padding: 0 1rem;
 }
 
-/* SEKCIJE (GRID) */
+
 .event-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr; /* Lijevo menu, desno glazba */
+  grid-template-columns: 1.5fr 1fr; 
   gap: 2rem;
   margin-bottom: 3rem;
 }
@@ -115,7 +115,7 @@
   display: inline-block;
 }
 
-/* MENU LISTA */
+
 .menu-list {
   display: flex;
   flex-direction: column;
@@ -139,7 +139,7 @@
 .menu-course-type {
   font-weight: 700;
   color: var(--accent-color);
-  width: 100px; /* Fiksna širina za poravnanje */
+  width: 100px; 
   text-transform: uppercase;
   font-size: 0.8rem;
 }
@@ -158,7 +158,7 @@
   object-fit: cover;
 }
 
-/* PLAYLISTA */
+
 .playlist-tracks {
   display: flex;
   flex-direction: column;
@@ -182,7 +182,7 @@
   background: rgba(255, 87, 51, 0.05);
 }
 
-/* OCJENE I KOMENTARI */
+
 .comments-section {
   background: var(--bg-card);
   padding: 2rem;
@@ -255,9 +255,9 @@
   cursor: pointer;
 }
 
-/* MUSIC MODAL (Reuse from CreateEvent but simpler) */
+
 .music-search-overlay {
-  /* Copy modal styles usually */
+  
   position: fixed; top:0; left:0; width:100%; height:100%;
   background: rgba(0,0,0,0.6);
   z-index: 1000;

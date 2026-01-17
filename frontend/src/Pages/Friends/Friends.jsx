@@ -14,12 +14,12 @@ const Friends = () => {
   const [loadingFriends, setLoadingFriends] = useState(true);
   const [pendingUsers, setPendingUsers] = useState([]);
 
-  // 1. Učitaj trenutne prijatelje pri otvaranju
+  
   const fetchInitialData = async () => {
     try {
       setLoadingFriends(true);
 
-      // Paralelno dohvati prijatelje i poslane zahtjeve
+      
       const [friendsData, sentRequestsData] = await Promise.all([
         friendApi.getMyFriends(),
         friendApi.getSentRequests(),
@@ -38,14 +38,14 @@ const Friends = () => {
     fetchInitialData();
   }, []);
 
-  // 2. DEBOUNCE LOGIKA ZA PRETRAGU
+
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
     }
 
-    // Postavi timer koji šalje upit za 300ms
+    
     const delayDebounceFn = setTimeout(async () => {
       try {
         console.log("Šaljem upit za:", query);
@@ -60,7 +60,7 @@ const Friends = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  // 3. Pošalji zahtjev za prijateljstvo
+  
   const handleSendRequest = async (userId) => {
     try {
       setPendingUsers((prev) => [...prev, userId]);
@@ -73,7 +73,7 @@ const Friends = () => {
     }
   };
 
-  // 4. Otkazivanje poslanog zahtjeva
+  
   const handleCancelRequest = async (userId) => {
     try {
       setPendingUsers((prev) => prev.filter((id) => id !== userId));
@@ -84,7 +84,7 @@ const Friends = () => {
     }
   };
 
-  // 5. Obriši prijatelja
+  
   const handleUnfriend = async (friendId) => {
     if (!window.confirm("Sigurno želiš ukloniti ovog prijatelja?")) return;
     try {
@@ -95,7 +95,7 @@ const Friends = () => {
     }
   };
 
-  // Pomoćna funkcija da provjerimo je li user već prijatelj
+  
   const isAlreadyFriend = (userId) => {
     return myFriends.some((f) => f._id === userId);
   };

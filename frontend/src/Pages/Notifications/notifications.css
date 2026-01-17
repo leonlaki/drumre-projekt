@@ -1,4 +1,4 @@
-/* notifications.css */
+
 .notifications-wrapper {
   min-height: 100vh;
   background-color: var(--bg-main);
@@ -53,7 +53,7 @@ h3 {
   object-fit: cover;
 }
 
-/* EVENT SPECIFIC STYLES */
+
 .event-img-wrapper {
   position: relative;
   width: 60px;
@@ -131,7 +131,6 @@ h3 {
   font-style: italic;
 }
 
-/* TABS */
 .notif-tabs {
   display: flex;
   gap: 10px;
@@ -153,7 +152,7 @@ h3 {
   border-color: var(--text-primary);
 }
 
-/* Centriranje spinnera */
+
 .spinner-center-container {
   display: flex;
   justify-content: center;
@@ -161,7 +160,7 @@ h3 {
   min-height: 50vh;
 }
 
-/* Tab Badge (mali broj pored teksta u tabu) */
+
 .tab-badge {
   background-color: var(--bg-card);
   color: var(--text-primary);

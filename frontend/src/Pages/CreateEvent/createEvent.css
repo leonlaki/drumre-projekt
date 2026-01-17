@@ -1,4 +1,4 @@
-/* createEvent.css */
+
 
 .create-event-wrapper {
   background-color: var(--bg-main);
@@ -15,7 +15,7 @@
   flex: 1;
 }
 
-/* WIZARD PROGRESS BAR */
+
 .wizard-progress {
   display: flex;
   justify-content: space-between;
@@ -76,12 +76,12 @@
 }
 
 .wizard-step.completed .step-number {
-  background-color: #27ae60; /* Zelena za riješeno */
+  background-color: #27ae60; 
   border-color: #27ae60;
   color: white;
 }
 
-/* FORME I KARTICE */
+
 .step-card {
   background-color: var(--bg-card);
   padding: 2rem;
@@ -124,7 +124,7 @@
   border-color: var(--accent-color);
 }
 
-/* COURSES SEKCIJA */
+
 .course-item {
   background: var(--bg-main);
   padding: 1rem;
@@ -162,7 +162,7 @@
   background: rgba(0,0,0,0.02);
 }
 
-/* MUSIC SEKCIJA */
+
 .music-search-results {
   margin-top: 1rem;
   display: flex;
@@ -189,7 +189,7 @@
 .track-title { font-weight: bold; font-size: 0.9rem; display: block;}
 .track-artist { font-size: 0.8rem; color: var(--text-secondary); }
 
-/* NAVIGATION BUTTONS */
+
 .wizard-actions {
   display: flex;
   justify-content: space-between;
@@ -238,7 +238,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Lijeva strana: Kontrole za pomicanje */
+
 .course-move-controls {
   display: flex;
   flex-direction: column;
@@ -264,7 +264,7 @@
   cursor: default;
 }
 
-/* Sredina: Slika i Info */
+
 .course-card-img {
   width: 60px;
   height: 60px;
@@ -291,7 +291,7 @@
   color: var(--text-secondary);
 }
 
-/* Dropdown za mijenjanje tipa slijeda unutar kartice */
+
 .course-type-select {
   padding: 5px 10px;
   border-radius: 8px;
@@ -304,7 +304,7 @@
   outline: none;
 }
 
-/* Desna strana: Delete gumb */
+
 .btn-remove-course {
   background: rgba(255, 0, 0, 0.1);
   color: red;
@@ -323,7 +323,7 @@
   background: rgba(255, 0, 0, 0.2);
 }
 
-/* SEARCH BAR U MODALU */
+
 .modal-search-input {
   width: 100%;
   padding: 12px;
@@ -335,7 +335,7 @@
   font-size: 1rem;
 }
 
-/* Popis recepata u modalu */
+
 .recipe-select-item {
   display: flex;
   align-items: center;
@@ -370,7 +370,7 @@
   color: var(--text-secondary);
 }
 
-/* REZULTATI PRETRAGE */
+
 .music-results-list {
   display: flex;
   flex-direction: column;
@@ -411,7 +411,7 @@
   object-fit: cover;
 }
 
-/* PLAY GUMB (Overlay na slici) */
+
 .btn-preview-play {
   position: absolute;
   top: 0;
@@ -473,7 +473,7 @@
   color: white;
 }
 
-/* SELECTED PLAYLIST (Donji dio) */
+
 .selected-playlist-container {
   margin-top: 2rem;
 }
@@ -504,7 +504,7 @@
   opacity: 1;
 }
 
-/* Animacija za play icon */
+
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
@@ -522,14 +522,14 @@
   margin-right: 10px;
 }
 
-/* Prilagodba itema u playlisti da prihvati kontrole */
+
 .track-item.selected {
-  /* Postojeći stilovi... */
-  padding-left: 5px; /* Malo manje paddinga lijevo da stane kontrola */
+ 
+  padding-left: 5px; 
   align-items: center; 
 }
 
-/* Ako želiš da gumbi izgledaju isto kao kod recepata */
+
 .btn-move-track {
   background: transparent;
   border: none;
@@ -630,7 +630,7 @@
   font-size: 0.8rem;
 }
 
-/* --- STEP 5 (REVIEW SUMMARY) --- */
+
 
 .review-summary {
   display: flex;

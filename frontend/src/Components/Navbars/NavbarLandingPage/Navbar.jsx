@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../../../Context/ThemeContext';
-import '../navbar.css'; // VAŽNO: Uvoz lokalnog CSS-a
+import '../navbar.css'; 
 
 const Navbar = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);

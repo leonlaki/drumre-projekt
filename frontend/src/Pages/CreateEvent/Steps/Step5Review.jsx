@@ -1,4 +1,4 @@
-// src/Pages/CreateEvent/Steps/Step5Review.jsx
+
 import React from 'react';
 
 const Step5Review = ({ eventData, friendsList, onPublish, loading }) => {

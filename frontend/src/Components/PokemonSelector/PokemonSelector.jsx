@@ -10,7 +10,7 @@ const PokemonSelector = ({ onSelect, selectedId }) => {
   useEffect(() => {
     const fetchPokemons = async () => {
       try {
-        // API vraća array: [{ id: 1, name: 'bulbasaur', avatar: 'url...' }, ...]
+        
         const data = await userApi.getPokemonList();
         setPokemons(data);
       } catch (error) {
@@ -23,7 +23,7 @@ const PokemonSelector = ({ onSelect, selectedId }) => {
     fetchPokemons();
   }, []);
 
-  // Filtriranje po imenu
+  
   const filteredPokemons = pokemons.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -45,7 +45,7 @@ const PokemonSelector = ({ onSelect, selectedId }) => {
           <div 
             key={poke.id} 
             className={`poke-item ${selectedId === poke.id ? 'selected' : ''}`}
-            onClick={() => onSelect(poke)} // Vraćamo cijeli objekt roditelju
+            onClick={() => onSelect(poke)} 
           >
             <img src={poke.avatar} alt={poke.name} className="poke-img" loading="lazy" />
             <span className="poke-name">{poke.name}</span>

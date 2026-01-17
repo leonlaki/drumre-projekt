@@ -1,4 +1,4 @@
-/* src/Components/PokemonSelector/pokemonSelector.css */
+
 
 .poke-selector-container {
   margin-top: 1rem;
@@ -27,11 +27,11 @@
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 10px;
   max-height: 300px;
-  overflow-y: auto; /* Scroll unutar grida */
+  overflow-y: auto; 
   padding-right: 5px;
 }
 
-/* Scrollbar styling */
+
 .poke-grid::-webkit-scrollbar {
   width: 6px;
 }
@@ -65,7 +65,7 @@
   width: 60px;
   height: 60px;
   object-fit: contain;
-  image-rendering: pixelated; /* Da pixel art izgleda oštro */
+  image-rendering: pixelated; 
 }
 
 .poke-name {

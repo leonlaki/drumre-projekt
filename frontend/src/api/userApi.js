@@ -4,26 +4,23 @@ export const userApi = {
   // Dohvati javni profil bilo kojeg korisnika
   getUserProfile: async (username) => {
     const response = await axiosClient.get(`/api/users/${username}`);
-    return response.data; // Vraća { profile, stats }
+    return response.data; 
   },
 
-  // Ažuriraj MOJ profil (Bio, Location, Avatar...)
+  // Ažuriraj MOJ profil 
   updateMyProfile: async (data) => {
     const response = await axiosClient.put("/api/users/profile", data);
     return response.data;
   },
 
-  // --- ONBOARDING ---
-
-  // Dohvati opcije za odabir (kategorije i države)
+  // Dohvati opcije za odabir 
   getOnboardingOptions: async () => {
     const response = await axiosClient.get("/api/users/onboarding/options");
     return response.data;
   },
 
-  // Spremi korisnikove preferencije
+  // Spremi korisnikove preference
   savePreferences: async (preferences) => {
-    // preferences = { categories: [], areas: [] }
     const response = await axiosClient.post(
       "/api/users/onboarding/save",
       preferences
@@ -31,7 +28,7 @@ export const userApi = {
     return response.data;
   },
 
-  // Dohvati pametne preporuke (bazirano na preferencijama)
+  // Dohvati preporuke
   getRecommendations: async () => {
     const response = await axiosClient.get(
       "/api/users/recommendations/external"

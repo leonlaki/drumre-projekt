@@ -1,4 +1,4 @@
-// src/Pages/CreateEvent/Steps/Step3Atmosphere.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { musicApi } from "../../../api/musicApi";
 
@@ -7,11 +7,11 @@ const Step3Atmosphere = ({ eventData, setEventData }) => {
   const [musicResults, setMusicResults] = useState([]);
   const [isSearchingMusic, setIsSearchingMusic] = useState(false);
   
-  // Audio Player - Lokalno unutar stepa
+  
   const [currentPreview, setCurrentPreview] = useState(null);
   const audioRef = useRef(new Audio());
 
-  // Cleanup: Gasi muziku kad komponenta nestane (kad klikneš Dalje/Natrag)
+  
   useEffect(() => {
     return () => {
       audioRef.current.pause();
@@ -19,7 +19,7 @@ const Step3Atmosphere = ({ eventData, setEventData }) => {
     };
   }, []);
 
-  // Search Debounce
+  
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (musicSearchQuery.trim().length > 2) {

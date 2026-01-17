@@ -26,9 +26,9 @@ const PageTransition = ({ children }) => {
       transition={{ duration: 0.4, ease: "easeInOut" }}
       style={{ 
         width: "100%", 
-        // Dodajemo ovo da spriječimo pojavu scrollbara zbog animacije
+        
         overflowX: "hidden", 
-        // Osiguravamo da wrapper zauzima punu visinu kako ne bi kolabirao
+        
         minHeight: "100vh" 
       }}
     >

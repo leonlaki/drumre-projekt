@@ -1,7 +1,6 @@
-/* index.css */
+
 
 :root {
-  /* LIGHT TEMA */
   --bg-main: #ffffff;
   --bg-main-contrast: #121212;
   --bg-card: #f9f9f9;
@@ -11,7 +10,6 @@
   --accent-color: #ff5733;
   --text-navbar: #1a1a1a;
 
-  /* TIPOGRAFIJA - Tvoja 4 standardizirana tipa */
   --fs-h1: 2.5rem;    --fw-h1: 800;
   --fs-h2: 1.75rem;   --fw-h2: 700;
   --fs-body: 1rem;    --fw-body: 400;
@@ -21,7 +19,7 @@
 }
 
 [data-theme='dark'] {
-  /* DARK TEMA */
+
   --bg-main: #121212;
   --bg-main-contrast: #ffffff;
   --bg-card: #1e1e1e;
@@ -34,7 +32,7 @@
   --footer-img: url('/images/footer-dark.svg');
 }
 
-/* GLOBALNI STILOVI I PRIJELAZ */
+
 * {
   margin: 0;
   padding: 0;
@@ -52,7 +50,7 @@ body {
   overflow-y: hidden;
 }
 
-/* Standardizacija teksta kroz klase */
+
 h1 { font-size: var(--fs-h1); font-weight: var(--fw-h1); margin-bottom: 1rem; }
 h2 { font-size: var(--fs-h2); font-weight: var(--fw-h2); }
 p { font-size: var(--fs-body); font-weight: var(--fw-body); line-height: 1.6; }

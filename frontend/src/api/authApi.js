@@ -23,11 +23,9 @@ export const authApi = {
   },
 
   // 4. Dohvati trenutnog usera (Check Session)
-  // Ovo zovemo svaki put kad se aplikacija refresha
   getCurrentUser: async () => {
     try {
       const response = await axiosClient.get('/auth/user');
-      // Backend vraća JSON usera ili prazan string/null ako nije logiran
       return response.data;
     } catch (error) {
       return null;

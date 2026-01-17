@@ -8,7 +8,7 @@ import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 import "./preferences.css";
 
-// MAPIRANJE: Ime iz MealDB API-ja -> ISO kod države (za FlagCDN)
+
 const AREA_FLAGS = {
   Algerian: "dz",
   American: "us",
@@ -69,7 +69,7 @@ const Preferences = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Stanje za pred-ispunjene podatke (Facebook)
+  
   const [isPrefilled, setIsPrefilled] = useState(false);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const Preferences = () => {
         setAvailableCategories(data.categories || []);
         setAvailableAreas(data.areas || []);
 
-        // Provjera postojećih preferencija (s Facebooka)
+        
         if (data.existingPreferences) {
           const { categories, areas } = data.existingPreferences;
           if (
@@ -121,8 +121,7 @@ const Preferences = () => {
       setError("Molimo odaberite barem 3 kategorije jela.");
       return;
     }
-    // Opcionalno za areas
-    // if (selectedAreas.length < 3) { ... }
+   
 
     setSubmitting(true);
     try {
@@ -131,7 +130,7 @@ const Preferences = () => {
         areas: selectedAreas,
       });
 
-      // Ažuriraj lokalni state
+     
       if (updateLocalUser) {
         updateLocalUser({
           isOnboarded: true,
@@ -139,7 +138,7 @@ const Preferences = () => {
         });
       }
 
-      navigate("/"); // Vrati na Home
+      navigate("/"); 
     } catch (err) {
       console.error(err);
       setError("Greška pri spremanju.");
@@ -182,7 +181,7 @@ const Preferences = () => {
 
         <AnimatedSection className="preferences-content">
           <div className="preferences-card">
-            {/* --- KATEGORIJE (GRID) --- */}
+            
             <div className="pref-section">
               <h3>Kategorije jela</h3>
               <span className="pref-instruction">
@@ -204,7 +203,7 @@ const Preferences = () => {
               </div>
             </div>
 
-            {/* --- KUHINJE (GRID) --- */}
+           
             <div className="pref-section">
               <h3>Svjetske kuhinje</h3>
               <span className="pref-instruction">

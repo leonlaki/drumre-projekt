@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { recipeApi } from "../../api/recipeApi";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar"; // Prilagodi putanju
-import Footer from "../../Components/Footer/Footer"; // Prilagodi putanju
-import Spinner from "../../Components/Spinner/Spinner"; // Prilagodi putanju
-import "./recipeDetails.css"; // CSS ćemo definirati ispod
+import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar"; 
+import Footer from "../../Components/Footer/Footer";
+import Spinner from "../../Components/Spinner/Spinner";
+import "./recipeDetails.css"; 
 import PageTransition from "../../Context/PageTransition";
 
 const RecipeDetailsPage = () => {
@@ -20,7 +20,7 @@ const RecipeDetailsPage = () => {
         setRecipe(data);
       } catch (error) {
         console.error("Greška pri dohvatu recepta:", error);
-        // Opcionalno: navigate("/home") ako ne postoji
+        
       } finally {
         setLoading(false);
       }
@@ -39,7 +39,7 @@ const RecipeDetailsPage = () => {
       
       <PageTransition>
         <div className="details-container">
-        {/* HEADER SEKCIJA */}
+        
         <div className="details-header">
           <button onClick={() => navigate(-1)} className="btn-back">
             ← Natrag
@@ -60,7 +60,7 @@ const RecipeDetailsPage = () => {
           </div>
         </div>
 
-        {/* GLAVNA SLIKA */}
+        
         <div className="hero-image-wrapper">
           <img 
             src={recipe.image || "https://via.placeholder.com/600"} 
@@ -69,10 +69,10 @@ const RecipeDetailsPage = () => {
           />
         </div>
 
-        {/* SADRŽAJ: SASTOJCI I UPUTE */}
+       
         <div className="details-grid">
           
-          {/* LIJEVI STUPAC: SASTOJCI */}
+          
           <div className="ingredients-panel">
             <h3>🛒 Sastojci</h3>
             <ul className="ingredients-list-large">
@@ -85,7 +85,7 @@ const RecipeDetailsPage = () => {
             </ul>
           </div>
 
-          {/* DESNI STUPAC: UPUTE */}
+          
           <div className="instructions-panel">
             <h3>👨‍🍳 Priprema</h3>
             <div className="instructions-text-large">

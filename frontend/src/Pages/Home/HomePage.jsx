@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom"; // Bitno za linkove
+import { Link } from "react-router-dom"; 
 import "./homePage.css";
 import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import CardRotator from "../../Components/CardRotator/CardRotator";
 import PageTransition from "../../Context/PageTransition";
-import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
+import EventCard from "../../Components/EventCard/EventCard"; 
 import { mealApi } from "../../api/mealApi";
 
 const useDebounce = (value, delay) => {
@@ -22,8 +22,8 @@ const useDebounce = (value, delay) => {
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedQuery = useDebounce(searchQuery, 400); // 400ms odgode
-  const [filterSort, setFilterSort] = useState("newest"); // 'newest' ili 'popular'
+  const debouncedQuery = useDebounce(searchQuery, 400); 
+  const [filterSort, setFilterSort] = useState("newest"); 
 
   const [events, setEvents] = useState([]);
   const [page, setPage] = useState(1);
@@ -35,7 +35,7 @@ const HomePage = () => {
   const [recommendedEvents, setRecommendedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. GLAVNA FUNKCIJA ZA DOHVAT (Reset vs Append)
+  
   const fetchEvents = async (
     query,
     pageNum,
@@ -52,7 +52,7 @@ const HomePage = () => {
         setEvents(newEvents);
       }
 
-      // Ako vrati manje od 20, znači da nema više
+      
       setHasMore(newEvents.length === 20);
     } catch (error) {
       console.error("Error fetching events", error);
@@ -62,14 +62,14 @@ const HomePage = () => {
     }
   };
 
-  // 2. EFEKT: OKIDANJE PRETRAGE (Kad se promijeni Query ili Filter)
+  
   useEffect(() => {
-    // Resetiramo page na 1 i radimo svježi fetch
+    
     setPage(1);
     fetchEvents(debouncedQuery, 1, filterSort, false);
   }, [debouncedQuery, filterSort]);
 
-  // 3. HANDLER: LOAD MORE (Klik na gumb)
+  
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
@@ -84,15 +84,15 @@ const HomePage = () => {
           mealApi.getRecommendations(),
         ]);
 
-        // 1. Priprema Trending podataka (Feed vraća authorDetails, EventCard traži author)
+        
         const formattedFeed = feedData.map((item) => ({
           ...item,
-          author: item.authorDetails, // Mapiramo authorDetails u author
-          // Slika i ostalo su ok
+          author: item.authorDetails, 
+          
         }));
         setTrendingEvents(formattedFeed);
 
-        // 2. Priprema Recommended podataka (Oni su već ok iz Controllera)
+        
         setRecommendedEvents(recData);
       } catch (error) {
         console.error("Error loading homepage data", error);
@@ -108,7 +108,7 @@ const HomePage = () => {
     <div className="homepage-wrapper">
       <Navbar />
       <PageTransition>
-        {/* HERO SEKCIJA */}
+        
         <div className="homepage-hero-section">
           <h1 className="homepage-hero-title">FOODTUNE</h1>
           <p className="homepage-hero-subtitle">
@@ -118,8 +118,8 @@ const HomePage = () => {
         </div>
 
         <div className="homepage-content-container">
-          {/* POPULARNI SADRŽAJ */}
-          {/* 1. ROTATOR: TRENDING (Popularno zadnjih 7 dana) */}
+          
+          
           <div className="homepage-section-header">
             <h2 className="homepage-section-title">
               Simfonija okusa u trendu 🔥
@@ -136,7 +136,7 @@ const HomePage = () => {
             )}
           </AnimatedSection>
 
-          {/* 2. ROTATOR: PREPORUČENO (Bazirano na preferencijama) */}
+          
           <div className="homepage-section-header">
             <h2 className="homepage-section-title">Skladano samo za tebe 🎼</h2>
             <p className="homepage-section-subtitle">
@@ -151,9 +151,9 @@ const HomePage = () => {
             )}
           </AnimatedSection>
 
-          {/* --- NOVE SEKCIJE S LINKOVIMA --- */}
+          
 
-          {/* 1. LINK NA CREATE EVENT */}
+          
           <AnimatedSection className="homepage-split-section">
             <div className="homepage-text-content">
               <h2>Započni novu simfoniju</h2>
@@ -171,7 +171,7 @@ const HomePage = () => {
             </div>
           </AnimatedSection>
 
-          {/* 2. LINK NA MY EVENTS (Obrnuto) */}
+          
           <AnimatedSection className="homepage-split-section section-reverse">
             <div className="homepage-text-content">
               <h2>Tvoji kulinarski trenutci</h2>
@@ -189,7 +189,7 @@ const HomePage = () => {
             </div>
           </AnimatedSection>
 
-          {/* 3. LINK NA FRIENDS */}
+          
           <AnimatedSection className="homepage-split-section">
             <div className="homepage-text-content">
               <h2>Poveži se s gurmanima</h2>
@@ -213,7 +213,7 @@ const HomePage = () => {
               <p>Pretraži po nazivu, autoru ili sastojcima.</p>
             </div>
 
-            {/* TRAŽILICA I FILTERI */}
+            
             <div className="search-controls-wrapper">
               <input
                 type="text"
@@ -223,7 +223,7 @@ const HomePage = () => {
                 className="big-search-input"
               />
 
-              {/* Jednostavni Filter Sort */}
+              
               <select
                 className="search-filter-select"
                 value={filterSort}
@@ -234,18 +234,18 @@ const HomePage = () => {
               </select>
             </div>
 
-            {/* REZULTATI PRETRAGE */}
+            
             <div className="search-results-grid">
               {events.map((event) => (
                 <EventCard key={event._id} event={event} />
               ))}
             </div>
 
-            {/* LOADING I EMPTY STATES */}
+            
             {isLoading && (
               <div style={{ marginTop: 20, textAlign: "center" }}>
                 <p>Učitavanje...</p>
-                {/* Ovdje možeš staviti <Spinner /> ako želiš */}
+                
               </div>
             )}
 
@@ -253,7 +253,7 @@ const HomePage = () => {
               <p className="no-results-msg">Nema rezultata za tvoj upit.</p>
             )}
 
-            {/* LOAD MORE GUMB */}
+            
             {!isLoading && hasMore && events.length > 0 && (
               <button className="btn-load-more" onClick={handleLoadMore}>
                 Prikaži još

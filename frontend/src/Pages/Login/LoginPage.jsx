@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext"; // Prilagodi putanju
+import { useAuth } from "../../Context/AuthContext"; 
 import Navbar from "../../Components/Navbars/NavbarLogin/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
@@ -12,7 +12,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    username: "", // Passport local strategy obično očekuje 'username'
+    username: "", 
     password: "",
   });
 
@@ -33,11 +33,11 @@ const LoginPage = () => {
 
     try {
       await loginUser(formData);
-      // Ako login prođe (nema errora), preusmjeri na home
+      
       navigate("/home");
     } catch (err) {
       console.error(err);
-      // Backend obično vraća poruku u err.response.data.message
+      
       setError(
         err.response?.data?.message || "Neispravno korisničko ime ili lozinka."
       );
