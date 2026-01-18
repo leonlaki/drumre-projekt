@@ -115,7 +115,7 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h2>{isEditMode ? "edit recipe" : "new recipe"}</h2>
+          <h2>{isEditMode ? "Edit recipe" : "New recipe"}</h2>
           <button className="btn-close" onClick={onClose}>&times;</button>
         </div>
 
