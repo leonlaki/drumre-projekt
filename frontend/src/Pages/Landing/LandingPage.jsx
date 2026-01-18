@@ -35,7 +35,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="section-image-wrapper">
-            <img src="/images/landingpage1.jfif" alt="Cooking" />
+            <img src="/images/landingpage1.jpg" alt="Cooking" />
           </div>
         </AnimatedSection>
 
@@ -48,7 +48,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="section-image-wrapper">
-            <img src="/images/landingPage-img3.webp" alt="Music" />
+            <img src="/images/landingpage2.jpg" alt="Music" />
           </div>
         </AnimatedSection>
 
