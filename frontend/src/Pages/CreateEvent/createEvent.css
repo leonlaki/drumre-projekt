@@ -46,7 +46,7 @@
   align-items: center;
   color: var(--text-secondary);
   font-size: 0.9rem;
-  transition: all 0.3s ease;
+  transition: all 0.7s ease-in-out;
 }
 
 .step-number {
@@ -116,7 +116,7 @@
   background-color: var(--bg-main);
   color: var(--text-primary);
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.7s ease-in-out, background-color 0.7s ease-in-out ;
 }
 
 .form-input:focus, .form-textarea:focus {
@@ -231,7 +231,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.7s ease-in-out, box-shadow 0.7s ease-in-out, background-color 0.7s ease-in-out;
 }
 
 .course-card-item:hover {
@@ -715,4 +715,25 @@
 .btn-publish:disabled {
   background-color: gray;
   cursor: not-allowed;
+}
+
+[data-theme='dark'] .form-input::-webkit-calendar-picker-indicator {
+  filter: invert(2);
+  cursor: pointer;
+}
+
+/* 2. Za Firefox i općenito bolji prikaz kalendara u dark modu */
+[data-theme='dark'] .form-input {
+  color-scheme: white;
+}
+
+@media (max-width: 600px) {
+  .course-card-item{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .step-card{
+    padding-left: 10px;
+    padding-right: 10px; 
+  }
 }

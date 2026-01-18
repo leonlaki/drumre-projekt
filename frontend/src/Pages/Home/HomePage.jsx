@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom"; // Bitno za linkove
 import "./homePage.css";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import CardRotator from "../../Components/CardRotator/CardRotator";
@@ -84,15 +83,7 @@ const HomePage = () => {
           mealApi.getRecommendations(),
         ]);
 
-        // 1. Priprema Trending podataka (Feed vraća authorDetails, EventCard traži author)
-        const formattedFeed = feedData.map((item) => ({
-          ...item,
-          author: item.authorDetails, // Mapiramo authorDetails u author
-          // Slika i ostalo su ok
-        }));
-        setTrendingEvents(formattedFeed);
-
-        // 2. Priprema Recommended podataka (Oni su već ok iz Controllera)
+        setTrendingEvents(feedData);    
         setRecommendedEvents(recData);
       } catch (error) {
         console.error("Error loading homepage data", error);
@@ -106,7 +97,6 @@ const HomePage = () => {
 
   return (
     <div className="homepage-wrapper">
-      <Navbar />
       <PageTransition>
         {/* HERO SEKCIJA */}
         <div className="homepage-hero-section">

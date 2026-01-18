@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import { userApi } from "../../api/userApi";
@@ -102,7 +101,7 @@ const Friends = () => {
 
   return (
     <div className="friends-wrapper">
-      <Navbar />
+  
       <PageTransition>
         <div className="friends-container">
           <h1>Friends & Community</h1>

@@ -98,6 +98,9 @@
 
 @media (max-width: 800px) {
   .event-grid { grid-template-columns: 1fr; }
+  .event-main-title{
+    font-size: 2rem;
+  }
 }
 
 .section-box {

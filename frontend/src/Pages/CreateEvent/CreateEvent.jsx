@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import Spinner from "../../Components/Spinner/Spinner";
@@ -139,7 +138,6 @@ const CreateEvent = () => {
 
   return (
     <div className="create-event-wrapper">
-      <Navbar />
       <PageTransition>
         <div className="create-event-container">
           

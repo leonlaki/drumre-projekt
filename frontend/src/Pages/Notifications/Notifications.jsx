@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PageTransition from "../../Context/PageTransition";
 import Spinner from "../../Components/Spinner/Spinner";
@@ -181,7 +180,6 @@ const Notifications = () => {
 
   return (
     <div className="notifications-wrapper">
-      <Navbar />
       <PageTransition>
         <div className="notifications-container">
           <header className="notif-header">

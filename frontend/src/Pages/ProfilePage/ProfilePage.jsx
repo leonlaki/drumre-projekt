@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { userApi } from "../../api/userApi";
 import { mealApi } from "../../api/mealApi"; // <--- NOVI IMPORT
-import Navbar from "../../Components/Navbars/NavbarLogedUser/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import PokemonSelector from "../../Components/PokemonSelector/PokemonSelector";
 import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
@@ -110,12 +109,12 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) return <div className="loading-screen"><Navbar /></div>;
-  if (!profileData) return <div className="error-screen"><Navbar /></div>;
+  // TO DO dadati sponere a ne ovo
+  if (loading) return <div className="loading-screen"></div>;
+  if (!profileData) return <div className="error-screen"></div>;
 
   return (
       <div className="profile-wrapper">
-        <Navbar />
         <SlidePageTransition>
         <div className="profile-container">
           

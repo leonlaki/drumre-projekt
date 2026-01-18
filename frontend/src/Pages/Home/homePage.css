@@ -24,7 +24,7 @@
   /* Stil kao .hero-title, ali malo veći jer je glavni brand name */
   font-size: 5rem; 
   font-weight: 800;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   color: var(--accent-color); /* Ističemo ime aplikacije */
   letter-spacing: -2px;
   line-height: 1.1;
@@ -81,7 +81,7 @@
 /* --- RESPONZIVNOST (Preslikano od LandingPage) --- */
 @media (max-width: 768px) {
   .homepage-hero-title {
-    font-size: 3rem; /* Prilagodba velikog naslova za mobitele */
+    font-size: 3.5rem; /* Prilagodba velikog naslova za mobitele */
   }
   
   .homepage-hero-section {
@@ -402,4 +402,9 @@
     width: 100%;
     flex: none;
   }
+}
+
+.hero-title{
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-h2);
 }

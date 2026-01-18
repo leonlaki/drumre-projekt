@@ -238,9 +238,13 @@
   .pref-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .preferences-card{
+    padding: 1.2rem;
+  }
 
   .pref-item {
     /* Na mobitelu možda bolje centrirano */
     justify-content: flex-start;
+    padding: 0.4rem 0.8rem;
   }
 }

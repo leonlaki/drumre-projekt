@@ -10,7 +10,7 @@ const Step1BasicInfo = ({ eventData, setEventData }) => {
   const getPreviewImage = () => {
     if (eventData.image && eventData.image.trim() !== "") return eventData.image;
     const title = eventData.title || "Event";
-    return `https://placehold.co/600x400/orange/white?text=${encodeURIComponent(title)}`;
+    return `https://placehold.co/600x400/coral/white?text=${encodeURIComponent(title)}`;
   };
 
   return (

@@ -4,7 +4,6 @@ const EventInvite = require("../models/EventInvite");
 
 // 1. KREIRAJ OBROK (EVENT)
 const createMeal = async (req, res) => {
-  // Destructuring
   const { title, description, courses, playlistId, date, location, image, participants } = req.body;
 
   if (!courses || courses.length === 0) {
@@ -12,9 +11,7 @@ const createMeal = async (req, res) => {
   }
 
   try {
-    // 1. Kreiraj Meal
-    // NAPOMENA: U participants stavljamo SAMO AUTORA (sebe) jer ostali još nisu prihvatili!
-    const meal = await Meal.create({
+    let meal = await Meal.create({
       title,
       description,
       image,
@@ -23,26 +20,23 @@ const createMeal = async (req, res) => {
       author: req.user._id,
       date: date || new Date(),
       location: location || "Kod autora",
-      participants: [req.user._id] // <--- Samo autor je siguran sudionik
+      participants: [req.user._id]
     });
 
-    // 2. Kreiraj Pozivnice (EventInvites) za odabrane prijatelje
     if (participants && participants.length > 0) {
-      // Filtriraj da ne šalješ sam sebi (za svaki slučaj)
       const guestsToInvite = participants.filter(id => id.toString() !== req.user._id.toString());
-
       const invites = guestsToInvite.map(guestId => ({
         from: req.user._id,
         to: guestId,
         meal: meal._id,
         status: 'pending'
       }));
-
       if (invites.length > 0) {
         await EventInvite.insertMany(invites);
       }
     }
     
+    meal = await meal.populate("author", "username avatar");
     res.status(201).json(meal);
   } catch (error) {
     console.error(error);
@@ -50,57 +44,47 @@ const createMeal = async (req, res) => {
   }
 };
 
-// ... ostatak filea ostaje isti ...
-
-// 2. FEED (TRENDING OBROCI - ZADNJIH 7 DANA)
+// 2. FEED (TRENDING OBROCI) - OVO JE RADILO DOBRO
 const getWeeklyMealFeed = async (req, res) => {
   try {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const feed = await Meal.aggregate([
-      // A. Filter: Zadnjih 7 dana
       { $match: { createdAt: { $gte: sevenDaysAgo } } },
-
-      // B. Statistika
       {
         $addFields: {
           voteCount: { $size: "$ratings" },
-          averageRating: { $avg: "$ratings.value" },
+          averageRating: { $avg: "$ratings.value" }, // Ovo je ključna linija
           commentCount: { $size: "$comments" },
         },
       },
-
-      // C. Sortiranje (Najviše lajkova)
       { $sort: { voteCount: -1 } },
-
-      // D. LIMIT - SAMO 15 NAJPOPULARNIJIH
       { $limit: 15 },
-
-      // E. POPULATE (Spajanje s ostalim podacima)
       {
         $lookup: {
           from: "users",
           localField: "author",
           foreignField: "_id",
-          as: "authorDetails",
+          as: "author", 
         },
       },
-      { $unwind: "$authorDetails" }, // Pretvara array u objekt
-      
-      // ... (Ostatak projekcije da podaci budu čisti za frontend) ...
+      { $unwind: "$author" },
       {
         $project: {
           title: 1,
           description: 1,
-          image: 1, // Dodali smo sliku
+          image: 1,
           createdAt: 1,
           voteCount: 1,
           averageRating: 1,
           commentCount: 1,
-          viewCount: 1, // Dodali viewCount
-          author: "$authorDetails", // Mapiramo authorDetails direktno u author
-          // Možeš dodati i ostalo ako trebaš
+          viewCount: 1,
+          author: { 
+             username: 1, 
+             avatar: 1, 
+             _id: 1 
+          }
         },
       },
     ]);
@@ -112,10 +96,10 @@ const getWeeklyMealFeed = async (req, res) => {
   }
 };
 
-// 3. DOHVATI OBROKE KORISNIKA (ZA PROFIL)
+// 3. DOHVATI OBROKE KORISNIKA
 const getUserMeals = async (req, res) => {
   const { username } = req.params;
-  const { sort } = req.query; // ?sort=newest ili ?sort=popular
+  const { sort } = req.query;
 
   try {
     const user = await User.findOne({ username });
@@ -123,31 +107,32 @@ const getUserMeals = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Odredi sortiranje
     let sortStage = {};
     if (sort === "newest") {
       sortStage = { createdAt: -1 };
     } else {
-      sortStage = { voteCount: -1, averageRating: -1 }; // Default: Popularno
+      sortStage = { voteCount: -1, averageRating: -1 };
     }
 
     const meals = await Meal.aggregate([
-      // A. FILTER: Samo obroci ovog korisnika (nema vremenskog ograničenja)
       { $match: { author: user._id } },
-
-      // B. Statistika
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails"
+        }
+      },
+      { $unwind: "$authorDetails" }, 
       {
         $addFields: {
           voteCount: { $size: "$ratings" },
-          averageRating: { $avg: "$ratings.value" },
+          averageRating: { $avg: "$ratings.value" }, // Računamo uživo
           commentCount: { $size: "$comments" },
         },
       },
-
-      // C. Sortiranje
       { $sort: sortStage },
-
-      // D. Populate
       {
         $lookup: {
           from: "playlists",
@@ -176,27 +161,37 @@ const getUserMeals = async (req, res) => {
           _id: "$_id",
           title: { $first: "$title" },
           description: { $first: "$description" },
+          image: { $first: "$image" },
           createdAt: { $first: "$createdAt" },
+          author: { 
+            $first: { 
+              username: "$authorDetails.username", 
+              avatar: "$authorDetails.avatar",
+              _id: "$authorDetails._id"
+            } 
+          },
           playlistDetails: { $first: "$playlistDetails" },
           voteCount: { $first: "$voteCount" },
-          averageRating: { $first: "$averageRating" },
+          averageRating: { $first: "$averageRating" }, // Prenosimo izračunatu vrijednost
           commentCount: { $first: "$commentCount" },
+          viewCount: { $first: "$viewCount" },
           courses: { $push: "$courses" },
         },
       },
       {
         $unwind: { path: "$playlistDetails", preserveNullAndEmptyArrays: true },
       },
-
-      // E. Projekcija
       {
         $project: {
           title: 1,
           description: 1,
+          image: 1,
           createdAt: 1,
           voteCount: 1,
           averageRating: 1,
           commentCount: 1,
+          viewCount: 1,
+          author: 1,
           "playlistDetails.name": 1,
           courses: {
             courseType: 1,
@@ -213,111 +208,69 @@ const getUserMeals = async (req, res) => {
   }
 };
 
-// 4. KOMENTIRAJ
+// ... commentOnMeal, rateMeal, incrementViewCount, incrementShareCount, getMealDetails ...
+// (Ostavi ih iste kao prije, nisu se mijenjali u logici prikaza)
 const commentOnMeal = async (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
-
   try {
     const meal = await Meal.findById(id);
     if (!meal) return res.status(404).json({ message: "Meal not found" });
-
     meal.comments.push({ user: req.user._id, text: text });
     await meal.save();
     res.json(meal);
-  } catch (err) {
-    res.status(500).json({ message: "Error posting comment" });
-  }
+  } catch (err) { res.status(500).json({ message: "Error posting comment" }); }
 };
 
-// 5. OCIJENI
 const rateMeal = async (req, res) => {
   const { id } = req.params;
   const { value } = req.body;
-
   try {
     const meal = await Meal.findById(id);
     if (!meal) return res.status(404).json({ message: "Meal not found" });
-
-    const prevIndex = meal.ratings.findIndex(
-      (r) => r.user.toString() === req.user._id.toString()
-    );
+    const prevIndex = meal.ratings.findIndex(r => r.user.toString() === req.user._id.toString());
     if (prevIndex !== -1) meal.ratings.splice(prevIndex, 1);
-
     meal.ratings.push({ user: req.user._id, value: Number(value) });
     await meal.save();
-
     res.json(meal);
-  } catch (error) {
-    res.status(500).json({ message: "Error rating meal" });
-  }
+  } catch (error) { res.status(500).json({ message: "Error rating meal" }); }
 };
 
-// 5. FUNKCIJA ZA BROJANJE PREGLEDA
 const incrementViewCount = async (req, res) => {
   try {
-    const mealId = req.params.id;
-
-    // $inc atomski povećava vrijednost (nema race-conditiona)
-    await Meal.findByIdAndUpdate(mealId, { $inc: { viewCount: 1 } });
-
-    // Vraćamo samo status 200 OK (ne treba nam nikakav podatak natrag)
+    await Meal.findByIdAndUpdate(req.params.id, { $inc: { viewCount: 1 } });
     res.status(200).send();
-  } catch (error) {
-    console.error("Greška viewCount:", error);
-    res.status(500).json({ message: "Greška pri ažuriranju pregleda" });
-  }
+  } catch (error) { res.status(500).json({ message: "Greška" }); }
 };
 
-// 6. FUNKCIJA ZA BROJANJE DIJELJENJA
 const incrementShareCount = async (req, res) => {
   try {
-    const mealId = req.params.id;
-
-    // Povećaj shareCount za +1
-    await Meal.findByIdAndUpdate(mealId, { $inc: { shareCount: 1 } });
-
+    await Meal.findByIdAndUpdate(req.params.id, { $inc: { shareCount: 1 } });
     res.status(200).send();
-  } catch (error) {
-    console.error("Greška shareCount:", error);
-    res.status(500).json({ message: "Greška pri dijeljenju" });
-  }
+  } catch (error) { res.status(500).json({ message: "Greška" }); }
 };
 
-// 7. DOHVATI DETALJE JEDNOG OBROKA
 const getMealDetails = async (req, res) => {
   try {
-    const mealId = req.params.id;
-
-    const meal = await Meal.findById(mealId)
-      .populate("author", "username avatar") // Tko je objavio
-      .populate("playlist") // Playlista
-      .populate("courses.recipe") // Recepti unutar sljedova
-      .populate("comments.user", "username avatar"); // Tko je komentirao
-
-    if (!meal) {
-      return res.status(404).json({ message: "Obrok nije pronađen" });
-    }
-
+    const meal = await Meal.findById(req.params.id)
+      .populate("author", "username avatar")
+      .populate("playlist")
+      .populate("courses.recipe")
+      .populate("comments.user", "username avatar");
+    if (!meal) return res.status(404).json({ message: "Obrok nije pronađen" });
     res.json(meal);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Greška pri dohvatu detalja obroka" });
-  }
+  } catch (error) { res.status(500).json({ message: "Greška" }); }
 };
 
+// --- POPRAVLJEN SEARCH MEALS ---
 const searchMeals = async (req, res) => {
   const { query, page = 1, limit = 20, sort = 'newest' } = req.query;
-
-  // Pretvori u brojeve
   const pageNum = parseInt(page);
   const limitNum = parseInt(limit);
   const skip = (pageNum - 1) * limitNum;
 
   try {
-    // 1. OSNOVNI PIPELINE (Joinovi koji trebaju uvijek)
     const pipeline = [
-      // Spoji s Userima
       {
         $lookup: {
           from: "users",
@@ -327,8 +280,6 @@ const searchMeals = async (req, res) => {
         },
       },
       { $unwind: "$authorDetails" },
-
-      // Spoji s Receptima (da izvučemo imena za pretragu)
       { $unwind: "$courses" },
       {
         $lookup: {
@@ -339,8 +290,8 @@ const searchMeals = async (req, res) => {
         },
       },
       { $unwind: "$courseRecipeDetails" },
-
-      // Grupiraj natrag
+      
+      // Grupiranje natrag
       {
         $group: {
           _id: "$_id",
@@ -349,15 +300,28 @@ const searchMeals = async (req, res) => {
           image: { $first: "$image" },
           author: { $first: "$authorDetails" },
           createdAt: { $first: "$createdAt" },
-          ratings: { $first: "$ratings" },
-          averageRating: { $first: "$averageRating" },
+          ratings: { $first: "$ratings" }, // Čuvamo niz ocjena
+          // OVDJE JE BIO PROBLEM: Čitao si polje iz baze koje je možda 0
+          // averageRating: { $first: "$averageRating" }, 
           viewCount: { $first: "$viewCount" },
           recipeNames: { $push: "$courseRecipeDetails.title" },
         },
       },
+
+      // --- NOVO: Računamo prosjek uživo ---
+      {
+        $addFields: {
+           averageRating: { 
+             $cond: { 
+               if: { $gt: [{ $size: "$ratings" }, 0] },
+               then: { $avg: "$ratings.value" },
+               else: 0 
+             }
+           }
+        }
+      }
     ];
 
-    // 2. SEARCH FILTER (Samo ako ima queryja)
     if (query && query.trim() !== "") {
       const regex = new RegExp(query, "i");
       pipeline.push({
@@ -371,19 +335,15 @@ const searchMeals = async (req, res) => {
       });
     }
 
-    // 3. SORTIRANJE
-    let sortStage = { createdAt: -1 }; // Default: Najnovije
+    let sortStage = { createdAt: -1 };
     if (sort === 'popular') {
       sortStage = { viewCount: -1 };
     }
     pipeline.push({ $sort: sortStage });
-
-    // 4. PAGINACIJA
     pipeline.push({ $skip: skip });
     pipeline.push({ $limit: limitNum });
 
     const results = await Meal.aggregate(pipeline);
-
     res.json(results);
   } catch (error) {
     console.error("Search meals error:", error);
@@ -391,15 +351,13 @@ const searchMeals = async (req, res) => {
   }
 };
 
-// 9. PREPORUKE ZA KORISNIKA (Interni Eventi)
+// --- POPRAVLJEN RECOMMENDED MEALS ---
 const getRecommendedMeals = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     
-    // Fallback ako nema preferencija
     if (!user.preferences || 
        (user.preferences.categories.length === 0 && user.preferences.areas.length === 0)) {
-       // Vrati random 15 ako nema preferencija
        const random = await Meal.aggregate([{ $sample: { size: 15 } }]);
        const populated = await User.populate(random, { path: "author", select: "username avatar" });
        return res.json(populated);
@@ -408,7 +366,6 @@ const getRecommendedMeals = async (req, res) => {
     const { categories, areas } = user.preferences;
 
     const recommendations = await Meal.aggregate([
-      // 1. Prvo moramo "dohvatiti" recepte unutar courses da vidimo njihove kategorije/zemlje
       { $unwind: "$courses" },
       {
         $lookup: {
@@ -419,43 +376,47 @@ const getRecommendedMeals = async (req, res) => {
         }
       },
       { $unwind: "$recipeDetails" },
-
-      // 2. Grupiraj natrag po Eventu (Meal), ali usput RAČUNAJ BODOVE
       {
         $group: {
           _id: "$_id",
           title: { $first: "$title" },
           description: { $first: "$description" },
           image: { $first: "$image" },
-          authorId: { $first: "$author" }, // Čuvamo ID za kasnije populate
+          authorId: { $first: "$author" },
           viewCount: { $first: "$viewCount" },
           createdAt: { $first: "$createdAt" },
-          ratings: { $first: "$ratings" },
+          ratings: { $first: "$ratings" }, // Čuvamo ocjene
           
-          // --- ALGORITAM BODOVANJA ---
+          // OVDJE JE FALIO averageRating! 
+          // Nisi ga uopće imao u $group fazi, pa se izgubio.
+          
           score: {
             $sum: {
               $add: [
-                // Bod za kategoriju? (1 ako je u listi, 0 ako nije)
                 { $cond: [{ $in: ["$recipeDetails.category", categories] }, 1, 0] },
-                // Bod za zemlju? (1 ako je u listi, 0 ako nije)
                 { $cond: [{ $in: ["$recipeDetails.area", areas] }, 1, 0] }
               ]
             }
           }
         }
       },
+      
+      // --- NOVO: Računamo prosjek uživo ---
+      {
+        $addFields: {
+           averageRating: { 
+             $cond: { 
+               if: { $gt: [{ $size: "$ratings" }, 0] },
+               then: { $avg: "$ratings.value" },
+               else: 0 
+             }
+           }
+        }
+      },
 
-      // 3. Izbaci one koji imaju 0 bodova (nisu relevantni)
       { $match: { score: { $gt: 0 } } },
-
-      // 4. Sortiraj po bodovima (Najveći score prvi)
       { $sort: { score: -1 } },
-
-      // 5. Limitiraj na 15
       { $limit: 15 },
-
-      // 6. Populate Autora (jer smo gore imali samo ID)
       {
         $lookup: {
           from: "users",
@@ -475,39 +436,24 @@ const getRecommendedMeals = async (req, res) => {
   }
 };
 
-// 8. OBRIŠI EVENT (Samo autor)
 const deleteMeal = async (req, res) => {
   try {
     const meal = await Meal.findById(req.params.id);
     if (!meal) return res.status(404).json({ message: "Event nije pronađen" });
-
-    if (meal.author.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Niste autor ovog eventa" });
-    }
-
+    if (meal.author.toString() !== req.user._id.toString()) return res.status(403).json({ message: "Niste autor" });
     await meal.deleteOne();
     res.json({ message: "Event obrisan" });
-  } catch (error) {
-    res.status(500).json({ message: "Greška pri brisanju" });
-  }
+  } catch (error) { res.status(500).json({ message: "Greška" }); }
 };
 
-// 9. IZAĐI IZ EVENTA (Samo sudionik)
 const leaveMeal = async (req, res) => {
   try {
     const meal = await Meal.findById(req.params.id);
     if (!meal) return res.status(404).json({ message: "Event nije pronađen" });
-
-    // Makni usera iz participants arraya
-    meal.participants = meal.participants.filter(
-      (id) => id.toString() !== req.user._id.toString()
-    );
-
+    meal.participants = meal.participants.filter(id => id.toString() !== req.user._id.toString());
     await meal.save();
     res.json({ message: "Napustili ste event" });
-  } catch (error) {
-    res.status(500).json({ message: "Greška pri izlasku" });
-  }
+  } catch (error) { res.status(500).json({ message: "Greška" }); }
 };
 
 module.exports = {
