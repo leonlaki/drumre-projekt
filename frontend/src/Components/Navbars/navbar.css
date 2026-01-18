@@ -36,16 +36,15 @@
   text-decoration: none;
 }
 
-/* --- POSTOJEĆI CSS (Zadržan) --- */
+
 .navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2%;
   background-color: var(--bg-navbar);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Malo nježniji border */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
   width: 100%;
-  /* Osigurava da dropdown ne bude skriven ako overflow nije visible */
   position: relative;
   z-index: 100;
 }
@@ -70,9 +69,9 @@
   color: var(--accent-color);
 }
 
-/* --- NOVI CSS (navbar-logd-user...) --- */
 
-/* Wrapper za pozicioniranje dropdowna */
+
+
 .navbar-logd-user-menu-wrapper {
   position: relative;
   display: flex;
@@ -90,7 +89,7 @@
   justify-content: center;
 }
 
-/* Dropdown kontejner */
+
 .navbar-logd-user-dropdown {
   position: absolute;
   top: 120%;
@@ -105,17 +104,16 @@
   flex-direction: column;
   z-index: 1000;
 
-  /* --- ANIMACIJA (Slide Up/Down logika) --- */
-  /* 1. Početno stanje (skriveno i pomaknuto gore) */
+
   opacity: 0;
   transform: translateY(-10px);
-  visibility: hidden; /* Bitno: sprječava klikanje dok je skriven */
+  visibility: hidden; 
 
-  /* Tranzicija za sva svojstva */
+  
   transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out, visibility 0.7s, background-color 0.7s ease-in-out;
 }
 
-/* --- STANJE KADA JE OTVOREN --- */
+
 .navbar-logd-user-dropdown.show {
   opacity: 1;
   transform: translateY(0);
@@ -127,7 +125,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* Ostali stilovi za iteme (ostaju isti) */
+
 .navbar-logd-user-item {
   padding: 15px 20px;
   text-decoration: none;
@@ -162,22 +160,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px; /* Razmak između linkova i crtica */
+  gap: 15px; 
 
-  /* Ključno za savršeno centriranje u odnosu na cijeli ekran */
+  
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  height: 100%; /* Da prati visinu navbara */
+  height: 100%; 
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--text-primary);
   font-size: 1.4rem;
-  font-weight: 500; /* Malo deblji font za bolju čitljivost */
+  font-weight: 500; 
   transition: color 0.3s ease;
-  white-space: nowrap; /* Sprječava da se tekst prelomi u novi red */
+  white-space: nowrap; 
   letter-spacing: 0.5px;
 }
 
@@ -185,12 +183,12 @@
   color: var(--accent-color);
 }
 
-/* Stil za crticu | */
+
 .nav-link-separator {
   color: var(--text-secondary);
   font-size: 0.9rem;
   margin: 0;
-  user-select: none; /* Sprječava selektiranje crtice mišem */
+  user-select: none; 
   opacity: 0.6;
 }
 
@@ -198,7 +196,7 @@
   display: none;
 }
 
-/* Stil za separator liniju unutar dropdowna */
+
 .navbar-dropdown-separator {
   height: 1px;
   background-color: rgba(0, 0, 0, 0.1);
@@ -210,22 +208,22 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* --- NOTIFIKACIJE (CRVENE TOČKICE) --- */
 
-/* 1. Točkica na Hamburgeru */
+
+
 .nav-hamburger-badge {
   position: absolute;
   top: 0px;
   right: 0px;
   width: 10px;
   height: 10px;
-  background-color: #ff3333; /* Crvena boja */
+  background-color: #ff3333; 
   border-radius: 50%;
-  border: 2px solid var(--bg-navbar); /* Mali okvir boje pozadine da se odvoji od ikone */
-  box-sizing: content-box; /* Da border ne smanjuje točkicu */
+  border: 2px solid var(--bg-navbar); 
+  box-sizing: content-box;
 }
 
-/* 2. Brojač unutar Dropdowna */
+
 .nav-dropdown-badge {
   background-color: #ff3333;
   color: white;
@@ -240,7 +238,7 @@
   min-width: 20px;
 }
 
-/* Animacija za pojavljivanje (opcionalno) */
+
 .nav-hamburger-badge,
 .nav-dropdown-badge {
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -255,16 +253,16 @@
   }
 }
 
-/* 2. Kada je ekran manji od 900px (Mobile/Tablet) */
+
 @media (max-width: 900px) {
-  /* Prikazujemo linkove u dropdownu */
+  
   .mobile-only-links {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  /* Skrivamo centralni dio navbara (već smo imali ovo, ali potvrđujemo) */
+  
   .nav-center {
     display: none;
   }

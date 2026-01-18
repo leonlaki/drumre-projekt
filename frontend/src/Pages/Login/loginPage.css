@@ -1,4 +1,4 @@
-/* loginPage.css */
+
 
 .login-wrapper {
   width: 100%;
@@ -8,7 +8,7 @@
   flex-direction: column;
 }
 
-/* Hero Section specifičan za Login */
+
 .login-hero-section {
   text-align: center;
   padding: 4rem 1rem 2rem 1rem;
@@ -27,7 +27,7 @@
   margin: 0 auto;
 }
 
-/* Pozicioniranje kartice unutar AnimatedSection */
+
 .login-content-section {
   display: flex;
   justify-content: center;
@@ -35,11 +35,11 @@
   padding-bottom: 4rem;
 }
 
-/* Glavna Login Kartica */
+
 .login-card {
   background-color: var(--bg-card);
   width: 100%;
-  max-width: 450px; /* Malo uže od registracije jer ima manje polja */
+  max-width: 450px; 
   padding: 2.5rem;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
@@ -56,7 +56,7 @@
   margin-bottom: 0.5rem;
 }
 
-/* Forma */
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@
   box-shadow: 0 0 0 3px rgba(255, 87, 51, 0.1);
 }
 
-/* Glavni gumb */
+
 .login-btn-submit {
   margin-top: 0.5rem;
   padding: 16px;
@@ -120,7 +120,7 @@
   transform: none;
 }
 
-/* Divider */
+
 .login-divider {
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@
   padding: 0 15px;
 }
 
-/* Social Buttons */
+
 .login-social-buttons {
   display: flex;
   gap: 1rem;
@@ -160,11 +160,11 @@
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
   
-  /* --- NOVO: Poravnanje ikona --- */
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* Razmak između ikone i teksta */
+  gap: 10px; 
 }
 
 [data-theme='dark'] .login-btn-social {
@@ -176,7 +176,7 @@
   transform: translateY(-2px);
 }
 
-/* Error poruka */
+
 .login-error-msg {
   background-color: rgba(255, 87, 51, 0.1);
   color: #ff3333;
@@ -188,7 +188,7 @@
   border: 1px solid rgba(255, 87, 51, 0.2);
 }
 
-/* Footer link */
+
 .login-footer-text {
   text-align: center;
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -209,7 +209,7 @@
   text-decoration: underline;
 }
 
-/* Responzivnost */
+
 @media (max-width: 600px) {
   .login-card {
     padding: 1.5rem;

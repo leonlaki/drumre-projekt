@@ -60,7 +60,7 @@
   background-color: var(--bg-main);
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  gap: 10px; /* Razmak između imena i gumba */
+  gap: 10px; 
 }
 
 .user-card-small img {

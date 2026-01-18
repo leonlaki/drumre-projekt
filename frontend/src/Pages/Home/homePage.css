@@ -1,44 +1,41 @@
-/* homePage.css */
+
 
 .homepage-wrapper {
   width: 100%;
-  /* Osiguravamo da footer bude na dnu ako je sadržaj kratak, iako ovdje ima dosta sadržaja */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* --- HERO SEKCIJA (Preslikano od .hero-section) --- */
+
 .homepage-hero-section {
-  min-height: 50vh; /* Isti visinski omjer kao na LandingPageu */
+  min-height: 50vh; 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding: 0 20px;
-  background-color: transparent; /* Eksplicitno, za svaki slučaj */
+  background-color: transparent; 
 }
 
 .homepage-hero-title {
-  /* Stil kao .hero-title, ali malo veći jer je glavni brand name */
   font-size: 5rem; 
   font-weight: 800;
   margin-bottom: 30px;
-  color: var(--accent-color); /* Ističemo ime aplikacije */
+  color: var(--accent-color); 
   letter-spacing: -2px;
   line-height: 1.1;
 }
 
 .homepage-hero-subtitle {
-  /* Identično kao .hero-subtitle */
   font-size: var(--fs-body);
   color: var(--text-secondary);
   max-width: 700px;
   line-height: 1.6;
 }
 
-/* --- GLAVNI SADRŽAJ (Rotatori) --- */
+
 
 .homepage-content-container {
   display: flex;
@@ -48,11 +45,11 @@
   padding-bottom: 4rem;
 }
 
-/* Stilovi za zaglavlja sekcija (Naslov iznad rotatora) */
+
 .homepage-section-header {
   text-align: center;
-  margin-top: 4rem; /* Odmak od prethodne sekcije */
-  margin-bottom: 2rem; /* Odmak do rotatora */
+  margin-top: 4rem; 
+  margin-bottom: 2rem; 
   padding: 0 20px;
   max-width: 800px;
 }
@@ -70,7 +67,7 @@
   line-height: 1.6;
 }
 
-/* Specifična klasa za AnimatedSection unutar Home-a */
+
 .homepage-animated-section {
   width: 100%;
   display: flex;
@@ -78,15 +75,15 @@
   margin-bottom: 2rem;
 }
 
-/* --- RESPONZIVNOST (Preslikano od LandingPage) --- */
+
 @media (max-width: 768px) {
   .homepage-hero-title {
-    font-size: 3.5rem; /* Prilagodba velikog naslova za mobitele */
+    font-size: 3.5rem; 
   }
   
   .homepage-hero-section {
-    min-height: 40vh; /* Malo manje visine na mobitelu */
-    padding: 60px 20px 20px 20px; /* Više paddinga gore zbog navbara */
+    min-height: 40vh;
+    padding: 60px 20px 20px 20px; 
   }
 
   .homepage-section-title {
@@ -105,24 +102,24 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 1200px; /* Da ne bude preširoko na velikim ekranima */
-  margin: 4rem auto 2rem auto; /* Razmak gore/dolje */
+  max-width: 1200px; 
+  margin: 4rem auto 2rem auto; 
   padding: 0 2rem;
-  gap: 3rem; /* Razmak između teksta i slike */
+  gap: 3rem; 
 }
 
-/* Klasa za obrtanje redoslijeda (Tekst desno, slika lijevo) */
+
 .section-reverse {
   flex-direction: row-reverse;
 }
 
-/* Stilovi za tekstualni dio */
+
 .homepage-text-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* Lijevo poravnanje */
+  align-items: flex-start; 
   text-align: left;
 }
 
@@ -135,13 +132,13 @@
 
 .homepage-text-content p {
   font-size: var(--fs-body);
-  color: var(--text-primary); /* ili --text-secondary ako želiš sivkastije */
+  color: var(--text-primary); 
   margin-bottom: 2.5rem;
   line-height: 1.6;
   max-width: 500px;
 }
 
-/* Stilovi za slike */
+
 .homepage-image-wrapper {
   flex: 1.2;
   display: flex;
@@ -154,23 +151,23 @@
   max-width: 600px;
   border-radius: 30px;
   
-  /* Landing page efekt blendanja slike s pozadinom */
+  
   mix-blend-mode: multiply; 
   transition: transform 0.5s ease;
 }
 
-/* Dark mode prilagodba za slike */
+
 [data-theme='dark'] .homepage-image-wrapper img {
   mix-blend-mode: screen;
   opacity: 0.9;
 }
 
-/* --- GUMB (Link) --- */
+
 .homepage-action-button {
   background-color: var(--bg-main-contrast);
   color: var(--text-primary-contrast);
   padding: 18px 45px;
-  font-size: var(--fs-h2); /* Dovoljno velik da bude uočljiv */
+  font-size: var(--fs-h2); 
   border-radius: 20px;
   text-decoration: none;
   text-align: center;
@@ -186,21 +183,21 @@
   transform: translateY(-2px);
 }
 
-/* --- RESPONZIVNOST --- */
+
 @media (max-width: 900px) {
   .homepage-split-section {
-    flex-direction: column; /* Slika ispod teksta na manjim ekranima */
+    flex-direction: column; 
     text-align: center;
     gap: 2rem;
     margin-top: 3rem;
   }
 
   .section-reverse {
-    flex-direction: column; /* I obrnuta sekcija ide u stupac */
+    flex-direction: column; 
   }
 
   .homepage-text-content {
-    align-items: center; /* Centriranje teksta i gumba */
+    align-items: center; 
     text-align: center;
     width: 100%;
   }
@@ -214,11 +211,11 @@
   }
   
   .homepage-image-wrapper img {
-    max-width: 100%; /* Puna širina na mobitelu */
+    max-width: 100%; 
   }
 
   .homepage-action-button {
-    width: 80%; /* Širi gumb na mobitelu */
+    width: 80%;
     padding: 15px 30px;
     font-size: 1.2rem;
   }
@@ -293,7 +290,7 @@
   transform: translateY(-2px);
 }
 
-/* GRID ZA KARTICE */
+
 .search-results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -321,9 +318,9 @@
   align-items: center;
 }
 
-/* Veći search input */
+
 .big-search-input {
-  flex: 2; /* Zauzima više mjesta */
+  flex: 2; 
   padding: 18px 25px;
   border-radius: 50px;
   border: 2px solid rgba(0,0,0,0.1);
@@ -340,9 +337,9 @@
   box-shadow: 0 4px 20px rgba(255, 87, 51, 0.2);
 }
 
-/* Filter Select */
+
 .search-filter-select {
-  flex: 0.5; /* Manji od inputa */
+  flex: 0.5; 
   padding: 18px 20px;
   border-radius: 50px;
   border: 2px solid rgba(0,0,0,0.1);
@@ -350,8 +347,8 @@
   color: var(--text-primary);
   font-size: 1rem;
   cursor: pointer;
-  appearance: none; /* Miče defaultnu strelicu browsera */
-  /* Možeš dodati custom strelicu background-imageom ako želiš */
+  appearance: none; 
+  
 }
 
 .search-filter-select:focus {
@@ -359,7 +356,7 @@
   border-color: var(--accent-color);
 }
 
-/* Grid rezultata */
+
 .search-results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -368,7 +365,7 @@
   margin-bottom: 2rem;
 }
 
-/* Gumb za učitavanje još */
+
 .btn-load-more {
   padding: 12px 30px;
   background-color: transparent;
@@ -393,7 +390,7 @@
   margin-top: 2rem;
 }
 
-/* Mobile responsive */
+
 @media (max-width: 600px) {
   .search-controls-wrapper {
     flex-direction: column;

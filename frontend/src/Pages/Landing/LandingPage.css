@@ -1,4 +1,4 @@
-/* LandingPage.css */
+
 
 .landing-wrapper {
   width: 100%;
@@ -25,9 +25,7 @@
   max-width: 700px;
 }
 
-/* .section-container je maknut u AnimatedSection.css */
 
-/* Ovu klasu ostavljamo ovdje jer je specifična za raspored elemenata na ovoj stranici */
 .section-reverse { 
   flex-direction: row-reverse; 
 }
@@ -51,7 +49,7 @@
   border-radius: 30px;
   mix-blend-mode: multiply;
   
-  /* Backface visibility je specifičan za sliku, ne za sekciju */
+
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -92,7 +90,7 @@
 
 @media (max-width: 768px) {
   .hero-title { font-size: 2.5rem; }
-  /* Media query za .section-container je prebačen u AnimatedSection.css */
+  
 }
 
 .landing-page-magic-section {

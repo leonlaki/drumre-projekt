@@ -1,4 +1,4 @@
-/* registerPage.css */
+
 
 .register-wrapper {
   width: 100%;
@@ -8,7 +8,7 @@
   flex-direction: column;
 }
 
-/* --- NOVI HERO SECTION (ISTO KAO LOGIN) --- */
+
 .register-hero-section {
   text-align: center;
   padding: 4rem 1rem 2rem 1rem;
@@ -23,13 +23,13 @@
 .register-hero-subtitle {
   font-size: var(--fs-body);
   color: var(--text-secondary);
-  max-width: 600px; /* Isto kao na login */
+  max-width: 600px; 
   margin: 0 auto;
 }
-/* ------------------------------------------- */
 
 
-/* Poravnanje sadržaja */
+
+
 .register-content {
   display: flex;
   justify-content: center;
@@ -37,7 +37,7 @@
   padding-bottom: 4rem; 
 }
 
-/* Glavna kartica */
+
 .register-card {
   background-color: var(--bg-card);
   width: 100%;
@@ -48,7 +48,7 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Forma */
+
 .register-form {
   display: flex;
   flex-direction: column;
@@ -101,7 +101,7 @@ input::placeholder {
   opacity: 0.5;
 }
 
-/* Glavni gumb */
+
 .btn-submit {
   margin-top: 1rem;
   padding: 16px;
@@ -126,7 +126,7 @@ input::placeholder {
   transform: none;
 }
 
-/* Divider */
+
 .divider {
   display: flex;
   align-items: center;
@@ -148,7 +148,7 @@ input::placeholder {
   padding: 0 15px;
 }
 
-/* Social Buttons (Ažurirano za flex ikone) */
+
 .social-login-buttons {
   display: flex;
   gap: 1rem;
@@ -166,7 +166,7 @@ input::placeholder {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 
-  /* Poravnanje ikona */
+  
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,7 +182,7 @@ input::placeholder {
   transform: translateY(-2px);
 }
 
-/* Footer linkovi */
+
 .login-redirect {
   text-align: center;
   border-top: 1px solid rgba(0,0,0,0.05);
@@ -203,7 +203,7 @@ input::placeholder {
   text-decoration: underline;
 }
 
-/* Error */
+
 .form-error {
   background-color: rgba(255, 87, 51, 0.1);
   color: #ff3333;
@@ -215,7 +215,7 @@ input::placeholder {
   border: 1px solid rgba(255, 87, 51, 0.2);
 }
 
-/* Responzivnost */
+
 @media (max-width: 600px) {
   .register-card {
     padding: 1.5rem;

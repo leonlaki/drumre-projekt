@@ -10,7 +10,7 @@
   transition: background-image 0.7s ease-in-out;
 }
 
-/* Footer.css */
+
 .footer-container {
   width: 100%;
   padding-bottom: 60px;
@@ -19,14 +19,14 @@
   align-items: center;
   gap: 30px;
   
-  /* DEFAULT: Ako je stranica Light, Footer će biti Dark */
-  background-color: #121212; /* Fiksna tamna za light temu */
+
+  background-color: #121212;
   color: #f5f5f5;
 }
 
-/* Ako je stranica u Dark modu, Footer neka bude Light */
+
 [data-theme='dark'] .footer-container {
-  background-color: #ffffff; /* Fiksna svijetla za dark temu */
+  background-color: #ffffff; 
   color: #1a1a1a;
 }
 
@@ -52,7 +52,7 @@
 
 .footer-links a {
   text-decoration: none;
-  color: inherit; /* Nasljeđuje boju od footera */
+  color: inherit; 
   font-size: var(--fs-small);
   opacity: 0.8;
   transition: opacity 0.2s;

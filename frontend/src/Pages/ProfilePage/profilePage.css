@@ -1,4 +1,4 @@
-/* src/Pages/Profile/profilePage.css */
+
 
 .profile-wrapper {
   min-height: 100vh;
@@ -15,19 +15,19 @@
   flex: 1;
 }
 
-/* KARTICA PROFILA */
+
 .profile-header-card {
   background-color: var(--bg-card);
   border-radius: 20px;
   padding: 2rem;
   display: grid;
-  grid-template-columns: auto 1fr auto; /* Avatar | Info | Stats */
+  grid-template-columns: auto 1fr auto; 
   gap: 2rem;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   align-items: start;
 }
 
-/* AVATAR SEKCIJA */
+
 .profile-avatar-section {
   display: flex;
   flex-direction: column;
@@ -42,7 +42,7 @@
   object-fit: contain;
   background-color: var(--bg-main);
   border: 4px solid var(--accent-color);
-  image-rendering: pixelated; /* Bitno za GIFove */
+  image-rendering: pixelated; 
 }
 
 .btn-edit-profile {
@@ -61,7 +61,7 @@
   border-color: var(--text-primary);
 }
 
-/* INFO SEKCIJA */
+
 .profile-info-section {
   display: flex;
   flex-direction: column;
@@ -75,7 +75,7 @@
 
 .profile-bio {
   color: var(--text-secondary);
-  white-space: pre-wrap; /* Čuva nove redove */
+  white-space: pre-wrap; 
 }
 
 .profile-meta {
@@ -87,7 +87,7 @@
   opacity: 0.8;
 }
 
-/* STATS */
+
 .profile-stats {
   display: flex;
   flex-direction: column;
@@ -117,7 +117,6 @@
   letter-spacing: 1px;
 }
 
-/* EDIT FORMA */
 .edit-profile-form {
   display: flex;
   flex-direction: column;
@@ -159,21 +158,21 @@
   cursor: pointer;
 }
 
-/* RESPONSIVE */
+
 @media (max-width: 768px) {
   .profile-header-card {
-    grid-template-columns: 1fr; /* Sve u jedan stupac */
+    grid-template-columns: 1fr; 
     text-align: center;
   }
 
   .profile-stats {
     flex-direction: row;
-    flex-wrap: wrap; /* Dodaj ovo da mogu preći u novi red ako ne stanu */
+    flex-wrap: wrap; 
     justify-content: space-around;
-    gap: 15px; /* Malo razmaka */
+    gap: 15px;
   }
   .stat-box {
-    min-width: 70px; /* Da nisu presitni na mobitelu */
+    min-width: 70px; 
   }
   
   .profile-meta {
@@ -185,7 +184,7 @@
   }
 }
 
-/* --- EVENTS SECTION --- */
+
 .profile-events-section {
   margin-top: 3rem;
   display: flex;
@@ -209,10 +208,10 @@
 
 .profile-event-wrapper {
   position: relative;
-  /* Omogućuje da se gumb pozicionira u odnosu na wrapper */
+  
 }
 
-/* GUMBOVI ZA AKCIJE NA KARTICI */
+
 .btn-delete-event, .btn-leave-event {
   position: absolute;
   top: 15px;
@@ -225,7 +224,7 @@
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: bold;
-  z-index: 10; /* Iznad EventCarda */
+  z-index: 10; 
   opacity: 0;
   transition: opacity 0.2s, transform 0.2s;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -242,7 +241,7 @@
 }
 
 .btn-leave-event {
-  background-color: rgba(255, 165, 0, 0.8); /* Narančasta za leave */
+  background-color: rgba(255, 165, 0, 0.8); 
 }
 .btn-leave-event:hover {
   background-color: orange;

@@ -1,4 +1,4 @@
-/* src/pages/Preferences/preferences.css */
+
 
 .preferences-wrapper {
   width: 100%;
@@ -35,14 +35,14 @@
 .preferences-card {
   background-color: var(--bg-card);
   width: 100%;
-  max-width: 900px; /* Šire jer imamo puno gumbića */
+  max-width: 900px; 
   padding: 2.5rem;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Sekcije */
+
 .pref-section {
   margin-bottom: 2.5rem;
 }
@@ -66,7 +66,7 @@
   display: block;
 }
 
-/* Grid za iteme */
+
 .pref-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -85,7 +85,7 @@
   animation: fadeIn 0.5s ease-in;
 }
 
-/* Stil za sličice kategorija */
+
 .pref-thumb {
   width: 40px;
   height: 40px;
@@ -94,7 +94,7 @@
   margin-right: 10px;
 }
 
-/* Pojedinačni item (gumb) */
+
 .pref-item {
   display: flex;
   align-items: center;
@@ -102,15 +102,15 @@
   gap: 8px;
   background-color: var(--bg-main);
   border: 2px solid transparent;
-  padding: 0.8rem 1.2rem; /* Malo više paddinga sa strane */
+  padding: 0.8rem 1.2rem; 
   border-radius: 12px;
   cursor: pointer;
   text-align: center;
   transition: all 0.7s ease;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Lijevo poravnanje izgleda bolje sa slikom */
-  gap: 12px; /* Razmak između zastave i teksta */
+  justify-content: flex-start; 
+  gap: 12px; 
   min-height: 60px;
   font-weight: 500;
   color: var(--text-primary);
@@ -137,7 +137,7 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Odabrano stanje */
+
 .pref-item.selected {
   border-color: var(--accent-color);
   background-color: rgba(255, 87, 51, 0.05);
@@ -145,7 +145,7 @@
   font-weight: 700;
 }
 
-/* Footer akcije */
+
 .pref-actions {
   display: flex;
   flex-direction: column;
@@ -192,7 +192,7 @@
   border-radius: 8px;
 }
 
-/* Loading stanje */
+
 .loading-container {
   display: flex;
   justify-content: center;
@@ -208,32 +208,32 @@
     margin: 0 15px;
   }
   .pref-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 stupca na mobitelu */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .pref-flag {
   width: 28px;
   height: 28px;
-  border-radius: 50%; /* Kružić */
-  object-fit: cover; /* Da slika ispuni kružić bez rastezanja */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Mala sjena ispod zastavice */
+  border-radius: 50%;
+  object-fit: cover; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Ako je odabrano, dodajemo malo "sjaja" */
+
 .pref-item.selected {
   border-color: var(--accent-color);
-  background-color: rgba(255, 87, 51, 0.08); /* Malo jača pozadina */
+  background-color: rgba(255, 87, 51, 0.08); 
   color: var(--accent-color);
   font-weight: 700;
 }
 
 .pref-item.selected .pref-flag {
-  border: 2px solid var(--accent-color); /* I zastavica dobije obrub */
+  border: 2px solid var(--accent-color); 
 }
 
-/* Na mobitelima možda želimo centrirati sve */
+
 @media (max-width: 600px) {
   .pref-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -243,7 +243,7 @@
   }
 
   .pref-item {
-    /* Na mobitelu možda bolje centrirano */
+    
     justify-content: flex-start;
     padding: 0.4rem 0.8rem;
   }

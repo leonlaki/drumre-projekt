@@ -1,11 +1,11 @@
-/* src/Components/PokemonSelector/pokemonSelector.css */
+
 
 .poke-selector-container {
   margin-top: 1rem;
   border: 1px solid rgba(0,0,0,0.1);
   border-radius: 12px;
   padding: 1rem;
-  background-color: var(--bg-card); /* Bolje bg-card da se ističe od pozadine */
+  background-color: var(--bg-card); 
 }
 
 [data-theme='dark'] .poke-selector-container {
@@ -30,13 +30,13 @@
   color: var(--text-secondary);
 }
 
-/* GRID */
+
 .poke-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 10px;
-  /* Maknuli smo max-height i overflow-y jer sad imamo paginaciju */
-  min-height: 220px; /* Da ne skače visina previše kad je manje itema */
+  
+  min-height: 220px; 
 }
 
 .poke-item {
@@ -63,7 +63,7 @@
 }
 
 .poke-img {
-  width: 50px; /* Malo manje da bude urednije */
+  width: 50px; 
   height: 50px;
   object-fit: contain;
   image-rendering: pixelated; 
@@ -88,7 +88,7 @@
   margin-top: 20px;
 }
 
-/* PAGINATION CONTROLS */
+
 .poke-pagination {
   display: flex;
   justify-content: center;
