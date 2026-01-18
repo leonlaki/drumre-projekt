@@ -219,7 +219,7 @@ input::placeholder {
 @media (max-width: 600px) {
   .register-card {
     padding: 1.5rem;
-    margin: 0 15px;
+    margin: 0px;
   }
   
   .form-row {

@@ -74,7 +74,8 @@
   color: var(--text-primary-contrast);
   border: none;
   width: 40%;
-  padding: 30px 60px;
+  min-width: 300px;
+  padding: 2rem 3rem;
   font-size: var(--fs-h2);
   border-radius: 20px;
   text-align: center;

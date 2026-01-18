@@ -726,3 +726,14 @@
 [data-theme='dark'] .form-input {
   color-scheme: white;
 }
+
+@media (max-width: 600px) {
+  .course-card-item{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .step-card{
+    padding-left: 10px;
+    padding-right: 10px; 
+  }
+}
