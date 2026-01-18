@@ -11,7 +11,6 @@ import { mealApi } from "../../api/mealApi";
 import { playlistApi } from "../../api/playlistApi";
 import { friendApi } from "../../api/friendApi";
 
-// Import koraka
 import Step1BasicInfo from "./Steps/Step1BasicInfo";
 import Step2Menu from "./Steps/Step2Menu";
 import Step3Atmosphere from "./Steps/Step3Atmosphere";
@@ -21,11 +20,11 @@ import Step5Review from "./Steps/Step5Review";
 import "./createEvent.css";
 
 const STEPS = [
-  { id: 1, title: "Detalji" },
-  { id: 2, title: "Jelovnik" },
-  { id: 3, title: "Atmosfera" },
-  { id: 4, title: "Gosti" },
-  { id: 5, title: "Pregled" }
+  { id: 1, title: "Details" },
+  { id: 2, title: "Menu" },
+  { id: 3, title: "Atmosphere" },
+  { id: 4, title: "Guests" },
+  { id: 5, title: "Review" }
 ];
 
 const CreateEvent = () => {
@@ -34,7 +33,7 @@ const CreateEvent = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // --- GLAVNI STATE ---
+  // osnovni podaci eventa
   const [eventData, setEventData] = useState({
     title: "",
     description: "",
@@ -47,11 +46,11 @@ const CreateEvent = () => {
     guests: []
   });
 
-  // Podaci potrebni za korake
+  // dostupni recepti i lista prijatelja
   const [availableRecipes, setAvailableRecipes] = useState([]);
   const [friendsList, setFriendsList] = useState([]);
 
-  // --- DOHVAT PODATAKA ---
+  // dohvati početne podatke
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,12 +60,12 @@ const CreateEvent = () => {
            friendApi.getMyFriends()
         ]);
         
-        // Obrada recepata
+        // obradi recepte
         const allRecipes = [...myRes, ...savedRes];
         const uniqueRecipes = Array.from(new Map(allRecipes.map(item => [item._id, item])).values());
         setAvailableRecipes(uniqueRecipes);
 
-        // Obrada prijatelja
+        // obradi prijatelje
         setFriendsList(friendsRes || []);
       } catch (err) {
         console.error("Failed fetching initial data", err);
@@ -75,24 +74,24 @@ const CreateEvent = () => {
     fetchData();
   }, [user]);
 
-  // --- NAVIGACIJA ---
+  // navigacija kroz korake
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 5));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
-  // --- SUBMIT LOGIKA ---
+  // kreiranje eventa
   const handleCreateEvent = async () => {
     setLoading(true);
     try {
-      if (!eventData.title) throw new Error("Naslov je obavezan!");
-      if (eventData.courses.length === 0) throw new Error("Dodaj barem jedan slijed!");
+      if (!eventData.title) throw new Error("Title is required!");
+      if (eventData.courses.length === 0) throw new Error("Add at least one course!");
 
       let finalPlaylistId = null;
 
-      // 1. Kreiraj playlistu ako postoji
+      // kreiraj playlistu ako postoji
       if (eventData.playlistSongs.length > 0) {
         const newPlaylist = await playlistApi.createPlaylist({
           name: `Playlist: ${eventData.title}`,
-          description: `Generirana playlista za event "${eventData.title}"`
+          description: `Generated playlist for event "${eventData.title}"`
         });
         finalPlaylistId = newPlaylist._id;
 
@@ -108,7 +107,7 @@ const CreateEvent = () => {
         await Promise.all(songPromises);
       }
 
-      // 2. Kreiraj Meal
+      // kreiraj meal
       const mealPayload = {
         title: eventData.title,
         description: eventData.description,
@@ -128,7 +127,7 @@ const CreateEvent = () => {
 
     } catch (error) {
       console.error("Error creating event:", error);
-      alert(error.message || "Došlo je do greške.");
+      alert(error.message || "An error occurred.");
     } finally {
       setLoading(false);
     }
@@ -141,7 +140,7 @@ const CreateEvent = () => {
       <PageTransition>
         <div className="create-event-container">
           
-          {/* PROGRESS BAR */}
+          {/* traka napretka */}
           <div className="wizard-progress">
              {STEPS.map((step) => (
                 <div key={step.id} className={`wizard-step ${currentStep === step.id ? 'active' : ''} ${currentStep > step.id ? 'completed' : ''}`}>
@@ -151,7 +150,7 @@ const CreateEvent = () => {
              ))}
           </div>
 
-          {/* RENDER KORAKA */}
+          {/* prikaz koraka */}
           <AnimatePresence mode="wait">
              <motion.div
                key={currentStep}
@@ -178,13 +177,13 @@ const CreateEvent = () => {
              </motion.div>
           </AnimatePresence>
 
-          {/* AKCIJE */}
+          {/* dugmad akcija */}
           <div className="wizard-actions">
              <button className="btn-prev" onClick={prevStep} disabled={currentStep === 1} style={{visibility: currentStep === 1 ? 'hidden' : 'visible'}}>
-               Natrag
+               Back
              </button>
              {currentStep < 5 && (
-               <button className="btn-next" onClick={nextStep}>Dalje</button>
+               <button className="btn-next" onClick={nextStep}>Next</button>
              )}
           </div>
 

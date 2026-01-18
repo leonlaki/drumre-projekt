@@ -9,7 +9,6 @@ import AddRecipeModal from "../../Components/AddRecipeModal/AddRecipeModal";
 import Spinner from "../../Components/Spinner/Spinner";
 import "./myRecepies.css";
 
-// 1. TOČNE KATEGORIJE (TheMealDB Standard)
 const CATEGORY_OPTIONS = [
   "Beef",
   "Chicken",
@@ -27,8 +26,6 @@ const CATEGORY_OPTIONS = [
   "Goat",
 ];
 
-// 2. MAPIRANJE ZASTAVA (TheMealDB Adjectives -> ISO Codes)
-// Ovo pretvara "American" u "us", "Croatian" u "hr" itd. za prikaz zastave.
 const AREA_FLAGS = {
   Algerian: "dz",
   American: "us",
@@ -76,7 +73,6 @@ const getFlagUrl = (areaName) => {
   return `https://flagcdn.com/24x18/${code}.png`;
 };
 
-// --- CUSTOM HOOK: DEBOUNCE ---
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -86,7 +82,6 @@ const useDebounce = (value, delay) => {
   return debouncedValue;
 };
 
-// --- KOMPONENTA: MULTI-SELECT DROPDOWN ---
 const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -114,7 +109,7 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
       <div className="multi-select-header" onClick={() => setIsOpen(!isOpen)}>
         <span>
           {selected.length > 0
-            ? `Odabrano država: ${selected.length}`
+            ? `Selected countries: ${selected.length}`
             : placeholder}
         </span>
         <span className="arrow">{isOpen ? "▲" : "▼"}</span>
@@ -150,53 +145,46 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
   );
 };
 
-// --- GLAVNA KOMPONENTA: MY RECEPIES ---
 const MyRecepies = () => {
   const { user } = useAuth();
 
-  // PODACI
   const [ownRecipes, setOwnRecipes] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [availableAreas, setAvailableAreas] = useState([]); // Popis svih zemalja
+  const [availableAreas, setAvailableAreas] = useState([]);
 
-  // UI STATE
-  const [loading, setLoading] = useState(true); // Initial spinner
-  const [isSearching, setIsSearching] = useState(false); // Search spinner
+  const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
   const [numColumns, setNumColumns] = useState(3);
 
-  // SEARCH & FILTER STATE
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]); // Array stringova
-  const [selectedAreas, setSelectedAreas] = useState([]); // Array stringova
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedAreas, setSelectedAreas] = useState([]);
   const [usePreferences, setUsePreferences] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchQuery, 300);
 
-  // 1. INICIJALNI LOAD (Moji, Spremljeni, Popis Država)
   useEffect(() => {
     const initData = async () => {
       if (!user) return;
 
-      // Timer 3 sekunde za smooth intro
       const minLoading = new Promise((resolve) => setTimeout(resolve, 1500));
 
       try {
         const [myRes, savedRes, filtersRes] = await Promise.all([
           recipeApi.getUserRecipes(user.username),
           recipeApi.getSavedRecipes(),
-          recipeApi.getFilters(), // Backend vraća { areas: ["American", "Croatian"...] }
+          recipeApi.getFilters(),
         ]);
 
-        await minLoading; // Čekaj timer
+        await minLoading;
 
         setOwnRecipes(myRes);
         setSavedRecipes(savedRes);
         setAvailableAreas(filtersRes.areas || []);
 
-        // Odmah napravi "Discovery" pretragu (random)
         const discoveryRes = await recipeApi.searchRecipes("", [], [], false);
         setSearchResults(discoveryRes);
       } catch (error) {
@@ -208,15 +196,12 @@ const MyRecepies = () => {
     initData();
   }, [user]);
 
-  // 2. SEARCH LOGIKA (Prati promjene u search baru i filterima)
   useEffect(() => {
-    if (loading) return; // Ne traži dok se još vrti glavni loader
+    if (loading) return;
 
     const performSearch = async () => {
       setIsSearching(true);
       try {
-        // Backend očekuje nizove (arrays) stringova.
-        // API MealDB i naš Backend rade sa STRINGOVIMA ("Beef"), tako da šaljemo imena.
         const results = await recipeApi.searchRecipes(
           debouncedSearchTerm,
           selectedCategories,
@@ -240,7 +225,6 @@ const MyRecepies = () => {
     loading,
   ]);
 
-  // 3. RESPONSIVE MASONRY
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 600) setNumColumns(1);
@@ -266,8 +250,6 @@ const MyRecepies = () => {
   const savedColumns = distributeRecipes(savedRecipes);
   const searchColumns = distributeRecipes(searchResults);
 
-  // --- HANDLERI ---
-
   const openNewModal = () => {
     setEditingRecipe(null);
     setIsModalOpen(true);
@@ -288,18 +270,17 @@ const MyRecepies = () => {
   };
 
   const handleDeleteRecipe = async (id) => {
-    if (!window.confirm("Jeste li sigurni da želite obrisati ovaj recept?"))
+    if (!window.confirm("Are you sure you want to delete this recipe?"))
       return;
     try {
       await recipeApi.deleteRecipe(id);
       setOwnRecipes((prev) => prev.filter((r) => r._id !== id));
     } catch (error) {
       console.error(error);
-      alert("Greška pri brisanju.");
+      alert("Error deleting recipe.");
     }
   };
 
-  // TOGGLE SAVE (Srce)
   const handleToggleSave = async (recipe) => {
     try {
       await recipeApi.toggleSave(recipe._id);
@@ -328,13 +309,12 @@ const MyRecepies = () => {
       <PageTransition>
         <div className="my-recipes-container">
           <header className="recipes-hero">
-            <h1>Moja Kuharica</h1>
+            <h1>My Cookbook</h1>
             <p className="recipes-subtitle">
-              Upravljaj svojim kulinarskim remek-djelima, pretražuj nove okuse i
-              čuvaj omiljene recepte.
+              Manage your culinary masterpieces, discover new flavors, and save favorite recipes.
             </p>
             <button className="btn-add-recipe" onClick={openNewModal}>
-              + Dodaj Novi Recept
+              + Add New Recipe
             </button>
           </header>
 
@@ -354,14 +334,13 @@ const MyRecepies = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                {/* --- 1. MOJI RECEPTI --- */}
                 <section className="recipes-section">
                   <h2 className="section-title">
-                    Moji Recepti ({ownRecipes.length})
+                    My Recipes ({ownRecipes.length})
                   </h2>
                   {ownRecipes.length === 0 ? (
                     <p className="empty-state">
-                      Još nisi kreirao/la nijedan recept.
+                      You haven't created any recipes yet.
                     </p>
                   ) : (
                     <div className="masonry-container">
@@ -384,13 +363,12 @@ const MyRecepies = () => {
 
                 <div className="section-divider"></div>
 
-                {/* --- 2. SPREMLJENI RECEPTI --- */}
                 <section className="recipes-section">
                   <h2 className="section-title">
-                    Spremljeno ({savedRecipes.length})
+                    Saved ({savedRecipes.length})
                   </h2>
                   {savedRecipes.length === 0 ? (
-                    <p className="empty-state">Nemaš spremljenih recepata.</p>
+                    <p className="empty-state">No saved recipes.</p>
                   ) : (
                     <div className="masonry-container">
                       {savedColumns.map((column, colIndex) => (
@@ -412,41 +390,36 @@ const MyRecepies = () => {
 
                 <div className="section-divider"></div>
 
-                {/* --- 3. SEARCH & DISCOVERY --- */}
                 <section className="recipes-section search-section">
                   <h2 className="section-title centered-title">
-                    Otkrij Nove Okuse
+                    Discover New Flavors
                   </h2>
 
-                  {/* SEARCH BAR */}
                   <div className="search-bar-wrapper">
                     <input
                       type="text"
                       className="search-input-large"
-                      placeholder="Što ti se danas kuha?..."
+                      placeholder="What's cooking today?..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
 
-                  {/* FILTER PANEL */}
                   <div className="filters-container">
-                    {/* Preferencije */}
                     <div className="filter-row-preferences">
                       <button
                         className={`pref-btn ${usePreferences ? "active" : ""}`}
                         onClick={() => setUsePreferences(!usePreferences)}
                       >
                         {usePreferences
-                          ? "★ Koristim tvoje postavke"
-                          : "☆ Uključi moje postavke"}
+                          ? "★ Using your preferences"
+                          : "☆ Enable my preferences"}
                       </button>
                     </div>
 
                     <div className="filters-grid">
-                      {/* Kategorije (Chips) */}
                       <div className="filter-group">
-                        <span className="filter-label">Kategorije:</span>
+                        <span className="filter-label">Categories:</span>
                         <div className="chips-wrapper">
                           {CATEGORY_OPTIONS.map((cat) => (
                             <button
@@ -464,22 +437,20 @@ const MyRecepies = () => {
                         </div>
                       </div>
 
-                      {/* Zemlje (Multi-select Dropdown) */}
                       <div className="filter-group">
-                        <span className="filter-label">Podrijetlo:</span>
+                        <span className="filter-label">Origin:</span>
                         <MultiSelectDropdown
                           options={availableAreas}
                           selected={selectedAreas}
                           onChange={setSelectedAreas}
-                          placeholder="Odaberi države..."
+                          placeholder="Select countries..."
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* SEARCH RESULTS */}
                   {isSearching ? (
-                    <div className="mini-loader">Miješam sastojke... 🍲</div>
+                    <div className="mini-loader">Mixing ingredients... 🍲</div>
                   ) : (
                     <div className="masonry-container">
                       {searchResults.length > 0 ? (
@@ -498,7 +469,7 @@ const MyRecepies = () => {
                         ))
                       ) : (
                         <p className="empty-state">
-                          Nema recepata za odabrane kriterije.
+                          No recipes match the selected criteria.
                         </p>
                       )}
                     </div>
@@ -508,7 +479,6 @@ const MyRecepies = () => {
             )}
           </AnimatePresence>
 
-          {/* MODAL */}
           <AnimatePresence>
             {isModalOpen && (
               <AddRecipeModal

@@ -6,7 +6,6 @@ import Spinner from "../../Components/Spinner/Spinner";
 import PageTransition from "../../Context/PageTransition";
 import "./recipeDetails.css";
 
-// 1. MAPIRANJE ZASTAVA
 const AREA_FLAGS = {
   Algerian: "dz", American: "us", Argentinian: "ar", Australian: "au",
   British: "gb", Canadian: "ca", Chinese: "cn", Croatian: "hr",
@@ -20,11 +19,10 @@ const AREA_FLAGS = {
   Vietnamese: "vn", Unknown: "un",
 };
 
-// Helper za dohvat URL-a zastave
 const getFlagUrl = (areaName) => {
   const code = AREA_FLAGS[areaName];
   if (!code || code === "un") return null;
-  return `https://flagcdn.com/w40/${code}.png`; // Koristimo w40 za bolju kvalitetu
+  return `https://flagcdn.com/w40/${code}.png`;
 };
 
 const RecipeDetailsPage = () => {
@@ -39,7 +37,7 @@ const RecipeDetailsPage = () => {
         const data = await recipeApi.getRecipeById(id);
         setRecipe(data);
       } catch (error) {
-        console.error("Greška pri dohvatu recepta:", error);
+        console.error("Error fetching recipe:", error);
       } finally {
         setLoading(false);
       }
@@ -48,14 +46,12 @@ const RecipeDetailsPage = () => {
   }, [id]);
 
   if (loading) return <Spinner />;
-  if (!recipe) return <div className="error-msg">Recept nije pronađen.</div>;
+  if (!recipe) return <div className="error-msg">Recipe not found.</div>;
 
   const isAppVerified = !recipe.author || recipe.author.username === "MealDB";
-  
-  // Odredi avatar: Ako je verificiran, koristi MealDB logo, inače user avatar
-  const authorAvatar = isAppVerified 
-    ? "https://www.themealdb.com/images/logo-small.png" 
-    : (recipe.author?.avatar || "https://via.placeholder.com/40");
+  const authorAvatar = isAppVerified
+    ? "https://www.themealdb.com/images/logo-small.png"
+    : recipe.author?.avatar || "https://via.placeholder.com/40";
 
   const flagUrl = getFlagUrl(recipe.area);
 
@@ -63,38 +59,21 @@ const RecipeDetailsPage = () => {
     <div className="details-page-wrapper">
       <PageTransition>
         <div className="details-container">
-          
-          {/* HEADER SEKCIJA */}
+
           <div className="details-header">
-            <button onClick={() => navigate(-1)} className="btn-back">
-              ← Natrag
-            </button>
-            
+            <button onClick={() => navigate(-1)} className="btn-back">← Back</button>
             <div className="header-content">
               <span className="details-category">{recipe.category}</span>
               <h1 className="details-title">{recipe.title}</h1>
-              
-              <div className="details-meta">
-                {/* 1. PRIKAZ AUTORA (Avatar + Ime) */}
-                <div className="meta-item author-meta">
-                  <img 
-                    src={authorAvatar} 
-                    alt="Author" 
-                    className="meta-avatar" 
-                  />
-                  <span className="meta-text">
-                    {isAppVerified ? "MealDB Verified" : recipe.author?.username}
-                  </span>
-                </div>
 
-                {/* 2. PRIKAZ DRŽAVE (Zastava + Ime) */}
+              <div className="details-meta">
+                <div className="meta-item author-meta">
+                  <img src={authorAvatar} alt="Author" className="meta-avatar" />
+                  <span className="meta-text">{isAppVerified ? "MealDB Verified" : recipe.author?.username}</span>
+                </div>
                 {flagUrl && (
                   <div className="meta-item origin-meta">
-                    <img 
-                      src={flagUrl} 
-                      alt={recipe.area} 
-                      className="meta-avatar" 
-                    />
+                    <img src={flagUrl} alt={recipe.area} className="meta-avatar" />
                     <span className="meta-text">{recipe.area}</span>
                   </div>
                 )}
@@ -102,21 +81,14 @@ const RecipeDetailsPage = () => {
             </div>
           </div>
 
-          {/* GLAVNA SLIKA */}
           <div className="hero-image-wrapper">
-            <img 
-              src={recipe.image || "https://via.placeholder.com/600"} 
-              alt={recipe.title} 
-              className="hero-image"
-            />
+            <img src={recipe.image || "https://via.placeholder.com/600"} alt={recipe.title} className="hero-image" />
           </div>
 
-          {/* SADRŽAJ: SASTOJCI I UPUTE */}
           <div className="details-grid">
-            
-            {/* LIJEVI STUPAC: SASTOJCI */}
+
             <div className="ingredients-panel">
-              <h3>🛒 Sastojci</h3>
+              <h3>🛒 Ingredients</h3>
               <ul className="ingredients-list-large">
                 {recipe.ingredients && recipe.ingredients.map((ing, i) => (
                   <li key={i} className="ing-item-large">
@@ -127,12 +99,9 @@ const RecipeDetailsPage = () => {
               </ul>
             </div>
 
-            {/* DESNI STUPAC: UPUTE */}
             <div className="instructions-panel">
-              <h3>👨‍🍳 Priprema</h3>
-              <div className="instructions-text-large">
-                {recipe.instructions}
-              </div>
+              <h3>👨‍🍳 Instructions</h3>
+              <div className="instructions-text-large">{recipe.instructions}</div>
             </div>
 
           </div>

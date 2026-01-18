@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { useAuth } from "./Context/AuthContext";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 
-// Importi stranica
 import LandingPage from "./Pages/Landing/LandingPage";
 import LoginPage from "./Pages/Login/LoginPage";
 import Register from "./Pages/Register/RegisterPage";
@@ -21,7 +20,7 @@ import Navbar from "./Components/Navbars/NavbarLandingPage/Navbar";
 import NavbarLoged from "./Components/Navbars/NavbarLogedUser/Navbar";
 import "./App.css";
 
-// PublicRoute: Ako je user logiran, ne daj mu na Login/Register
+// ruta za javne stranice
 const PublicRoute = ({ children }) => {
   const { user } = useAuth();
   if (user) {
@@ -37,7 +36,6 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         
-        {/* --- JAVNE RUTE --- */}
         <Route
           path="/"
           element={
@@ -68,18 +66,13 @@ const AnimatedRoutes = () => {
           }
         />
 
-        {/* --- ZAŠTIĆENA RUTA: PREFERENCES --- */}
+        {/* ruta za preferences */}
         <Route element={<ProtectedRoute requireOnboarding={false} />}>
           <Route path="/preferences" element={<Preferences />} />
         </Route>
 
-        {/* --- ZAŠTIĆENE RUTE: APLIKACIJA --- */}
-        {/* OVDJE JE BILA GREŠKA: Maknuo sam <Routes> wrapper koji je bio viška */}
-        
-        {/* Prvi sloj: Provjera autorizacije (requireOnboarding=true) */}
+        {/* zaštićene rute aplikacije */}
         <Route element={<ProtectedRoute requireOnboarding={true} />}>
-          
-          {/* Drugi sloj: Layout s NavbarLoged */}
           <Route
             element={
               <>
@@ -90,7 +83,6 @@ const AnimatedRoutes = () => {
               </>
             }
           >
-            {/* Treći sloj: Tvoje stvarne stranice */}
             <Route path="/home" element={<Home />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/my-recepies" element={<MyRecepies />} />
@@ -101,10 +93,9 @@ const AnimatedRoutes = () => {
             <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
             <Route path="/event/:id" element={<EventDetailsPage />} />
           </Route>
-          
         </Route>
 
-        {/* Catch-all ruta */}
+        {/* fallback ruta */}
         <Route path="*" element={<Navigate to="/" />} />
         
       </Routes>

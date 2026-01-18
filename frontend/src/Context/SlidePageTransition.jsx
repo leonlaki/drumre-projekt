@@ -1,21 +1,22 @@
-import React, { useLayoutEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useLayoutEffect } from "react";
+import { motion } from "framer-motion";
 
+// animacije za slide prijelaz stranice
 const slideVariants = {
   initial: { opacity: 0, x: 100 },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -100 }
+  exit: { opacity: 0, x: -100 },
 };
 
 const SlidePageTransition = ({ children, animateOnMount = true }) => {
-
+  // scrollaj na vrh pri promjeni stranice
   useLayoutEffect(() => {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: 'instant'
+      behavior: "instant",
     });
-  }, []); 
+  }, []);
 
   return (
     <motion.div

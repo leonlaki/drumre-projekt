@@ -1,18 +1,21 @@
-import React from 'react';
-import { useInView } from 'react-intersection-observer';
-import './animatedSection.css'; // Uvozimo pripadajući CSS
+import React from "react";
+import { useInView } from "react-intersection-observer";
+import "./animatedSection.css";
 
 const AnimatedSection = ({ children, className }) => {
+  // prati je li sekcija vidljiva u viewportu
   const { ref, inView } = useInView({
     threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px', 
-    triggerOnce: true, 
+    rootMargin: "0px 0px -100px 0px",
+    triggerOnce: true,
   });
 
   return (
-    <div 
-      ref={ref} 
-      className={`section-container ${className || ''} ${inView ? 'visible' : 'hidden'}`}
+    <div
+      ref={ref}
+      className={`section-container ${className || ""} ${
+        inView ? "visible" : "hidden"
+      }`}
     >
       {children}
     </div>

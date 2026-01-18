@@ -1,4 +1,3 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
@@ -7,7 +6,6 @@ import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import "./loginPage.css";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
-// --- DEFINICIJA IKONA (SVG) ---
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M23.52 12.29C23.52 11.43 23.44 10.61 23.3 9.81H12V14.41H18.45C18.17 15.86 17.31 17.1 16.05 17.94V20.87H19.92C22.19 18.78 23.52 15.7 23.52 12.29Z" fill="#4285F4"/>
@@ -54,7 +52,7 @@ const LoginPage = () => {
     } catch (err) {
       console.error(err);
       setError(
-        err.response?.data?.message || "Neispravno korisničko ime ili lozinka."
+        err.response?.data?.message || "Incorrect username or password."
       );
     } finally {
       setIsLoading(false);
@@ -69,45 +67,45 @@ const LoginPage = () => {
     <SlidePageTransition>
       <div className="login-wrapper">
         <header className="login-hero-section">
-          <h1 className="login-hero-title">Dobrodošli natrag</h1>
+          <h1 className="login-hero-title">Welcome back</h1>
           <p className="login-hero-subtitle">
-            Nastavi gdje si stao/la. Tvoji recepti i playliste te čekaju.
+            Continue where you left off. Your recipes and playlists are waiting.
           </p>
         </header>
 
         <AnimatedSection className="login-content-section">
           <div className="login-card">
             <div className="login-header">
-              <h2>Prijava</h2>
-              <p className="text-small">Unesi svoje podatke za pristup</p>
+              <h2>Login</h2>
+              <p className="text-small">Enter your login details</p>
             </div>
 
             {error && <div className="login-error-msg">{error}</div>}
 
             <form onSubmit={handleSubmit} className="login-form">
               <div className="login-form-group">
-                <label htmlFor="username">Korisničko ime</label>
+                <label htmlFor="username">Username</label>
                 <input
                   type="text"
                   id="username"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="Unesi korisničko ime"
+                  placeholder="Enter username"
                   className="login-input"
                   required
                 />
               </div>
 
               <div className="login-form-group">
-                <label htmlFor="password">Lozinka</label>
+                <label htmlFor="password">Password</label>
                 <input
                   type="password"
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Unesi lozinku"
+                  placeholder="Enter password"
                   className="login-input"
                   required
                 />
@@ -118,12 +116,12 @@ const LoginPage = () => {
                 className="login-btn-submit"
                 disabled={isLoading}
               >
-                {isLoading ? "Prijava..." : "Prijavi se"}
+                {isLoading ? "Logging in..." : "Login"}
               </button>
             </form>
 
             <div className="login-divider">
-              <span>ili se prijavi putem</span>
+              <span>or login with</span>
             </div>
 
             <div className="login-social-buttons">
@@ -147,9 +145,9 @@ const LoginPage = () => {
 
             <div className="login-footer-text">
               <p className="text-small">
-                Nemaš račun?{" "}
+                Don't have an account?{" "}
                 <Link to="/register" className="login-link-highlight">
-                  Registriraj se
+                  Register
                 </Link>
               </p>
             </div>

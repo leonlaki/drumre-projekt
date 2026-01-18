@@ -7,7 +7,6 @@ import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 import "./preferences.css";
 
-// MAPIRANJE: Ime iz MealDB API-ja -> ISO kod države (za FlagCDN)
 const AREA_FLAGS = {
   Algerian: "dz",
   American: "us",
@@ -68,7 +67,6 @@ const Preferences = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Stanje za pred-ispunjene podatke (Facebook)
   const [isPrefilled, setIsPrefilled] = useState(false);
 
   useEffect(() => {
@@ -79,7 +77,6 @@ const Preferences = () => {
         setAvailableCategories(data.categories || []);
         setAvailableAreas(data.areas || []);
 
-        // Provjera postojećih preferencija (s Facebooka)
         if (data.existingPreferences) {
           const { categories, areas } = data.existingPreferences;
           if (
@@ -93,7 +90,7 @@ const Preferences = () => {
         }
       } catch (err) {
         console.error(err);
-        setError("Greška pri učitavanju opcija.");
+        setError("Error loading options.");
       } finally {
         setLoading(false);
       }
@@ -117,11 +114,9 @@ const Preferences = () => {
 
   const handleSave = async () => {
     if (selectedCats.length < 3) {
-      setError("Molimo odaberite barem 3 kategorije jela.");
+      setError("Please select at least 3 food categories.");
       return;
     }
-    // Opcionalno za areas
-    // if (selectedAreas.length < 3) { ... }
 
     setSubmitting(true);
     try {
@@ -130,7 +125,6 @@ const Preferences = () => {
         areas: selectedAreas,
       });
 
-      // Ažuriraj lokalni state
       if (updateLocalUser) {
         updateLocalUser({
           isOnboarded: true,
@@ -138,10 +132,10 @@ const Preferences = () => {
         });
       }
 
-      navigate("/"); // Vrati na Home
+      navigate("/");
     } catch (err) {
       console.error(err);
-      setError("Greška pri spremanju.");
+      setError("Error saving preferences.");
     } finally {
       setSubmitting(false);
     }
@@ -150,7 +144,7 @@ const Preferences = () => {
   if (loading) {
     return (
       <div className="preferences-wrapper">
-        <div className="loading-container">Učitavanje opcija...</div>
+        <div className="loading-container">Loading options...</div>
       </div>
     );
   }
@@ -160,31 +154,29 @@ const Preferences = () => {
       <div className="preferences-wrapper">
 
         <header className="preferences-hero">
-          <h1 className="preferences-title">Personaliziraj svoj račun</h1>
+          <h1 className="preferences-title">Personalize Your Account</h1>
           <p className="preferences-subtitle">
-            Odaberi ono što voliš kako bismo ti mogli preporučiti najbolje
-            recepte.
+            Choose what you like so we can recommend the best recipes.
           </p>
 
           {isPrefilled && (
             <div className="pref-suggestion-msg">
               ✨{" "}
               <b>
-                Pronašli smo neke interese na temelju tvojih Facebook lajkova!
+                We found some interests based on your Facebook likes!
               </b>
               <br />
-              Slobodno ih uredi ili dodaj nove.
+              Feel free to edit them or add new ones.
             </div>
           )}
         </header>
 
         <AnimatedSection className="preferences-content">
           <div className="preferences-card">
-            {/* --- KATEGORIJE (GRID) --- */}
             <div className="pref-section">
-              <h3>Kategorije jela</h3>
+              <h3>Food Categories</h3>
               <span className="pref-instruction">
-                Odaberi barem 3 (Odabrano: {selectedCats.length})
+                Select at least 3 (Selected: {selectedCats.length})
               </span>
 
               <div className="pref-grid">
@@ -202,11 +194,10 @@ const Preferences = () => {
               </div>
             </div>
 
-            {/* --- KUHINJE (GRID) --- */}
             <div className="pref-section">
-              <h3>Svjetske kuhinje</h3>
+              <h3>World Cuisines</h3>
               <span className="pref-instruction">
-                Odaberi (Odabrano: {selectedAreas.length})
+                Select (Selected: {selectedAreas.length})
               </span>
               <div className="pref-grid">
                 {availableAreas.map((area) => {
@@ -241,7 +232,7 @@ const Preferences = () => {
                 onClick={handleSave}
                 disabled={submitting}
               >
-                {submitting ? "Spremanje..." : "Završi postavljanje"}
+                {submitting ? "Saving..." : "Finish Setup"}
               </button>
             </div>
           </div>

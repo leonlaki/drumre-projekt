@@ -1,4 +1,4 @@
-// src/api/authApi.js
+
 import axiosClient from './axiosClient';
 
 export const authApi = {

@@ -1,19 +1,21 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from "react";
 
+// kontekst za temu (light/dark)
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Inicijalizacija: uzmi iz localStorage ili stavi 'light'
-  const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'light');
+  // inicijalna tema iz localStorage ili 'light'
+  const [theme, setTheme] = useState(localStorage.getItem("app-theme") || "light");
 
+  // ažurira html atribut i sprema u localStorage kad se promijeni
   useEffect(() => {
-    // Postavljamo data-theme na <html> element kako bi CSS znao koje varijable koristiti
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('app-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("app-theme", theme);
   }, [theme]);
 
+  // toggle između light i dark
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return (

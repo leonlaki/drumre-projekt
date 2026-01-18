@@ -25,13 +25,13 @@ export const recipeApi = {
     return response.data;
   },
 
-  // NOVO: Dohvati spremljene recepte
+  // Dohvati spremljene recepte
   getSavedRecipes: async () => {
     const response = await axiosClient.get('/api/recipes/saved');
     return response.data;
   },
 
-  // NOVO: Spremi/Odshemi recept
+  // Spremi recept
   toggleSave: async (recipeId) => {
     const response = await axiosClient.post(`/api/recipes/${recipeId}/save`);
     return response.data;
@@ -43,16 +43,15 @@ export const recipeApi = {
   },
 
   searchRecipes: async (query, categories, areas, usePreferences) => {
-    // Axios paramsSerializer osigurava da se nizovi šalju kao: category=Breakfast&category=Lunch
     const response = await axiosClient.get('/api/recipes/search', {
       params: { 
         query, 
-        categories, // Array
-        areas,      // Array
-        usePreferences // Boolean
+        categories,
+        areas,      
+        usePreferences 
       },
       paramsSerializer: {
-        indexes: null // Ovo miče uglate zagrade [] iz URL-a (npr. categories=A&categories=B)
+        indexes: null 
       }
     });
     return response.data;

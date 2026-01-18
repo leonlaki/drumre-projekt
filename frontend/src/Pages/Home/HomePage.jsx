@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom"; // Bitno za linkove
+import { Link } from "react-router-dom";
 import "./homePage.css";
 import Footer from "../../Components/Footer/Footer";
 import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import CardRotator from "../../Components/CardRotator/CardRotator";
 import PageTransition from "../../Context/PageTransition";
-import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
+import EventCard from "../../Components/EventCard/EventCard";
 import { mealApi } from "../../api/mealApi";
 
 const useDebounce = (value, delay) => {
@@ -21,8 +21,8 @@ const useDebounce = (value, delay) => {
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedQuery = useDebounce(searchQuery, 400); // 400ms odgode
-  const [filterSort, setFilterSort] = useState("newest"); // 'newest' ili 'popular'
+  const debouncedQuery = useDebounce(searchQuery, 400);
+  const [filterSort, setFilterSort] = useState("newest");
 
   const [events, setEvents] = useState([]);
   const [page, setPage] = useState(1);
@@ -34,7 +34,7 @@ const HomePage = () => {
   const [recommendedEvents, setRecommendedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. GLAVNA FUNKCIJA ZA DOHVAT (Reset vs Append)
+  // dohvati evente
   const fetchEvents = async (
     query,
     pageNum,
@@ -51,7 +51,6 @@ const HomePage = () => {
         setEvents(newEvents);
       }
 
-      // Ako vrati manje od 20, znači da nema više
       setHasMore(newEvents.length === 20);
     } catch (error) {
       console.error("Error fetching events", error);
@@ -61,20 +60,20 @@ const HomePage = () => {
     }
   };
 
-  // 2. EFEKT: OKIDANJE PRETRAGE (Kad se promijeni Query ili Filter)
+  // efekt za pretragu i filter
   useEffect(() => {
-    // Resetiramo page na 1 i radimo svježi fetch
     setPage(1);
     fetchEvents(debouncedQuery, 1, filterSort, false);
   }, [debouncedQuery, filterSort]);
 
-  // 3. HANDLER: LOAD MORE (Klik na gumb)
+  // load more handler
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchEvents(debouncedQuery, nextPage, filterSort, true);
   };
 
+  // dohvati feed i preporuke
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,7 +82,7 @@ const HomePage = () => {
           mealApi.getRecommendations(),
         ]);
 
-        setTrendingEvents(feedData);    
+        setTrendingEvents(feedData);
         setRecommendedEvents(recData);
       } catch (error) {
         console.error("Error loading homepage data", error);
@@ -98,155 +97,136 @@ const HomePage = () => {
   return (
     <div className="homepage-wrapper">
       <PageTransition>
-        {/* HERO SEKCIJA */}
+        {/* hero sekcija */}
         <div className="homepage-hero-section">
           <h1 className="homepage-hero-title">FOODTUNE</h1>
           <p className="homepage-hero-subtitle">
-            Tvoj ritam kuhanja. Otkrij recepte koji sviraju tvoju melodiju,
-            kreiraj simfoniju okusa i uživaj u svakom zalogaju bez granica.
+            Your cooking rhythm. Discover recipes that play your melody,
+            create a symphony of flavors, and enjoy every bite without limits.
           </p>
         </div>
 
         <div className="homepage-content-container">
-          {/* POPULARNI SADRŽAJ */}
-          {/* 1. ROTATOR: TRENDING (Popularno zadnjih 7 dana) */}
+          {/* trending sekcija */}
           <div className="homepage-section-header">
             <h2 className="homepage-section-title">
-              Simfonija okusa u trendu 🔥
+              Trending Flavor Symphony 🔥
             </h2>
             <p className="homepage-section-subtitle">
-              Ovo su hitovi tjedna. Najpopularniji eventi zajednice.
+              These are the hits of the week. Most popular community events.
             </p>
           </div>
           <AnimatedSection className="homepage-animated-section">
-            {loading ? (
-              <p>Učitavanje hitova...</p>
-            ) : (
-              <CardRotator events={trendingEvents} />
-            )}
+            {loading ? <p>Loading hits...</p> : <CardRotator events={trendingEvents} />}
           </AnimatedSection>
 
-          {/* 2. ROTATOR: PREPORUČENO (Bazirano na preferencijama) */}
+          {/* preporučeno */}
           <div className="homepage-section-header">
-            <h2 className="homepage-section-title">Skladano samo za tebe 🎼</h2>
+            <h2 className="homepage-section-title">Tailored Just for You 🎼</h2>
             <p className="homepage-section-subtitle">
-              Recepti i eventi koji odgovaraju tvom ukusu i stilu.
+              Recipes and events that match your taste and style.
             </p>
           </div>
           <AnimatedSection className="homepage-animated-section">
-            {loading ? (
-              <p>Skladamo preporuke...</p>
-            ) : (
-              <CardRotator events={recommendedEvents} />
-            )}
+            {loading ? <p>Composing recommendations...</p> : <CardRotator events={recommendedEvents} />}
           </AnimatedSection>
 
-          {/* --- NOVE SEKCIJE S LINKOVIMA --- */}
-
-          {/* 1. LINK NA CREATE EVENT */}
+          {/* link na create event */}
           <AnimatedSection className="homepage-split-section">
             <div className="homepage-text-content">
-              <h2>Započni novu simfoniju</h2>
+              <h2>Start a New Symphony</h2>
               <p>
-                Spreman si za kuhanje? Kreiraj novi event, odaberi jelo koje
-                želiš pripremiti i dodaj mu savršenu glazbenu pozadinu. Postavi
-                scenu za nezaboravnu večeru.
+                Ready to cook? Create a new event, choose the dish you want to prepare, and add the perfect music background. Set the scene for an unforgettable dinner.
               </p>
               <Link to="/create-event" className="homepage-action-button">
-                Kreiraj Event
+                Create Event
               </Link>
             </div>
             <div className="homepage-image-wrapper">
-              <img src="/images/landingPage-img1.png" alt="Kuhanje" />
+              <img src="/images/landingPage-img1.png" alt="Cooking" />
             </div>
           </AnimatedSection>
 
-          {/* 2. LINK NA MY EVENTS (Obrnuto) */}
+          {/* link na my events */}
           <AnimatedSection className="homepage-split-section section-reverse">
             <div className="homepage-text-content">
-              <h2>Tvoji kulinarski trenutci</h2>
+              <h2>Your Culinary Moments</h2>
               <p>
-                Pregledaj sve svoje prošle i nadolazeće evente na jednom mjestu.
-                Uredi svoje playliste, prisjeti se starih recepata ili planiraj
-                sljedeće druženje.
+                View all your past and upcoming events in one place. Edit your playlists, recall old recipes, or plan your next gathering.
               </p>
               <Link to="/my-events" className="homepage-action-button">
-                Moji Eventi
+                My Events
               </Link>
             </div>
             <div className="homepage-image-wrapper">
-              <img src="/images/homepage2.webp" alt="Glazba" />
+              <img src="/images/homepage2.webp" alt="Music" />
             </div>
           </AnimatedSection>
 
-          {/* 3. LINK NA FRIENDS */}
+          {/* link na friends */}
           <AnimatedSection className="homepage-split-section">
             <div className="homepage-text-content">
-              <h2>Poveži se s gurmanima</h2>
+              <h2>Connect with Foodies</h2>
               <p>
-                Pogledaj što tvoji prijatelji kuhaju i slušaju. Pronađi
-                inspiraciju u njihovim eventima i podijeli svoja iskustva s
-                ljudima koji dijele tvoju strast.
+                See what your friends are cooking and listening to. Find inspiration in their events and share your experiences with people who share your passion.
               </p>
               <Link to="/friends" className="homepage-action-button">
-                Prijatelji
+                Friends
               </Link>
             </div>
             <div className="homepage-image-wrapper">
-              <img src="/images/homepage3.jpg" alt="Prijatelji" />
+              <img src="/images/homepage3.jpg" alt="Friends" />
             </div>
           </AnimatedSection>
 
+          {/* pretraga eventa */}
           <div className="homepage-search-section">
             <div className="search-header">
-              <h2>Istraži Evente 🔍</h2>
-              <p>Pretraži po nazivu, autoru ili sastojcima.</p>
+              <h2>Explore Events 🔍</h2>
+              <p>Search by name, author, or ingredients.</p>
             </div>
 
-            {/* TRAŽILICA I FILTERI */}
+            {/* tražilica i filter */}
             <div className="search-controls-wrapper">
               <input
                 type="text"
-                placeholder="Upiši za pretragu..."
+                placeholder="Type to search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="big-search-input"
               />
-
-              {/* Jednostavni Filter Sort */}
               <select
                 className="search-filter-select"
                 value={filterSort}
                 onChange={(e) => setFilterSort(e.target.value)}
               >
-                <option value="newest">📅 Najnovije</option>
-                <option value="popular">🔥 Popularno</option>
+                <option value="newest">📅 Newest</option>
+                <option value="popular">🔥 Popular</option>
               </select>
             </div>
 
-            {/* REZULTATI PRETRAGE */}
+            {/* rezultati pretrage */}
             <div className="search-results-grid">
               {events.map((event) => (
                 <EventCard key={event._id} event={event} />
               ))}
             </div>
 
-            {/* LOADING I EMPTY STATES */}
+            {/* loading i empty states */}
             {isLoading && (
               <div style={{ marginTop: 20, textAlign: "center" }}>
-                <p>Učitavanje...</p>
-                {/* Ovdje možeš staviti <Spinner /> ako želiš */}
+                <p>Loading...</p>
               </div>
             )}
 
             {!isLoading && events.length === 0 && (
-              <p className="no-results-msg">Nema rezultata za tvoj upit.</p>
+              <p className="no-results-msg">No results for your query.</p>
             )}
 
-            {/* LOAD MORE GUMB */}
+            {/* load more gumb */}
             {!isLoading && hasMore && events.length > 0 && (
               <button className="btn-load-more" onClick={handleLoadMore}>
-                Prikaži još
+                Show More
               </button>
             )}
           </div>

@@ -1,7 +1,6 @@
-// src/App.jsx
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './Context/AuthContext';
-import AnimatedRoutes from './AnimatedRoutes'; // Importaj novu komponentu
+import AnimatedRoutes from './AnimatedRoutes';
 import './App.css';
 import ScrollToTop from './Context/ScrollToTop';
 
@@ -10,7 +9,7 @@ function App() {
     <AuthProvider>
       <Router>
         <ScrollToTop />
-        {/* Sva logika ruta i animacija je sada ovdje */}
+        {/* prikaz ruta i animacija */}
         <AnimatedRoutes />
       </Router>
     </AuthProvider>

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { userApi } from "../../api/userApi";
-import { mealApi } from "../../api/mealApi"; // <--- NOVI IMPORT
+import { mealApi } from "../../api/mealApi";
 import Footer from "../../Components/Footer/Footer";
 import PokemonSelector from "../../Components/PokemonSelector/PokemonSelector";
-import EventCard from "../../Components/EventCard/EventCard"; // <--- NOVI IMPORT
+import EventCard from "../../Components/EventCard/EventCard";
 import "./profilePage.css";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
@@ -15,8 +15,6 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState(null);
-  
-  // Novi state za evente
   const [myEvents, setMyEvents] = useState([]);
   const [participatingEvents, setParticipatingEvents] = useState([]);
 
@@ -25,7 +23,7 @@ const ProfilePage = () => {
     recipes: 0, 
     views: 0, 
     likes: 0,
-    avgRating: 0 // <--- NOVO
+    avgRating: 0
   });
   
   const [loading, setLoading] = useState(true);
@@ -35,7 +33,6 @@ const ProfilePage = () => {
 
   const isMyProfile = !username || (currentUser && username === currentUser.username);
 
-  // --- FETCH DATA ---
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -45,8 +42,6 @@ const ProfilePage = () => {
         const data = await userApi.getUserProfile(targetUsername);
         setProfileData(data.profile);
         setStats(data.stats);
-        
-        // Postavi evente
         setMyEvents(data.myEvents || []);
         setParticipatingEvents(data.participatingEvents || []);
 
@@ -58,7 +53,7 @@ const ProfilePage = () => {
           });
         }
       } catch (error) {
-        console.error("Greška pri dohvatu profila:", error);
+        console.error("error fetching profile:", error);
       } finally {
         setLoading(false);
       }
@@ -67,26 +62,25 @@ const ProfilePage = () => {
     fetchProfile();
   }, [username, currentUser, isMyProfile]);
 
-  // --- HANDLERS ---
   const handleDeleteEvent = async (e, eventId) => {
-    e.stopPropagation(); // Da ne otvori detalje
-    if (!window.confirm("Jeste li sigurni da želite obrisati ovaj event?")) return;
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this event?")) return;
     try {
       await mealApi.deleteMeal(eventId);
       setMyEvents(prev => prev.filter(ev => ev._id !== eventId));
     } catch (err) {
-      alert("Greška pri brisanju.");
+      alert("Error deleting event.");
     }
   };
 
   const handleLeaveEvent = async (e, eventId) => {
     e.stopPropagation();
-    if (!window.confirm("Želite li napustiti ovaj event?")) return;
+    if (!window.confirm("Do you want to leave this event?")) return;
     try {
       await mealApi.leaveMeal(eventId);
       setParticipatingEvents(prev => prev.filter(ev => ev._id !== eventId));
     } catch (err) {
-      alert("Greška pri izlasku.");
+      alert("Error leaving event.");
     }
   };
 
@@ -105,11 +99,10 @@ const ProfilePage = () => {
       setProfileData(updatedUser);
       setIsEditing(false);
     } catch (error) {
-      alert("Došlo je do greške pri spremanju profila.");
+      alert("Error saving profile.");
     }
   };
 
-  // TO DO dadati sponere a ne ovo
   if (loading) return <div className="loading-screen"></div>;
   if (!profileData) return <div className="error-screen"></div>;
 
@@ -118,12 +111,11 @@ const ProfilePage = () => {
         <SlidePageTransition>
         <div className="profile-container">
           
-          {/* HEADER PROFILA */}
           <div className="profile-header-card">
             <div className="profile-avatar-section">
               <img src={profileData.avatar || "https://via.placeholder.com/150"} alt="Avatar" className="profile-avatar-lg" />
               {isMyProfile && !isEditing && (
-                <button className="btn-edit-profile" onClick={() => setIsEditing(true)}>Uredi Profil</button>
+                <button className="btn-edit-profile" onClick={() => setIsEditing(true)}>Edit Profile</button>
               )}
             </div>
 
@@ -131,92 +123,86 @@ const ProfilePage = () => {
               {!isEditing ? (
                 <>
                   <h1 className="profile-username">@{profileData.username}</h1>
-                  <p className="profile-bio">{profileData.bio || "Ovaj korisnik još nije napisao opis."}</p>
+                  <p className="profile-bio">{profileData.bio || "This user hasn't written a bio yet."}</p>
                   <div className="profile-meta">
                      {profileData.location && <span>📍 {profileData.location}</span>}
-                     <span>📅 Član od {new Date(profileData.createdAt).toLocaleDateString()}</span>
+                     <span>📅 Member since {new Date(profileData.createdAt).toLocaleDateString()}</span>
                   </div>
                 </>
               ) : (
                 <div className="edit-profile-form">
-                  <h3>Uredi Profil</h3>
-                  <textarea name="bio" value={editForm.bio} onChange={handleEditChange} rows="3" placeholder="Opis..." />
-                  <input type="text" name="location" value={editForm.location} onChange={handleEditChange} placeholder="Lokacija" />
-                  <label>Promijeni Pokémona</label>
+                  <h3>Edit Profile</h3>
+                  <textarea name="bio" value={editForm.bio} onChange={handleEditChange} rows="3" placeholder="Bio..." />
+                  <input type="text" name="location" value={editForm.location} onChange={handleEditChange} placeholder="Location" />
+                  <label>Change Pokémon</label>
                   <PokemonSelector selectedId={selectedPokemonId} onSelect={handlePokemonSelect} />
                   <div className="edit-actions">
-                    <button className="btn-save" onClick={handleSaveProfile}>Spremi</button>
-                    <button className="btn-cancel" onClick={() => setIsEditing(false)}>Odustani</button>
+                    <button className="btn-save" onClick={handleSaveProfile}>Save</button>
+                    <button className="btn-cancel" onClick={() => setIsEditing(false)}>Cancel</button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* AŽURIRANA STATISTIKA */}
             <div className="profile-stats">
                <div className="stat-box">
                  <span className="stat-number">{stats.meals}</span>
-                 <span className="stat-label">Objava</span>
+                 <span className="stat-label">Posts</span>
                </div>
                <div className="stat-box">
                  <span className="stat-number">{stats.likes}</span>
-                 <span className="stat-label">Glasova</span>
+                 <span className="stat-label">Likes</span>
                </div>
                <div className="stat-box">
                  <span className="stat-number">{stats.avgRating ? stats.avgRating.toFixed(1) : "0.0"}</span>
-                 <span className="stat-label">Prosjek</span>
+                 <span className="stat-label">Average</span>
                </div>
                <div className="stat-box">
                  <span className="stat-number">{stats.views}</span>
-                 <span className="stat-label">Pregleda</span>
+                 <span className="stat-label">Views</span>
                </div>
             </div>
           </div>
 
-          {/* LISTE EVENATA */}
           <div className="profile-events-section">
             
-            {/* 1. MOJI EVENTI */}
             <div className="events-group">
-               <h3 className="group-title">Moji Eventi ({myEvents.length})</h3>
+               <h3 className="group-title">My Events ({myEvents.length})</h3>
                {myEvents.length > 0 ? (
                  <div className="events-grid-profile">
                     {myEvents.map(event => (
                        <div key={event._id} className="profile-event-wrapper">
                           <EventCard event={event} />
-                          {/* Gumb za brisanje (samo ako je moj profil i moj event) */}
                           {isMyProfile && (
                              <button className="btn-delete-event" onClick={(e) => handleDeleteEvent(e, event._id)}>
-                                🗑️ Obriši
+                                🗑️ Delete
                              </button>
                           )}
                        </div>
                     ))}
                  </div>
                ) : (
-                 <p className="empty-msg">Još nisi kreirao nijedan event.</p>
+                 <p className="empty-msg">You haven't created any events yet.</p>
                )}
             </div>
 
-            {/* 2. SUDJELOVANJA */}
             <div className="events-group">
-               <h3 className="group-title">Sudjelovanja ({participatingEvents.length})</h3>
+               <h3 className="group-title">Participations ({participatingEvents.length})</h3>
                {participatingEvents.length > 0 ? (
                  <div className="events-grid-profile">
                     {participatingEvents.map(event => (
                        <div key={event._id} className="profile-event-wrapper">
                           <EventCard event={event} />
-                          {/* Gumb za izlazak (samo ako je moj profil) */}
                           {isMyProfile && (
                              <button className="btn-leave-event" onClick={(e) => handleLeaveEvent(e, event._id)}>
-                                🚪 Izađi
+                                🚪 Leave
                              </button>
                           )}
                        </div>
                     ))}
                  </div>
                ) : (
-                 <p className="empty-msg">Nemaš evenata u kojima sudjeluješ.</p>
+                 <p className="empty-msg">You have no events you are participating in.</p>
                )}
             </div>
 

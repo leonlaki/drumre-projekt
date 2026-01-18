@@ -2,51 +2,57 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../../Context/ThemeContext";
 import { useAuth } from "../../../Context/AuthContext";
-// Dodajemo import za eventInviteApi
 import { friendApi } from "../../../api/friendApi";
-import { eventInviteApi } from "../../../api/eventInviteApi"; 
+import { eventInviteApi } from "../../../api/eventInviteApi";
 import "../navbar.css";
 
 const NavbarLoged = () => {
+  // dohvaćanje teme i funkcije za promjenu teme
   const { theme, toggleTheme } = useContext(ThemeContext);
+
+  // stanje za otvaranje i zatvaranje izbornika
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // referenca za detekciju klika izvan izbornika
   const menuRef = useRef(null);
+
+  // dohvaćanje funkcije za odjavu
   const { logoutUser } = useAuth();
+
+  // navigacija nakon odjave
   const navigate = useNavigate();
+
+  // stanje za broj notifikacija
   const [notifCount, setNotifCount] = useState(0);
 
-  // --- IZMJENA OVDJE ---
+  // dohvaćanje broja notifikacija pri prvom renderu
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        // Koristimo Promise.all da dohvatimo oboje paralelno
         const [friendRequests, eventInvites] = await Promise.all([
           friendApi.getPendingRequests(),
-          eventInviteApi.getMyInvites()
+          eventInviteApi.getMyInvites(),
         ]);
 
-        // Zbrajamo dužinu oba niza (pazimo da nisu undefined)
-        const total = (friendRequests?.length || 0) + (eventInvites?.length || 0);
-        
+        const total =
+          (friendRequests?.length || 0) + (eventInvites?.length || 0);
+
         setNotifCount(total);
       } catch (error) {
-        console.error("Failed to fetch notifications count", error);
+        console.error("failed to fetch notifications count", error);
       }
     };
 
     fetchNotifications();
-    
-    // Opcionalno: Možeš dodati interval da provjerava svakih 30s
-    // const interval = setInterval(fetchNotifications, 30000);
-    // return () => clearInterval(interval);
+  }, []);
 
-  }, []); // Prazan array znači da se izvršava samo pri prvom renderu (ili refreshu)
-
+  // odjava korisnika i preusmjeravanje
   const handleLogout = async () => {
     await logoutUser();
     navigate("/");
   };
 
+  // zatvaranje izbornika klikom izvan njega
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -68,7 +74,6 @@ const NavbarLoged = () => {
         </button>
       </div>
 
-      {/* Ovi linkovi se vide samo na DESKTOPU (šire od 900px) */}
       <div className="nav-center">
         <Link to="/home" className="nav-link">
           Home
@@ -78,14 +83,15 @@ const NavbarLoged = () => {
           Create Event
         </Link>
         <p className="nav-link-separator">|</p>
-        <Link to="/my-recepies" className="nav-link">My Recepies</Link>
+        <Link to="/my-recepies" className="nav-link">
+          My Recepies
+        </Link>
         <p className="nav-link-separator">|</p>
         <Link to="/friends" className="nav-link">
           Friends
         </Link>
       </div>
 
-      {/* DESNA STRANA - HAMBURGER MENU */}
       <div className="navbar-logd-user-menu-wrapper" ref={menuRef}>
         <button
           className="navbar-logd-user-hamburger"
@@ -107,24 +113,44 @@ const NavbarLoged = () => {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
 
-          {/* Ovdje prikazujemo crvenu točkicu na hamburgeru */}
           {notifCount > 0 && <span className="nav-hamburger-badge"></span>}
         </button>
 
         <div
           className={`navbar-logd-user-dropdown ${isMenuOpen ? "show" : ""}`}
         >
-          {/* --- MOBILE ONLY LINKOVI --- */}
           <div className="mobile-only-links">
-            <Link to="/home" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Home</Link>
-            <Link to="/create-event" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Create Event</Link>
-            <Link to="/my-recepies" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>My Recepies</Link>
-            <Link to="/friends" className="navbar-logd-user-item" onClick={() => setIsMenuOpen(false)}>Friends</Link>
-            {/* Linija razdvajanja */}
+            <Link
+              to="/home"
+              className="navbar-logd-user-item"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/create-event"
+              className="navbar-logd-user-item"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Create Event
+            </Link>
+            <Link
+              to="/my-recepies"
+              className="navbar-logd-user-item"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              My Recepies
+            </Link>
+            <Link
+              to="/friends"
+              className="navbar-logd-user-item"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Friends
+            </Link>
             <div className="navbar-dropdown-separator"></div>
           </div>
 
-          {/* --- STANDARDNI LINKOVI --- */}
           <Link
             to="/profile"
             className="navbar-logd-user-item"
@@ -138,7 +164,6 @@ const NavbarLoged = () => {
             onClick={() => setIsMenuOpen(false)}
           >
             Notifications
-            {/* Ovdje prikazujemo broj u dropdownu */}
             {notifCount > 0 && (
               <span className="nav-dropdown-badge">{notifCount}</span>
             )}

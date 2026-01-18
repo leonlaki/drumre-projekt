@@ -13,7 +13,6 @@ export const userApi = {
     return response.data;
   },
 
-  // --- ONBOARDING ---
 
   // Dohvati opcije za odabir (kategorije i države)
   getOnboardingOptions: async () => {

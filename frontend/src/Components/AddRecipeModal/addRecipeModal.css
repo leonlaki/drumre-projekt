@@ -1,4 +1,4 @@
-/* Backdrop (tamna pozadina) */
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -10,10 +10,10 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px); /* Moderni efekt zamućenja */
+  backdrop-filter: blur(5px); 
 }
 
-/* Sadržaj modala */
+
 .modal-content {
   background-color: var(--bg-card);
   color: var(--text-primary);
@@ -24,7 +24,7 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   position: relative;
   max-height: 90vh;
-  overflow-y: auto; /* Scroll ako je ekran mali */
+  overflow-y: auto; 
 }
 
 .modal-header {
@@ -58,7 +58,7 @@
   color: var(--accent-color);
 }
 
-/* Forma */
+
 .recipe-form {
   display: flex;
   flex-direction: column;
@@ -72,8 +72,7 @@
   margin-top: 1rem;
 }
 
-/* Inputi su već stilizirani globalno ili u loginPage.css, 
-   ali možemo dodati specifične ako treba */
+
 .recipe-form select {
   width: 100%;
   padding: 14px;
@@ -97,7 +96,7 @@
   gap: 10px;
 }
 
-/* Jedan red (Ime + Mjera + Gumb) */
+
 .ingredient-row {
   display: flex;
   gap: 10px;
@@ -105,20 +104,20 @@
 }
 
 .ing-input-name {
-  flex: 2; /* Ime zauzima više mjesta */
+  flex: 2; 
 }
 
 .ing-input-measure {
-  flex: 1; /* Mjera manje */
+  flex: 1; 
 }
 
-/* Gumbi */
+
 .btn-remove-ing {
   background: #ffcccc;
   color: #cc0000;
   border: none;
   width: 36px;
-  height: 36px; /* Da bude iste visine kao input */
+  height: 36px; 
   border-radius: 8px;
   cursor: pointer;
   font-size: 1.2rem;

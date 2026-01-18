@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../Components/Footer/Footer";
 import VinylReveal from "./VinylReveal";
-import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection"; // <--- NOVI IMPORT (prilagodi putanju)
+import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import "./LandingPage.css";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
@@ -19,52 +19,49 @@ const LandingPage = () => {
       <div className="landing-wrapper">
         <header className="hero-section">
           <h1 className="homepage-hero-title">FOODTUNE</h1>
-          <h1 className="hero-title">Savršena večera uz savršenu glazbu</h1>
+          <h1 className="hero-title">Perfect Dinner with Perfect Music</h1>
           <p className="hero-subtitle">
-            FoodTune povezuje tvoje omiljene recepte s idealnim playlistama.
-            Stvori atmosferu koja se pamti jednim klikom.
+            FoodTune connects your favorite recipes with ideal playlists.
+            Create an unforgettable atmosphere with a single click.
           </p>
         </header>
 
-        {/* 1. CJELINA */}
+        {/* gurmanski recepti */}
         <AnimatedSection>
           <div className="section-text">
-            <h2>Gurmanski Recepti</h2>
+            <h2>Gourmet Recipes</h2>
             <p>
-              Otkrij jela koja nisu samo hrana, već doživljaj. Naša baza
-              recepata je pažljivo birana za svaku priliku.
+              Discover dishes that are not just food, but an experience. Our recipe database is carefully curated for every occasion.
             </p>
           </div>
           <div className="section-image-wrapper">
-            <img src="/images/landingpage1.jfif" alt="Kuhanje" />
+            <img src="/images/landingpage1.jfif" alt="Cooking" />
           </div>
         </AnimatedSection>
 
-        {/* 2. CJELINA (Obrnuto) */}
+        {/* ritam kuhinje */}
         <AnimatedSection className="section-reverse">
           <div className="section-text">
-            <h2>Ritam tvoje kuhinje</h2>
+            <h2>Your Kitchen's Rhythm</h2>
             <p>
-              Zaboravi na tišinu dok kuhaš. Naš algoritam bira glazbu koja prati
-              tempo tvoje pripreme jela.
+              Forget the silence while cooking. Our algorithm selects music that follows the tempo of your dish preparation.
             </p>
           </div>
           <div className="section-image-wrapper">
-            <img src="/images/landingPage-img3.webp" alt="Glazba" />
+            <img src="/images/landingPage-img3.webp" alt="Music" />
           </div>
         </AnimatedSection>
 
-        {/* 3. CJELINA */}
+        {/* zajednica i dijeljenje */}
         <AnimatedSection>
           <div className="section-text">
-            <h2>Zajednica i Dijeljenje</h2>
+            <h2>Community and Sharing</h2>
             <p>
-              Podijeli svoje kulinarske i glazbene kreacije s drugim
-              zaljubljenicima u dobru hranu.
+              Share your culinary and musical creations with other food enthusiasts.
             </p>
           </div>
           <div className="section-image-wrapper">
-            <img src="/images/landingPage-img2.webp" alt="Zajednica" />
+            <img src="/images/landingPage-img2.webp" alt="Community" />
           </div>
         </AnimatedSection>
 
@@ -79,13 +76,12 @@ const LandingPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* MAGIC SECTION */}
+        {/* magic sekcija */}
         <AnimatedSection className="landing-page-magic-section">
           <div className="section-text">
-            <h2>Istraži magiju</h2>
+            <h2>Explore the Magic</h2>
             <p>
-              Prijeđi mišem preko tanjura i otkrij glazbu koja se krije iza
-              okusa.
+              Hover over the plate and discover the music hidden behind the flavors.
             </p>
           </div>
           <div className="section-image-wrapper">

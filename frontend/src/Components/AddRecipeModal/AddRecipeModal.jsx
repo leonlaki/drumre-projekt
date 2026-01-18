@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { recipeApi } from "../../api/recipeApi";
 import "./addRecipeModal.css";
@@ -20,23 +20,22 @@ const CATEGORIES = [
   "Vegetarian"
 ];
 
-// Dodali smo prop 'initialData'
 const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
   
-  // Ako imamo initialData (edit mode), popuni formu, inače prazno
+  // stanje forme
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     image: initialData?.image || "",
     category: initialData?.category || "Beef",
-    area: initialData?.area || "", // NOVO POLJE
+    area: initialData?.area || "",
     instructions: initialData?.instructions || "",
   });
 
-  // Parsiranje sastojaka: Ako editiramo, uzmi iz initialData, inače jedan prazan red
+  // stanje sastojaka
   const [ingredients, setIngredients] = useState(
     initialData?.ingredients?.length > 0 
       ? initialData.ingredients.map(i => 
-          typeof i === 'string' ? { name: i, measure: '' } : i // Kompatibilnost sa starim podacima
+          typeof i === 'string' ? { name: i, measure: '' } : i
         )
       : [{ name: "", measure: "" }]
   );
@@ -44,29 +43,32 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const isEditMode = !!initialData; // Boolean flag
+  const isEditMode = !!initialData;
 
+  // promjena inputa
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- LOGIKA ZA SASTOJKE (Ista kao prije) ---
+  // promjena sastojka
   const handleIngredientChange = (index, field, value) => {
     const newIngredients = [...ingredients];
     newIngredients[index][field] = value;
     setIngredients(newIngredients);
   };
 
+  // dodaj novi red sastojka
   const addIngredientRow = () => {
     setIngredients([...ingredients, { name: "", measure: "" }]);
   };
 
+  // ukloni red sastojka
   const removeIngredientRow = (index) => {
     const newIngredients = ingredients.filter((_, i) => i !== index);
     setIngredients(newIngredients);
   };
-  // ------------------------------------------
 
+  // slanje forme
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -75,7 +77,7 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
     try {
       const validIngredients = ingredients.filter(ing => ing.name.trim() !== "");
       if (validIngredients.length === 0) {
-        setError("Molimo dodajte barem jedan sastojak.");
+        setError("please add at least one ingredient");
         setLoading(false);
         return;
       }
@@ -88,18 +90,16 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
       let savedRecipe;
       
       if (isEditMode) {
-        // UPDATE POSTOJEĆEG
         savedRecipe = await recipeApi.updateRecipe(initialData._id, payload);
       } else {
-        // KREIRANJE NOVOG
         savedRecipe = await recipeApi.saveRecipe(payload);
       }
 
-      onRecipeSaved(savedRecipe, isEditMode); // Šaljemo info roditelju
+      onRecipeSaved(savedRecipe, isEditMode);
       onClose();
     } catch (err) {
       console.error(err);
-      setError("Greška pri spremanju recepta.");
+      setError("error saving recipe");
     } finally {
       setLoading(false);
     }
@@ -115,8 +115,7 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          {/* Naslov ovisi o modu */}
-          <h2>{isEditMode ? "Uredi Recept" : "Novi Recept"}</h2>
+          <h2>{isEditMode ? "edit recipe" : "new recipe"}</h2>
           <button className="btn-close" onClick={onClose}>&times;</button>
         </div>
 
@@ -124,31 +123,31 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
 
         <form onSubmit={handleSubmit} className="recipe-form">
           <div className="form-group">
-            <label>Naziv recepta</label>
+            <label>recipe name</label>
             <input type="text" name="title" value={formData.title} onChange={handleChange} required />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label>Kategorija</label>
+              <label>category</label>
               <select name="category" value={formData.category} onChange={handleChange}>
                 {CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
             <div className="form-group">
-              <label>URL Slike</label>
+              <label>image URL</label>
               <input type="text" name="image" value={formData.image} onChange={handleChange} placeholder="https://..." />
             </div>
           </div>
 
           <div className="form-group">
-            <label>Sastojci</label>
+            <label>ingredients</label>
             <div className="ingredients-container">
               {ingredients.map((ing, index) => (
                 <div key={index} className="ingredient-row">
                   <input
                     type="text"
-                    placeholder="Ime"
+                    placeholder="name"
                     value={ing.name}
                     onChange={(e) => handleIngredientChange(index, "name", e.target.value)}
                     className="ing-input-name"
@@ -156,7 +155,7 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
                   />
                   <input
                     type="text"
-                    placeholder="Kol."
+                    placeholder="amount"
                     value={ing.measure}
                     onChange={(e) => handleIngredientChange(index, "measure", e.target.value)}
                     className="ing-input-measure"
@@ -166,19 +165,19 @@ const AddRecipeModal = ({ onClose, onRecipeSaved, initialData = null }) => {
                   )}
                 </div>
               ))}
-              <button type="button" className="btn-add-ing" onClick={addIngredientRow}>+ Dodaj sastojak</button>
+              <button type="button" className="btn-add-ing" onClick={addIngredientRow}>+ add ingredient</button>
             </div>
           </div>
 
           <div className="form-group">
-            <label>Upute</label>
+            <label>instructions</label>
             <textarea name="instructions" value={formData.instructions} onChange={handleChange} rows="5" required />
           </div>
 
           <div className="modal-actions">
-            <button type="button" className="btn-cancel" onClick={onClose}>Odustani</button>
+            <button type="button" className="btn-cancel" onClick={onClose}>cancel</button>
             <button type="submit" className="btn-save" disabled={loading}>
-              {loading ? "Spremanje..." : (isEditMode ? "Spremi Izmjene" : "Objavi Recept")}
+              {loading ? "saving..." : (isEditMode ? "save changes" : "publish recipe")}
             </button>
           </div>
         </form>

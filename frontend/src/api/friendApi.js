@@ -7,7 +7,7 @@ export const friendApi = {
     return response.data;
   },
 
-  // Dohvati zahtjeve za prijateljstvo (Pending) - ZA NOTIFIKACIJE
+  // Dohvati zahtjeve za prijateljstvo (Pending) 
   getPendingRequests: async () => {
     const response = await axiosClient.get("/api/friends/requests");
     return response.data;

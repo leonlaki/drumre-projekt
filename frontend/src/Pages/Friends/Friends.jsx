@@ -13,12 +13,10 @@ const Friends = () => {
   const [loadingFriends, setLoadingFriends] = useState(true);
   const [pendingUsers, setPendingUsers] = useState([]);
 
-  // 1. Učitaj trenutne prijatelje pri otvaranju
+  // učitaj prijatelje i poslane zahtjeve
   const fetchInitialData = async () => {
     try {
       setLoadingFriends(true);
-
-      // Paralelno dohvati prijatelje i poslane zahtjeve
       const [friendsData, sentRequestsData] = await Promise.all([
         friendApi.getMyFriends(),
         friendApi.getSentRequests(),
@@ -27,7 +25,7 @@ const Friends = () => {
       setMyFriends(friendsData);
       setPendingUsers(sentRequestsData);
     } catch (error) {
-      console.error("Greška pri dohvatu podataka", error);
+      console.error("Error fetching data", error);
     } finally {
       setLoadingFriends(false);
     }
@@ -37,81 +35,77 @@ const Friends = () => {
     fetchInitialData();
   }, []);
 
-  // 2. DEBOUNCE LOGIKA ZA PRETRAGU
+  // debounce pretraga korisnika
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
     }
 
-    // Postavi timer koji šalje upit za 300ms
     const delayDebounceFn = setTimeout(async () => {
       try {
-        console.log("Šaljem upit za:", query);
         const results = await userApi.searchUsers(query);
-
         setSearchResults(results);
       } catch (error) {
-        console.error("Greška pretrage", error);
+        console.error("Search error", error);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  // 3. Pošalji zahtjev za prijateljstvo
+  // pošalji zahtjev za prijateljstvo
   const handleSendRequest = async (userId) => {
     try {
       setPendingUsers((prev) => [...prev, userId]);
       await friendApi.sendRequest(userId);
     } catch (error) {
-      console.error("Greška:", error);
+      console.error("Error:", error);
       if (error.response?.status !== 400) {
         setPendingUsers((prev) => prev.filter((id) => id !== userId));
       }
     }
   };
 
-  // 4. Otkazivanje poslanog zahtjeva
+  // otkaži zahtjev
   const handleCancelRequest = async (userId) => {
     try {
       setPendingUsers((prev) => prev.filter((id) => id !== userId));
       await friendApi.cancelRequest(userId);
     } catch (error) {
-      console.error("Greška pri otkazivanju", error);
+      console.error("Error cancelling request", error);
       setPendingUsers((prev) => [...prev, userId]);
     }
   };
 
-  // 5. Obriši prijatelja
+  // ukloni prijatelja
   const handleUnfriend = async (friendId) => {
-    if (!window.confirm("Sigurno želiš ukloniti ovog prijatelja?")) return;
+    if (!window.confirm("Are you sure you want to remove this friend?")) return;
     try {
       await friendApi.unfriend(friendId);
-      fetchFriends();
+      fetchInitialData();
     } catch (error) {
-      alert("Greška pri brisanju");
+      alert("Error removing friend");
     }
   };
 
-  // Pomoćna funkcija da provjerimo je li user već prijatelj
+  // provjeri je li već prijatelj
   const isAlreadyFriend = (userId) => {
     return myFriends.some((f) => f._id === userId);
   };
 
   return (
     <div className="friends-wrapper">
-  
       <PageTransition>
         <div className="friends-container">
           <h1>Friends & Community</h1>
 
           <div className="search-section">
-            <h3>Pronađi nove gurmane</h3>
+            <h3>Find new foodies</h3>
             <div className="search-bar">
               <input
                 type="text"
-                placeholder="Upiši ime ili korisničko ime..."
+                placeholder="Enter name or username..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 autoFocus
@@ -147,20 +141,20 @@ const Friends = () => {
                       </div>
 
                       {isFriend ? (
-                        <span className="badge-friend">Prijatelj ✔</span>
+                        <span className="badge-friend">Friend ✔</span>
                       ) : isPending ? (
                         <button
                           className="btn-cancel-request"
                           onClick={() => handleCancelRequest(user._id)}
                         >
-                          Otkaži ✕
+                          Cancel ✕
                         </button>
                       ) : (
                         <button
                           className="btn-add-friend"
                           onClick={() => handleSendRequest(user._id)}
                         >
-                          Dodaj +
+                          Add +
                         </button>
                       )}
                     </div>
@@ -173,7 +167,7 @@ const Friends = () => {
               <p
                 style={{ marginTop: "10px", color: "#666", fontSize: "0.9rem" }}
               >
-                Nema rezultata.
+                No results.
               </p>
             )}
           </div>
@@ -181,9 +175,9 @@ const Friends = () => {
           <hr className="divider" />
 
           <div className="my-friends-section">
-            <h3>Moji prijatelji ({myFriends.length})</h3>
+            <h3>My Friends ({myFriends.length})</h3>
             {loadingFriends ? (
-              <p>Učitavanje...</p>
+              <p>Loading...</p>
             ) : (
               <div className="friends-grid">
                 {myFriends.map((friend) => (
@@ -205,7 +199,7 @@ const Friends = () => {
                       className="btn-unfriend"
                       onClick={() => handleUnfriend(friend._id)}
                     >
-                      Ukloni
+                      Remove
                     </button>
                   </div>
                 ))}

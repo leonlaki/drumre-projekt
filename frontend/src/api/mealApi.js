@@ -48,7 +48,7 @@ export const mealApi = {
   },
 
   incrementViewCount: async (id) => {
-    // Backend ruta je definisana kao POST /api/meals/:id/view
+   
     const response = await axiosClient.post(`/api/meals/${id}/view`);
     return response.data;
   },

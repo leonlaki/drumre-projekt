@@ -1,4 +1,3 @@
-// src/pages/Register.jsx
 import { useState } from "react";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -7,7 +6,6 @@ import AnimatedSection from "../../Components/AnimatedSection/AnimatedSection";
 import Footer from "../../Components/Footer/Footer";
 import SlidePageTransition from "../../Context/SlidePageTransition";
 
-// --- DEFINICIJA IKONA (SVG) ---
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M23.52 12.29C23.52 11.43 23.44 10.61 23.3 9.81H12V14.41H18.45C18.17 15.86 17.31 17.1 16.05 17.94V20.87H19.92C22.19 18.78 23.52 15.7 23.52 12.29Z" fill="#4285F4"/>
@@ -28,7 +26,6 @@ const Register = () => {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
 
-  // State za podatke forme
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -40,7 +37,6 @@ const Register = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Ažuriranje input polja
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -49,13 +45,12 @@ const Register = () => {
     if (error) setError("");
   };
 
-  // Slanje forme
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Lozinke se ne podudaraju.");
+      setError("Passwords do not match.");
       setIsLoading(false);
       return;
     }
@@ -68,7 +63,7 @@ const Register = () => {
       console.error(err);
       setError(
         err.response?.data?.message ||
-          "Neuspješna registracija. Pokušajte ponovno."
+          "Registration failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -82,13 +77,11 @@ const Register = () => {
   return (
     <SlidePageTransition>
       <div className="register-wrapper">
-        
-        {/* --- AŽURIRANA HERO SEKCIJA (Isto kao Login) --- */}
+
         <header className="register-hero-section">
-          <h1 className="register-hero-title">Registriraj se</h1>
+          <h1 className="register-hero-title">Register</h1>
           <p className="register-hero-subtitle">
-            Izradi korisnički račun kako bi započeo svoje kulinarsko i glazbeno
-            putovanje s nama!
+            Create an account to start your culinary and music journey with us!
           </p>
         </header>
 
@@ -97,52 +90,48 @@ const Register = () => {
             {error && <div className="form-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="register-form">
-              {/* Ime i Prezime */}
               <div className="form-group">
-                <label htmlFor="name">Ime i prezime</label>
+                <label htmlFor="name">Full Name</label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="npr. Ana Anić"
+                  placeholder="e.g. Ana Anic"
                   required
                 />
               </div>
 
-              {/* Korisničko ime */}
               <div className="form-group">
-                <label htmlFor="username">Korisničko ime</label>
+                <label htmlFor="username">Username</label>
                 <input
                   type="text"
                   id="username"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="npr. chef_ana"
+                  placeholder="e.g. chef_ana"
                   required
                 />
               </div>
 
-              {/* Email */}
               <div className="form-group">
-                <label htmlFor="email">Email adresa</label>
+                <label htmlFor="email">Email Address</label>
                 <input
                   type="email"
                   id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="ana@primjer.com"
+                  placeholder="ana@example.com"
                   required
                 />
               </div>
 
-              {/* Lozinke */}
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="password">Lozinka</label>
+                  <label htmlFor="password">Password</label>
                   <input
                     type="password"
                     id="password"
@@ -156,7 +145,7 @@ const Register = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="confirmPassword">Potvrdi lozinku</label>
+                  <label htmlFor="confirmPassword">Confirm Password</label>
                   <input
                     type="password"
                     id="confirmPassword"
@@ -170,12 +159,12 @@ const Register = () => {
               </div>
 
               <button type="submit" className="btn-submit" disabled={isLoading}>
-                {isLoading ? "Kreiranje..." : "Kreiraj račun"}
+                {isLoading ? "Creating..." : "Create Account"}
               </button>
             </form>
 
             <div className="divider">
-              <span>ili nastavi putem</span>
+              <span>or continue with</span>
             </div>
 
             <div className="social-login-buttons">
@@ -199,9 +188,9 @@ const Register = () => {
 
             <div className="login-redirect">
               <p className="text-small">
-                Već imaš račun?{" "}
+                Already have an account?{" "}
                 <Link to="/login" className="link-highlight">
-                  Prijavi se ovdje
+                  Login here
                 </Link>
               </p>
             </div>
