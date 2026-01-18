@@ -18,7 +18,7 @@ const LandingPage = () => {
     <SlidePageTransition animateOnMount={shouldAnimate}>
       <div className="landing-wrapper">
         <header className="hero-section">
-          <h1 className="homepage-hero-title">FOODTUNE</h1>
+          <img className="homepage-hero-logo" src="/images/logo.svg" alt="FOODTUNE Logo" />
           <h1 className="hero-title">Perfect Dinner with Perfect Music</h1>
           <p className="hero-subtitle">
             FoodTune connects your favorite recipes with ideal playlists.

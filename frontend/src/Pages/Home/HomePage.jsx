@@ -99,7 +99,7 @@ const HomePage = () => {
       <PageTransition>
         {/* hero sekcija */}
         <div className="homepage-hero-section">
-          <h1 className="homepage-hero-title">FOODTUNE</h1>
+          <img className="homepage-hero-logo" src="/images/logo.svg" alt="FOODTUNE Logo" />
           <p className="homepage-hero-subtitle">
             Your cooking rhythm. Discover recipes that play your melody,
             create a symphony of flavors, and enjoy every bite without limits.

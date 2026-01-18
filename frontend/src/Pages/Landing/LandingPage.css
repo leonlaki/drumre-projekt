@@ -17,12 +17,14 @@
 .hero-title {
   font-size: var(--fs-h1);
   margin-bottom: 20px;
+  margin-top: -10px;
 }
 
 .hero-subtitle {
   font-size: var(--fs-body);
   color: var(--text-secondary);
   max-width: 700px;
+  margin-bottom: 50px;
 }
 
 
@@ -136,4 +138,11 @@
     width: 280px;
     height: 280px;
   }
+}
+
+.homepage-hero-logo {
+  width: 800px; 
+  height: auto;
+  margin-bottom: -100px;
+  margin-top: -70px;
 }

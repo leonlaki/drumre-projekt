@@ -405,3 +405,11 @@
   font-size: var(--fs-h2);
   font-weight: var(--fw-h2);
 }
+
+.homepage-hero-logo {
+  width: 800px; 
+  height: auto;
+  margin-bottom: -100px;
+  margin-top: -70px;
+}
+
