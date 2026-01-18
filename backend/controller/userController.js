@@ -17,51 +17,139 @@ const getUserProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // --- AGREGACIJA STATISTIKE (Samo za evente koje je ON kreirao) ---
+    // --- 1. AGREGACIJA STATISTIKE (POPRAVLJENO) ---
     const engagementStats = await Meal.aggregate([
       { $match: { author: user._id } },
+      
+      // Prvo moramo "odmotati" sve ocjene da ih možemo zbrojiti
+      // Ali oprez: ako event nema ocjena, on nestane nakon unwinda.
+      // Zato koristimo facet ili group pa project.
+      
       {
         $group: {
           _id: null,
           totalViews: { $sum: "$viewCount" },
-          totalVotes: { $sum: { $size: "$ratings" } }, // Ukupan broj glasova
-          // Prosječna ocjena svih njegovih evenata
-          // Prvo moramo unwindati ratings da bi izračunali prosjek svih glasova ikad
-          // ILI jednostavnije: uzeti prosjek 'averageRating' polja svakog eventa
-          avgRatingSum: { $avg: "$averageRating" } 
-        },
+          totalMeals: { $sum: 1 },
+          // Zbrajamo sve ocjene iz svih arraya
+          allRatings: { $push: "$ratings.value" } 
+        }
       },
+      {
+        $project: {
+          totalViews: 1,
+          totalMeals: 1,
+          // Flatten array arrayeva u jedan veliki array brojeva
+          flatRatings: { 
+            $reduce: {
+              input: "$allRatings",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          totalViews: 1,
+          totalVotes: { $size: "$flatRatings" }, // Ukupan broj glasova
+          avgRatingSum: { $avg: "$flatRatings" } // Pravi prosjek svih glasova ikad
+        }
+      }
     ]);
 
     const statsResult = engagementStats[0] || { totalViews: 0, totalVotes: 0, avgRatingSum: 0 };
 
-    // --- DOHVAT EVENATA ---
-    
-    // 1. MOJI EVENTI (Gdje sam ja autor)
-    const myEvents = await Meal.find({ author: user._id })
-      .sort({ createdAt: -1 })
-      .populate("author", "username avatar");
 
-    // 2. EVENTI U KOJIMA SUDJELUJEM (Gdje sam u participants, ali NISAM autor)
-    const participatingEvents = await Meal.find({
-      participants: user._id,
-      author: { $ne: user._id } // Ne želim vidjeti svoje evente ovdje
-    })
-      .sort({ createdAt: -1 })
-      .populate("author", "username avatar");
+    // --- 2. DOHVAT EVENATA (POPRAVLJEN POPULATE) ---
+    // Frontend (EventCard) treba cijeli author objekt (avatar), a ne samo ID.
+    // .populate("author") bi trebao raditi, ali provjerimo.
 
+    // 2.1. MOJI EVENTI
+    // Moramo izračunati averageRating za svaki event da bi se prikazao na kartici
+    const myEvents = await Meal.aggregate([
+      { $match: { author: user._id } },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author"
+        }
+      },
+      { $unwind: "$author" },
+      {
+        $addFields: {
+          averageRating: { 
+             $cond: { 
+               if: { $gt: [{ $size: "$ratings" }, 0] },
+               then: { $avg: "$ratings.value" },
+               else: 0 
+             }
+           },
+           viewCount: { $ifNull: ["$viewCount", 0] }
+        }
+      },
+      // Projekcija za sigurnost (da ne šaljemo passworde)
+      {
+        $project: {
+          title: 1, image: 1, createdAt: 1, averageRating: 1, viewCount: 1,
+          "author.username": 1, "author.avatar": 1, "author._id": 1,
+          // Dodaj ostala polja koja EventCard treba
+          ratings: 1 
+        }
+      }
+    ]);
+
+    // 2.2. SUDJELOVANJA
+    const participatingEvents = await Meal.aggregate([
+      { 
+        $match: {
+          participants: user._id,
+          author: { $ne: user._id } 
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author"
+        }
+      },
+      { $unwind: "$author" },
+      {
+        $addFields: {
+          averageRating: { 
+             $cond: { 
+               if: { $gt: [{ $size: "$ratings" }, 0] },
+               then: { $avg: "$ratings.value" },
+               else: 0 
+             }
+           }
+        }
+      },
+      {
+        $project: {
+          title: 1, image: 1, createdAt: 1, averageRating: 1, viewCount: 1,
+          "author.username": 1, "author.avatar": 1, "author._id": 1,
+          ratings: 1
+        }
+      }
+    ]);
 
     res.json({
       profile: user,
       stats: {
         recipes: await Recipe.countDocuments({ author: user._id }),
-        meals: await Meal.countDocuments({ author: user._id }),
+        meals: await Meal.countDocuments({ author: user._id }), // Koristimo count za brzi info
         views: statsResult.totalViews,
-        likes: statsResult.totalVotes, // Broj glasova
-        avgRating: statsResult.avgRatingSum // Prosječna ocjena
+        likes: statsResult.totalVotes,
+        avgRating: statsResult.avgRatingSum || 0
       },
-      myEvents, // <--- Šaljemo listu
-      participatingEvents // <--- Šaljemo listu
+      myEvents, 
+      participatingEvents
     });
 
   } catch (error) {

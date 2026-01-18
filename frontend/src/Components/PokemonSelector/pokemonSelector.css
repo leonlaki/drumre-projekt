@@ -5,7 +5,7 @@
   border: 1px solid rgba(0,0,0,0.1);
   border-radius: 12px;
   padding: 1rem;
-  background-color: var(--bg-main);
+  background-color: var(--bg-card); /* Bolje bg-card da se ističe od pozadine */
 }
 
 [data-theme='dark'] .poke-selector-container {
@@ -17,27 +17,26 @@
   padding: 10px;
   margin-bottom: 1rem;
   border-radius: 8px;
-  border: 1px solid var(--text-secondary);
-  background: var(--bg-card);
+  border: 1px solid rgba(0,0,0,0.2);
+  background: var(--bg-main);
   color: var(--text-primary);
+  font-family: inherit;
 }
 
+.poke-loading {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* GRID */
 .poke-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 10px;
-  max-height: 300px;
-  overflow-y: auto; /* Scroll unutar grida */
-  padding-right: 5px;
-}
-
-/* Scrollbar styling */
-.poke-grid::-webkit-scrollbar {
-  width: 6px;
-}
-.poke-grid::-webkit-scrollbar-thumb {
-  background-color: var(--text-secondary);
-  border-radius: 3px;
+  /* Maknuli smo max-height i overflow-y jer sad imamo paginaciju */
+  min-height: 220px; /* Da ne skače visina previše kad je manje itema */
 }
 
 .poke-item {
@@ -46,13 +45,15 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 5px;
+  padding: 8px;
   border-radius: 8px;
   border: 2px solid transparent;
   transition: all 0.2s;
+  background-color: var(--bg-main);
 }
 
 .poke-item:hover {
+  transform: translateY(-2px);
   background-color: rgba(0,0,0,0.05);
 }
 
@@ -62,10 +63,10 @@
 }
 
 .poke-img {
-  width: 60px;
-  height: 60px;
+  width: 50px; /* Malo manje da bude urednije */
+  height: 50px;
   object-fit: contain;
-  image-rendering: pixelated; /* Da pixel art izgleda oštro */
+  image-rendering: pixelated; 
 }
 
 .poke-name {
@@ -74,4 +75,57 @@
   margin-top: 4px;
   color: var(--text-secondary);
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 20px;
+}
+
+/* PAGINATION CONTROLS */
+.poke-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.btn-poke-nav {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.btn-poke-nav:disabled {
+  background-color: gray;
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-poke-nav:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.page-info {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
